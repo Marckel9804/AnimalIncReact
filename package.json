@@ -4,12 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 3600",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "vite --port 3600"
   },
   "dependencies": {
+    "nes.css": "^2.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.25.1"
@@ -26,5 +28,6 @@
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.6",
     "vite": "^5.3.4"
-  }
+  },
+  "proxy": "http://localhost:8080/"
 }
