@@ -1,0 +1,17 @@
+.maingame-container {
+  background-color: #017d7c;
+}
+
+.myinfo-container {
+  position: relative;
+  height: 94vh;
+  width: 22%;
+  background-color: white;
+}
+
+.stockinfo-container {
+  position: relative;
+  height: 94vh;
+  width: 45%;
+  background-color: white;
+}
