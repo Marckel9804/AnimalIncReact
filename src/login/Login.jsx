@@ -22,6 +22,12 @@ const Login = () => {
                     <NaverLogin />
                     <KakaoLogin />
                 </div>
+                <div>
+                    <a href={"/login"} className="login-link">로그인</a> |
+                    <a href={"/register"} className="register-link">회원 가입</a> |
+                    <a href={"/find-id"} className="find-id-link">ID 찾기</a> |
+                    <a href={"/find-password"} className="find-password-link">비밀번호 찾기</a>
+                </div>
                 <div className="login-footer">
                     <span>서비스 약관 | </span>
                     <span>개인정보 처리방침 | </span>

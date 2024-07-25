@@ -10,9 +10,9 @@ const NaverLogin = () => {
     useEffect(() => {
         const naverLogin = new window.naver.LoginWithNaverId({
             clientId: 'XtRHdGsf1DCObrQohYWO',
-            callbackUrl: 'http://localhost:8080/callback',
+            callbackUrl: 'http://localhost:3600/api/callback',
             isPopup: false,
-            loginButton: { color: 'green', type: 3, height: 52 }
+            loginButton: { color: 'green', type: 3, height: 20 }
         });
         naverLogin.init();
 
