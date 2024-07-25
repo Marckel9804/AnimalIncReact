@@ -62,7 +62,7 @@ const GoogleLogin = () => {
 };
 
 const GoogleLoginPage = () => {
-    const clientId = "975411602786-m61p0e7053pnrpi7j4gl92ftmdpjkj8u.apps.googleusercontent.com";
+    const clientId = "691131005394-6u9f06b6hbje6thje9cu1n7hsm3tpsoj.apps.googleusercontent.com";
 
     return (
         <GoogleOAuthProvider clientId={clientId}>
