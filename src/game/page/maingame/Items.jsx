@@ -1,11 +1,11 @@
 import React from "react";
 
-function MyInfo({ show, setShow }) {
+function ItemsWin({ show, setShow }) {
   return (
-    <div className={"myinfo-container"}>
+    <div className={"itemswin-container"}>
       <div className={`main-window ${show ? "" : "win-hide"}`}>
         <div className="window-head">
-          My Info
+          Items
           <div className=" ml-auto mr-1 flex items-center">
             <button
               className="window-head-btn items-end"
@@ -32,4 +32,4 @@ function MyInfo({ show, setShow }) {
   );
 }
 
-export default MyInfo;
+export default ItemsWin;
