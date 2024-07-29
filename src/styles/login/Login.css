@@ -1,0 +1,26 @@
+.login-btns {
+    display: flex;
+    width: 100%;
+    padding: 10px 120px 40px 0;
+    border: none;
+    gap: 45px;
+}
+
+.login-footer {
+    color: black;
+    margin-top: 20px;
+    translate: 0px 50px;
+}
+
+.notice-link {
+    text-decoration: none;
+    color: black;
+}
+
+.notice-link:hover {
+    text-decoration: underline;
+}
+
+input {
+    border: 1px solid black;
+}
