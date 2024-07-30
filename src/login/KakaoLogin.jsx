@@ -1,7 +1,6 @@
-import React, {useEffect} from 'react';
-import axios from '../utils/axios';
-import {useNavigate} from 'react-router-dom';
-import kakaoLogin from "../image/kakao_login.png";
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import kakaoLogin from "../image/kakao.png";
 import '../styles/login/KakaoLogin.css';
 
 const KakaoLogin = () => {
@@ -16,52 +15,19 @@ const KakaoLogin = () => {
     const handleLogin = () => {
         window.Kakao.Auth.login({
             success: async (authObj) => {
-                try {
-                    const userInfo = await window.Kakao.API.request({
-                        url: '/v2/user/me',
-                    });
-                    const {id: socialId, kakao_account: {profile: {nickname: name}, email}} = userInfo;
-                    handleLoginSuccess({socialId, name, email}, 'kakao');
-                } catch (error) {
-                    console.error('Kakao API request error:', error);
-                }
+                const accessToken = authObj.access_token;
+                window.location.href = `/kakao/callback?access_token=${accessToken}`;
+            },
+            fail: (error) => {
+                console.error('Kakao login error:', error);
+                alert('카카오 로그인에 실패했습니다. 다시 시도해 주세요.');
             },
         });
     };
 
-    const handleLoginSuccess = async (userInfo, platform) => {
-        const {socialId, name, email} = userInfo;
-
-        try {
-            const result = await axios.post('https://bit-two.com/api/members/social-login', {
-                socialId,
-                platform,
-                name,
-                email,
-            }, {
-                withCredentials: true
-            });
-
-            const response = result.data;
-            if (response.status === 'error') {
-                return;
-            }
-
-            const member = response.member;
-            if (!member) {
-                throw new Error('Member data is not defined in the response.');
-            }
-
-            sessionStorage.setItem('member', JSON.stringify(member));
-            navigate('/main');
-        } catch (error) {
-            console.error('Social login error:', error);
-        }
-    };
-
     return (
         <button className="kakao-login-btn" onClick={handleLogin}>
-            <img src={kakaoLogin} alt="kakaoLogin" className="kakao-login-image"/>
+            <img src={kakaoLogin} alt="kakaoLogin" className="kakao-login-image nes-pointer" />
         </button>
     );
 };
