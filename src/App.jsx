@@ -1,9 +1,10 @@
 import "./App.css";
+import Ladder from "./game/page/minigame/Ladder";
 import RoomList from "./game/page/rooms/RoomList";
 
 function App() {
   return (
-    <RoomList />
+    <Ladder />
     // <>
     //   <button type="button" className="nes-btn is-primary">
     //     Primary
