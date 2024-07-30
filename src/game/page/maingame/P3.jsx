@@ -29,7 +29,7 @@ function P3({ show, setShow, setZ, z }) {
         <div className="window-head2">
           {/* <span className=" underline">F</span>ile
         <span className="ml-4 underline">E</span>dit
-        <span className="ml-4 underline">V</span>iew
+        <span className="ml-4 underline">Vs</span>iew
         <span className="ml-4 underline">H</span>elp */}
         </div>
       </div>
