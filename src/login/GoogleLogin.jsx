@@ -9,7 +9,7 @@ const GoogleLogin = () => {
 
     const handleLoginSuccess = async (tokenResponse) => {
         const { access_token } = tokenResponse;
-        window.location.href = `/google-callback?access_token=${access_token}`;
+        window.location.href = `/google/callback?access_token=${access_token}`;
     };
 
     const login = useGoogleLogin({
@@ -21,15 +21,14 @@ const GoogleLogin = () => {
     });
 
     return (
-        <div className="google-login-btn" onClick={login}>
-            <img src={googleLogo} alt="Google로 로그인" />
-            <span>Google로 로그인</span>
+        <div className="" onClick={login}>
+            <i className="nes-icon google is-large nes-pointer"/>
         </div>
     );
 };
 
 const GoogleLoginPage = () => {
-    const clientId = "YOUR_GOOGLE_CLIENT_ID";
+    const clientId = "691131005394-6u9f06b6hbje6thje9cu1n7hsm3tpsoj.apps.googleusercontent.com";
 
     return (
         <GoogleOAuthProvider clientId={clientId}>

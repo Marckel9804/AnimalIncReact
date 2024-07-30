@@ -32,34 +32,27 @@ const Login = () => {
     };
 
     return (
-        <div className="container-p">
+        <div className="nes-container with-title is-rounded">
             <div className="Box-p">
                 <div className="logoTitle-p">
-                    <h1 className="title-p">Animal Corporation</h1>
-                    <div>
-                        ID <input type="text" value={userId} onChange={(e) => setUserId(e.target.value)} />
+                    <h1 className="title-p">Animal Inc</h1>
+                    <div className="login-id">
+                        <input type="text" value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="아이디"/>
                     </div>
-                    <div>
-                        Password <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <div className="login-pw">
+                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="비밀번호"/>
                     </div>
-                    <button onClick={handleLogin}>로그인</button>
+                    <button onClick={handleLogin} id="loginButton" className="nes-btn">로그인</button>
                 </div>
                 <div className="login-btns">
                     <GoogleLogin />
                     <NaverLogin />
                     <KakaoLogin />
                 </div>
-                <div>
+                <div className="find">
                     <a href="/register" className="register-link">회원 가입</a> |
                     <a href="/find-id" className="find-id-link">ID 찾기</a> |
                     <a href="/find-password" className="find-password-link">비밀번호 찾기</a>
-                </div>
-                <div className="login-footer">
-                    <span>서비스 약관 | </span>
-                    <span>개인정보 처리방침 | </span>
-                    <span>이용약관 | </span>
-                    <span><a href="/notices" className="notice-link">공지사항</a> | </span>
-                    <span><a href="/notices-board" className="notice-link">QnA</a></span>
                 </div>
             </div>
         </div>

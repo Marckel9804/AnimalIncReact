@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import kakaoLogin from "../image/kakao_login.png";
+import kakaoLogin from "../image/kakao.png";
 import '../styles/login/KakaoLogin.css';
 
 const KakaoLogin = () => {
@@ -8,7 +8,7 @@ const KakaoLogin = () => {
 
     useEffect(() => {
         if (!window.Kakao.isInitialized()) {
-            window.Kakao.init('YOUR_KAKAO_JS_KEY');
+            window.Kakao.init('556a6f2f18618bf8d0ac80fd3c79cc35');
         }
     }, []);
 
@@ -16,7 +16,7 @@ const KakaoLogin = () => {
         window.Kakao.Auth.login({
             success: async (authObj) => {
                 const accessToken = authObj.access_token;
-                window.location.href = `/kakao-callback?access_token=${accessToken}`;
+                window.location.href = `/kakao/callback?access_token=${accessToken}`;
             },
             fail: (error) => {
                 console.error('Kakao login error:', error);
@@ -27,7 +27,7 @@ const KakaoLogin = () => {
 
     return (
         <button className="kakao-login-btn" onClick={handleLogin}>
-            <img src={kakaoLogin} alt="kakaoLogin" className="kakao-login-image" />
+            <img src={kakaoLogin} alt="kakaoLogin" className="kakao-login-image nes-pointer" />
         </button>
     );
 };
