@@ -47,6 +47,7 @@ function TaskBar(props) {
       >
         내 정보
       </button>
+      <button className="task-btn w-48">채팅</button>
       <button
         className="task-btn w-48"
         onClick={() => {

@@ -32,22 +32,22 @@
 
 .p2-container {
   position: absolute;
-  margin-top: 5px;
-  height: 85vh;
-  width: 90%;
-  margin-left: 50px;
-}
-.p3-container {
-  position: absolute;
-  margin-top: 45px;
-  height: 85vh;
+  margin-top: 0.5vh;
+  height: 35vh;
   width: 90%;
   margin-left: 120px;
 }
+.p3-container {
+  position: absolute;
+  margin-top: 25vh;
+  height: 35vh;
+  width: 90%;
+  margin-left: 60px;
+}
 .p4-container {
   position: absolute;
-  margin-top: 90px;
-  height: 85vh;
+  margin-top: 50vh;
+  height: 35vh;
   width: 90%;
 }
 

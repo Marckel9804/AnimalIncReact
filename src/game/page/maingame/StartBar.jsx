@@ -22,7 +22,7 @@ function StartBar({ show, preventBlur }) {
         </div>
         <div
           className="start-bar-compoB"
-          onClick={() => {
+          onMouseDown={() => {
             navigate("/");
           }}
         >
