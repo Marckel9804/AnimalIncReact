@@ -1,7 +1,6 @@
 import React from 'react';
 import { useGoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
-import googleLogo from '../image/google_logo.png';
 import '../styles/login/GoogleLogin.css';
 
 const GoogleLogin = () => {
@@ -21,8 +20,8 @@ const GoogleLogin = () => {
     });
 
     return (
-        <div className="" onClick={login}>
-            <i className="nes-icon google is-large nes-pointer"/>
+        <div className="google-login-btn" onClick={login}>
+            <i className="nes-icon google is-medium nes-pointer"/>
         </div>
     );
 };

@@ -32,27 +32,29 @@ const Login = () => {
     };
 
     return (
-        <div className="nes-container with-title is-rounded">
-            <div className="Box-p">
-                <div className="logoTitle-p">
-                    <h1 className="title-p">Animal Inc</h1>
-                    <div className="login-id">
-                        <input type="text" value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="아이디"/>
+        <div className="login-page">
+            <div className="login-form with-title is-rounded">
+                <div className="Box-p">
+                    <div className="logoTitle-p">
+                        <h1 className="title-p">Animal, Inc.</h1>
+                        <div className="login-id">
+                            <input type="text" value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="아이디"/>
+                        </div>
+                        <div className="login-pw">
+                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="비밀번호"/>
+                        </div>
+                        <button onClick={handleLogin} id="loginButton" className="nes-btn is-primary">로그인</button>
                     </div>
-                    <div className="login-pw">
-                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="비밀번호"/>
+                    <div className="login-btns">
+                        <GoogleLogin />
+                        <KakaoLogin />
+                        <NaverLogin />
                     </div>
-                    <button onClick={handleLogin} id="loginButton" className="nes-btn">로그인</button>
-                </div>
-                <div className="login-btns">
-                    <GoogleLogin />
-                    <NaverLogin />
-                    <KakaoLogin />
-                </div>
-                <div className="find">
-                    <a href="/register" className="register-link">회원 가입</a> |
-                    <a href="/find-id" className="find-id-link">ID 찾기</a> |
-                    <a href="/find-password" className="find-password-link">비밀번호 찾기</a>
+                    <div className="find">
+                        <a href="/register" className="register-link">회원 가입</a> |
+                        <a href="/find-id" className="find-id-link">ID 찾기</a> |
+                        <a href="/find-password" className="find-password-link">비밀번호 찾기</a>
+                    </div>
                 </div>
             </div>
         </div>

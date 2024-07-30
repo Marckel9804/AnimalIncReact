@@ -1,3 +1,24 @@
+.title-p {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+.login-page {
+    background-image: url('../../image/background.png');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-form {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 40px;
+    border-radius: 10px;
+}
+
 .login-btns {
     display: flex;
     align-items: center;
@@ -38,17 +59,28 @@ input {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: bold;
 }
 
 input {
-    width: 492px;
-    height: 56px;
+    width: 400px;
+    height: 50px;
     padding: 18px 12px;
     border: 1px solid #e5e8eb;
     background-color: #fff;
     font-size: 16px;
     font-weight: 700;
     outline: 0;
+}
+
+#loginButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width:400px;
+    height: 50px;
+    text-align: center;
+    font-weight: 700;
 }
 
 .login-id {
@@ -62,10 +94,5 @@ input {
     align-items: center;
     justify-content: center;
     padding-top: 12px;
-}
-
-#loginButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding-bottom: 12px;
 }
