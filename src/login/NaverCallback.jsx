@@ -6,25 +6,29 @@ const NaverCallback = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        let urlParams = new URLSearchParams(window.location.hash.substring(1));
-        let accessToken = urlParams.get('access_token');
+        const handleAccessToken = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const accessToken = urlParams.get('access_token');
 
-        if (!accessToken) {
-            urlParams = new URLSearchParams(window.location.search);
-            accessToken = urlParams.get('access_token');
-        }
+            if (accessToken) {
+                await getUserInfo(accessToken);
+            } else {
+                console.error('No access token found.');
+                alert('액세스 토큰이 없습니다.');
+            }
+        };
 
-        if (accessToken) {
-            getUserInfo(accessToken);
-        } else {
-            console.error('No access token found.');
-            alert('액세스 토큰이 없습니다.');
-        }
+        handleAccessToken();
     }, []);
 
     const getUserInfo = async (accessToken) => {
         try {
-            const response = await axios.get(`https://bit-two.com/api/naver/user-info?accessToken=${accessToken}`);
+            const response = await axios.get(`https://openapi.naver.com/v1/nid/me`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+
             if (response.data) {
                 const { id: socialId, name, email } = response.data.response;
                 handleLoginSuccess({ socialId, name, email }, 'naver');
@@ -42,7 +46,7 @@ const NaverCallback = () => {
         const { socialId, name, email } = userInfo;
 
         try {
-            const result = await axios.post('https://bit-two.com/api/members/social-login', {
+            const result = await axios.post('/api/user/social-login', {
                 socialId,
                 platform,
                 name,
@@ -55,14 +59,13 @@ const NaverCallback = () => {
                 return;
             }
 
-            const member = response.member;
+            const member = response;
             if (!member) {
                 throw new Error('Member data is not defined in the response.');
             }
 
             sessionStorage.setItem('member', JSON.stringify(member));
-            sessionStorage.setItem('token', result.headers.authorization);
-            if (!member.memberUsername) {
+            if (!member.user_nickname) {
                 navigate('/set-nickname');
             } else {
                 navigate('/main');
