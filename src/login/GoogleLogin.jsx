@@ -8,7 +8,7 @@ const GoogleLogin = () => {
 
     const handleLoginSuccess = async (tokenResponse) => {
         const { access_token } = tokenResponse;
-        window.location.href = `/google/callback?access_token=${access_token}`;
+        window.location.href = `/api/oauth2/google/callback?access_token=${access_token}`;
     };
 
     const login = useGoogleLogin({

@@ -16,7 +16,7 @@ const KakaoLogin = () => {
         window.Kakao.Auth.login({
             success: async (authObj) => {
                 const accessToken = authObj.access_token;
-                window.location.href = `/kakao/callback?access_token=${accessToken}`;
+                window.location.href = `/api/oauth2/kakao/callback?access_token=${accessToken}`;
             },
             fail: (error) => {
                 console.error('Kakao login error:', error);
