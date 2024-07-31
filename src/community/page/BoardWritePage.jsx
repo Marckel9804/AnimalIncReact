@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
 
-const BoardUpdatePage = () => {
+const BoardWritePage = () => {
 
   const navi = useNavigate()
 
@@ -11,4 +11,4 @@ const BoardUpdatePage = () => {
   )
 }
 
-export default BoardUpdatePage
+export default BoardWritePage
