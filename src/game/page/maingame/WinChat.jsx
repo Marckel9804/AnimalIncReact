@@ -9,7 +9,7 @@ function WinChat({ show, setShow }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const apiKey = "dd";
+  const apiKey = import.meta.env.VITE_GPT_API_KEY;
 
   const handleGenerateNews = async () => {
     setLoading(true);
