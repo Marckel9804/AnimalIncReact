@@ -1,44 +1,51 @@
-import "./App.css";
+import React from 'react'
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import Header from './components/Header'
+import Footer from './components/Footer'
+import Main from './components/main/Main'
+import Store from './components/store/Store'
+import GachaShop from './components/store/GachaShop'
+import GachaResult from './components/store/GachaResult'
+import ItemShop from './components/store/ItemShop'
 
-function App() {
+import 'nes.css/css/nes.min.css'
+import './App.css' // App.css 파일을 임포트합니다.
+
+const App = () => {
+  const containerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+    position: 'relative', // 배경 투명도
+  }
+
+  const contentStyle = {
+    flex: 1,
+  }
+
   return (
-    <>
-      <button type="button" className="nes-btn is-primary">
-        Primary
-      </button>
-      <button type="button" className="nes-btn is-success">
-        Success
-      </button>
-      <button type="button" className="nes-btn is-warning">
-        한글 폰트 잘 됨?? 00012345678910
-      </button>
-      <button type="button" className="nes-btn is-error">
-        Error
-      </button>
-      <button type="button" className="nes-btn is-disabled">
-        Disabled
-      </button>
-
-      <label className="nes-btn">
-        <span>Select your file</span>
-        <input type="file" />
-      </label>
-      <section className="icon-list">
-        <i className="nes-icon twitter is-large"></i>
-        <i className="nes-icon facebook is-large"></i>
-        <i className="nes-icon instagram is-large"></i>
-        <i className="nes-icon github is-large"></i>
-        <i className="nes-icon google is-large"></i>
-        <i className="nes-icon gmail is-large"></i>
-        <i className="nes-icon medium is-large"></i>
-        <i className="nes-icon linkedin is-large"></i>
-        <i className="nes-icon twitch is-large"></i>
-        <i className="nes-icon youtube is-large"></i>
-        <i className="nes-icon reddit is-large"></i>
-        <i className="nes-icon whatsapp is-large"></i>
-      </section>
-    </>
-  );
+    <Router>
+      <div style={containerStyle}>
+        <Header />
+        <div style={contentStyle}>
+          <Routes>
+            <Route path="/" element={<Main />} />
+            <Route path="/shop" element={<Store />} />
+            <Route path="/shop/animal" element={<GachaShop />} />
+            <Route
+              path="/shop/animal-store/gacha"
+              element={<GachaResult />}
+            />{' '}
+            {/* GachaResult 경로를 추가합니다 */}
+            <Route path="/shop/item" element={<ItemShop />} />{' '}
+            {/* ItemShop 경로를 추가합니다 */}
+          </Routes>
+        </div>
+        <Footer />
+        <div className="background-overlay"></div> {/* 배경 오버레이 추가 */}
+      </div>
+    </Router>
+  )
 }
 
-export default App;
+export default App
