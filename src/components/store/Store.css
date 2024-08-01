@@ -1,9 +1,9 @@
 .store-container {
-  position: relative;
+  /* position: relative; */
   width: 40%;
   height: 49.5vh;
   text-align: center;
-  margin: 0 auto;
+  margin: 40px auto;
   top: 90px;
   background-color: rgba(255, 255, 255, 0.7); /* 투명한 흰색 배경 */
   border: 6px solid #4cbdb8; /* 테두리를 더 두껍게 설정 */
@@ -13,7 +13,7 @@
 }
 
 .store-container::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0%;
   left: 0%;
@@ -38,7 +38,7 @@
 }
 
 .store-title {
-  position: absolute;
+  position: relative;
   left: 50%;
   transform: translateX(-50%);
   top: 5%;
@@ -100,7 +100,7 @@
 }
 
 .option::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -136,7 +136,7 @@
 
 .animal-icon::after,
 .item-icon::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -15px; /* 아이콘 아래에 그림자 위치 */
   left: 50%;
@@ -168,7 +168,7 @@
   right: 0px;
   bottom: -4px;
   left: 0px;
-  content: '';
+  content: "";
   box-shadow: inset -4px -4px #adafbc;
 }
 
@@ -178,6 +178,6 @@
   right: 0px;
   bottom: -4px;
   left: 0px;
-  content: '';
+  content: "";
   box-shadow: inset -4px -4px #adafbc;
 }

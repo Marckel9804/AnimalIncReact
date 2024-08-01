@@ -1,5 +1,10 @@
 import React from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import {
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Main from "./components/main/Main";
@@ -30,29 +35,24 @@ const App = () => {
 
   return (
     <Router>
-      <div style={containerStyle}>
-        <Header />
-        <div style={contentStyle}>
-          <Routes>
-            <Route path="/game/:room_id" element={<MainGame />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Main />} />
-            <Route path="/shop" element={<Store />} />
-            <Route path="/shop/animal" element={<GachaShop />} />
-            <Route
-              path="/shop/animal-store/gacha"
-              element={<GachaResult />}
-            />{" "}
-            {/* GachaResult 경로를 추가합니다 */}
-            <Route path="/shop/item" element={<ItemShop />} />{" "}
-            {/* ItemShop 경로를 추가합니다 */}
-            <Route path="/createroom" element={<RoomList />} />
-            <Route path="/ladder" element={<Ladder />} />
-          </Routes>
-        </div>
-        <Footer />
-        <div className="background-overlay"></div> {/* 배경 오버레이 추가 */}
+      <div className="flex flex-col relative min-h-screen">
+        <Routes>
+          <Route path="/game/:room_id" element={<MainGame />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Main />} />
+          <Route path="/shop" element={<Store />} />
+          <Route path="/shop/animal" element={<GachaShop />} />
+          <Route
+            path="/shop/animal-store/gacha"
+            element={<GachaResult />}
+          />{" "}
+          {/* GachaResult 경로를 추가합니다 */}
+          <Route path="/shop/item" element={<ItemShop />} />{" "}
+          {/* ItemShop 경로를 추가합니다 */}
+          <Route path="/createroom" element={<RoomList />} />
+          <Route path="/ladder" element={<Ladder />} />
+        </Routes>
       </div>
     </Router>
   );
