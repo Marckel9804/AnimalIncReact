@@ -24,6 +24,7 @@ const App = () => {
   }
 
   return (
+<<<<<<< HEAD
     <Router>
       <div style={containerStyle}>
         <Header />
@@ -46,6 +47,11 @@ const App = () => {
       </div>
     </Router>
   )
+=======
+    <>
+    </>
+  );
+>>>>>>> dev
 }
 
 export default App
