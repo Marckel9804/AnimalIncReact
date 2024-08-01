@@ -1,8 +1,7 @@
 /* 푸터 스타일 */
 .footer-container {
-  margin-top: 40px;
-  margin-left: 220px;
-  margin-bottom: 20px;
+  left: 50%;
+  transform: translate(-50%);
   display: flex;
   justify-content: center; /* 요소들을 중앙으로 정렬 */
   align-items: center;
@@ -12,6 +11,8 @@
   border: 6px solid #4cbdb8; /* 테두리를 더 두껍게 설정 */
   border-radius: 10px; /* 둥근 모서리 */
   box-shadow: 0 0 10px rgba(76, 189, 184, 0.5); /* 그림자 추가 */
+  position: absolute;
+  bottom: 20px;
 }
 
 .footer-content {
