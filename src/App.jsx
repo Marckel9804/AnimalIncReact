@@ -7,6 +7,9 @@ import Store from './components/store/Store'
 import GachaShop from './components/store/GachaShop'
 import GachaResult from './components/store/GachaResult'
 import ItemShop from './components/store/ItemShop'
+import MainGame from './game/page/maingame/MainGame.jsx'
+import Login from './login/Login.jsx'
+import Register from './login/Register.jsx'
 
 import 'nes.css/css/nes.min.css'
 import './App.css' // App.css 파일을 임포트합니다.
@@ -24,12 +27,14 @@ const App = () => {
   }
 
   return (
-<<<<<<< HEAD
     <Router>
       <div style={containerStyle}>
         <Header />
         <div style={contentStyle}>
           <Routes>
+            <Route path="/game/:room_id" element={<MainGame />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/" element={<Main />} />
             <Route path="/shop" element={<Store />} />
             <Route path="/shop/animal" element={<GachaShop />} />
@@ -47,11 +52,6 @@ const App = () => {
       </div>
     </Router>
   )
-=======
-    <>
-    </>
-  );
->>>>>>> dev
 }
 
 export default App
