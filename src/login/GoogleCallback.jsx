@@ -19,7 +19,7 @@ const GoogleCallback = () => {
 
     const getGoogleUserInfo = async (code) => {
         try {
-            const response = await axios.get(`/oauth2/google/callback?code=${code}`);
+            const response = await axios.get(`/api/google/callback?code=${code}`);
             if (response.data) {
                 const { id: socialId, name, email } = response.data;
                 handleLoginSuccess({ socialId, name, email }, 'google');
@@ -37,7 +37,7 @@ const GoogleCallback = () => {
         const { socialId, name, email } = userInfo;
 
         try {
-            const result = await axios.post('/members/social-login', {
+            const result = await axios.post('/api/members/social-login', {
                 socialId,
                 platform,
                 name,

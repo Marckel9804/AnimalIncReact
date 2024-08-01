@@ -4,10 +4,11 @@ import axios from '../utils/axios.js';
 import '../styles/login/Register.css';
 
 const Register = () => {
-    const [email, setEmail] = useState('');
+    const [userId, setUserId] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
     const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [nickname, setNickname] = useState('');
     const [birthdate, setBirthdate] = useState('');
     const [isNicknameAvailable, setIsNicknameAvailable] = useState(null);
@@ -27,18 +28,14 @@ const Register = () => {
             return;
         }
 
-        if(!password) {
-            alert('비밀번호를 입력해주세요.');
-            return;
-        }
-
         try {
             const response = await axios.post('/api/user/register', {
-                userEmail: email,
-                userRealname: name,
-                userPw: password,
-                userNickname: nickname,
-                userBirthdate: birthdate
+                name,
+                userId,
+                password,
+                nickname,
+                email,
+                birthdate,
             });
 
             alert('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
@@ -60,22 +57,12 @@ const Register = () => {
     };
 
     const sendVerificationCode = async () => {
-        if (!email) {
-            alert('이메일을 입력해주세요');
-            return;
-        }
         try {
-            const response = await axios.post('/api/user/send-verification-code', { email });
+            await axios.post('/api/user/send-verification-code', { email });
             setIsVerificationCodeSent(true);
-            alert('인증번호가 이메일로 전송되었습니다.');
         } catch (error) {
             console.error('Send verification code error:', error);
-            if (error.response && error.response.data) {
-                // 서버에서 반환된 메시지를 확인하여 alert에 표시
-                alert(error.response.data);
-            } else {
-                alert('인증번호 전송 중 오류가 발생했습니다. 다시 시도해 주세요.');
-            }
+            alert('인증번호 전송 중 오류가 발생했습니다. 다시 시도해 주세요.');
         }
     };
 
@@ -102,16 +89,8 @@ const Register = () => {
                     <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="이름"/>
                 </div>
                 <div className="register-input">
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="이메일"/>
-                    <button type="button" className="nes-btn" onClick={sendVerificationCode}>인증번호 전송</button>
+                    <input type="text" value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="아이디"/>
                 </div>
-                {isVerificationCodeSent && (
-                    <div className="register-input">
-                        <input type="text" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)}
-                               placeholder="인증번호 입력"/>
-                        <button type="button" className="nes-btn" onClick={verifyEmail}>인증 확인</button>
-                    </div>
-                )}
                 <div className="register-input">
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                            placeholder="비밀번호"/>
@@ -124,8 +103,19 @@ const Register = () => {
                     <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} placeholder="닉네임"/>
                     <button type="button" className="nes-btn" onClick={checkNicknameAvailability}>중복 확인</button>
                 </div>
-                {isNicknameAvailable === false && <div className="error-message">이미 사용 중인 닉네임입니다...</div>}
-                {isNicknameAvailable === true && <div className="success-message">사용 가능한 닉네임입니다!!!</div>}
+                {isNicknameAvailable === false && <div className="error-message">이미 사용 중인 닉네임입니다.</div>}
+                {isNicknameAvailable === true && <div className="success-message">사용 가능한 닉네임입니다.</div>}
+                <div className="register-input">
+                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="이메일"/>
+                    <button type="button" className="nes-btn" onClick={sendVerificationCode}>인증번호 전송</button>
+                </div>
+                {isVerificationCodeSent && (
+                    <div className="register-input">
+                        <input type="text" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)}
+                               placeholder="인증번호 입력"/>
+                        <button type="button" className="nes-btn" onClick={verifyEmail}>인증 확인</button>
+                    </div>
+                )}
                 <div className="register-input">
                     <input type="date" value={birthdate} onChange={(e) => setBirthdate(e.target.value)}
                            placeholder="생년월일"/>
