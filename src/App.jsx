@@ -1,46 +1,29 @@
-import "./App.css";
-import Ladder from "./game/page/minigame/Ladder";
-import RoomList from "./game/page/rooms/RoomList";
+import React from "react";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Main from "./components/main/Main";
+import Store from "./components/store/Store";
+import GachaShop from "./components/store/GachaShop";
+import GachaResult from "./components/store/GachaResult";
+import ItemShop from "./components/store/ItemShop";
 
-function App() {
-  return (
-    <>
-      <button type="button" className="nes-btn is-primary">
-        Primary
-      </button>
-      <button type="button" className="nes-btn is-success">
-        Success
-      </button>
-      <button type="button" className="nes-btn is-warning">
-        한글 폰트 잘 됨?? 00012345678910
-      </button>
-      <button type="button" className="nes-btn is-error">
-        Error
-      </button>
-      <button type="button" className="nes-btn is-disabled">
-        Disabled
-      </button>
+import "nes.css/css/nes.min.css";
+import "./App.css"; // App.css 파일을 임포트합니다.
 
-      <label className="nes-btn">
-        <span>Select your file</span>
-        <input type="file" />
-      </label>
-      <section className="icon-list">
-        <i className="nes-icon twitter is-large"></i>
-        <i className="nes-icon facebook is-large"></i>
-        <i className="nes-icon instagram is-large"></i>
-        <i className="nes-icon github is-large"></i>
-        <i className="nes-icon google is-large"></i>
-        <i className="nes-icon gmail is-large"></i>
-        <i className="nes-icon medium is-large"></i>
-        <i className="nes-icon linkedin is-large"></i>
-        <i className="nes-icon twitch is-large"></i>
-        <i className="nes-icon youtube is-large"></i>
-        <i className="nes-icon reddit is-large"></i>
-        <i className="nes-icon whatsapp is-large"></i>
-      </section>
-    </>
-  );
-}
+const App = () => {
+  const containerStyle = {
+    display: "flex",
+    flexDirection: "column",
+    minHeight: "100vh",
+    position: "relative", // 배경 투명도
+  };
+
+  const contentStyle = {
+    flex: 1,
+  };
+
+  return <></>;
+};
 
 export default App;

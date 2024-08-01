@@ -7,7 +7,7 @@ function StartBar({ show, preventBlur }) {
   const navigate = useNavigate();
 
   return (
-    <div className={` flex start-bar-container ${show ? "" : "win-hide"}`}>
+    <div className={`start-bar-container ${show ? "flex" : "hidden"}`}>
       <div className="start-bar-side">ANI, INC.</div>
       <div className="start-bar-group flex-col">
         <div className="start-bar-compoB"></div>

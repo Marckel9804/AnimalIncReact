@@ -47,7 +47,7 @@ function TaskBar(props) {
       >
         내 정보
       </button>
-      <button className="task-btn w-48">채팅</button>
+
       <button
         className="task-btn w-48"
         onClick={() => {
@@ -84,8 +84,25 @@ function TaskBar(props) {
       >
         다른 플레이어 정보
       </button>
-      <div className="task-clock w-28 pl-2">
-        {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+      <button
+        className="task-btn w-48"
+        onClick={() => {
+          if (props.showWC) {
+            props.setShowWC(false);
+          } else {
+            props.setShowWC(true);
+          }
+        }}
+      >
+        채팅
+      </button>
+      <div className="task-clock w-1/12 pl-1">
+        {time.toLocaleTimeString([], {
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
       </div>
     </div>
   );

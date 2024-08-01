@@ -3,7 +3,7 @@ import React from "react";
 function ItemsWin({ show, setShow }) {
   return (
     <div className={"itemswin-container"}>
-      <div className={`main-window ${show ? "" : "win-hide"}`}>
+      <div className={`main-window ${show ? "flex" : "hidden"}`}>
         <div className="window-head">
           Items
           <div className=" ml-auto mr-1 flex items-center">
@@ -27,6 +27,7 @@ function ItemsWin({ show, setShow }) {
           <span className="ml-4 underline">V</span>iew
           <span className="ml-4 underline">H</span>elp
         </div>
+        <div className="main-window-inside"></div>
       </div>
     </div>
   );
