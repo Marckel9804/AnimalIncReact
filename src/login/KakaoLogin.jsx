@@ -16,12 +16,31 @@ const KakaoLogin = () => {
         window.Kakao.Auth.login({
             success: async (authObj) => {
                 const accessToken = authObj.access_token;
-                window.location.href = `/api/oauth2/kakao/callback?access_token=${accessToken}`;
+                try {
+                    const response = await fetch(`https://kapi.kakao.com/v2/user/me`, {
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
+                    });
+                    const userInfo = await response.json();
+                    const { email, properties: { nickname: name } } = userInfo.kakao_account;
+
+                    await fetch('/api/user/social-login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, name })
+                    });
+                } catch (error) {
+                    console.error('Kakao login error:', error);
+                    alert('카카오 로그인에 실패했습니다. 다시 시도해 주세요.');
+                }
             },
             fail: (error) => {
                 console.error('Kakao login error:', error);
                 alert('카카오 로그인에 실패했습니다. 다시 시도해 주세요.');
-            },
+            }
         });
     };
 
