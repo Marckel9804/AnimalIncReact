@@ -11,7 +11,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Routes>
         <Route path="/game/:room_id" element={<MainGame />} />
-
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
     </Routes>
