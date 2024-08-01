@@ -1,17 +1,223 @@
 .maingame-container {
+  /* background-color: #4cbdb8; */
   background-color: #017d7c;
+  height: 100vh;
 }
 
 .myinfo-container {
   position: relative;
-  height: 94vh;
-  width: 22%;
-  background-color: white;
+  margin-top: 6vh;
+  height: 82.5vh;
+  width: 21%;
 }
 
+.otherpinfo-container {
+  position: relative;
+  margin-top: 1vh;
+  height: 45vh;
+  width: 100%;
+  margin-left: 10px;
+}
 .stockinfo-container {
   position: relative;
-  height: 94vh;
+  height: 63vh;
+  margin-left: 20px;
+}
+.itemswin-container {
+  position: absolute;
+  margin-top: 25px;
+  height: 25vh;
   width: 45%;
+  z-index: 1;
+  margin-left: 3px;
+}
+.win-chat-container {
+  position: relative;
+  margin-top: 1vh;
+  height: 45vh;
+  width: 100%;
+  margin-left: 10px;
+}
+.p2-container {
+  position: absolute;
+  margin-top: 0.5vh;
+  height: 22vh;
+  width: 90%;
+  margin-left: 80px;
+}
+.p3-container {
+  position: absolute;
+  margin-top: 18vh;
+  height: 22vh;
+  width: 90%;
+  margin-left: 40px;
+}
+.p4-container {
+  position: absolute;
+  margin-top: 36vh;
+  height: 22vh;
+  width: 90%;
+}
+
+.taskbar-container {
+  width: 100%;
+  height: 40px;
+  position: absolute;
+  bottom: 0;
+  background-color: #c0c0c0;
+  border-top: 0.5px #f0ffff solid;
+}
+
+.task-btn {
+  height: 32px;
+  border-top: 2px #f0ffff solid;
+  border-left: 2px #f0ffff solid;
+  border-right: 2px #252525 solid;
+  border-bottom: 2px #252525 solid;
+  align-items: center;
+  padding-right: 4px;
+  padding-left: 4px;
+  display: flex;
+}
+.task-btn:focus {
+  border-top: 2px #252525 solid;
+  border-left: 2px #252525 solid;
+  border-right: 2px #f0ffff solid;
+  border-bottom: 2px #f0ffff solid;
+  outline: none;
+}
+
+.task-clock {
+  margin-left: auto;
+  border-top: 2px #252525 solid;
+  border-left: 2px #252525 solid;
+  border-right: 2px #f0ffff solid;
+  border-bottom: 2px #f0ffff solid;
+}
+.win-z {
+  z-index: 10;
+}
+
+.main-window {
+  width: 100%;
+  height: 100%;
+  background-color: #b2b8b6;
+  border-top: 2px #f0ffff solid;
+  border-left: 2px #f0ffff solid;
+  border-right: 2px #252525 solid;
+  border-bottom: 2px #252525 solid;
+  padding: 4px;
+  flex-direction: column;
+}
+.main-window-inside {
   background-color: white;
+  width: 100%;
+  flex-grow: 1;
+  border-top: 2px #252525 solid;
+  border-left: 2px #252525 solid;
+  border-right: 2px #f0ffff solid;
+  border-bottom: 2px #f0ffff solid;
+  padding: 4px;
+  margin-top: 8px;
+}
+
+.window-head {
+  background-color: #808080;
+  width: 100%;
+  height: 25px;
+  display: flex;
+  padding-left: 4px;
+}
+
+.window-head-btn {
+  border-top: 2px #f0ffff solid;
+  border-left: 2px #f0ffff solid;
+  border-right: 2px #252525 solid;
+  border-bottom: 2px #252525 solid;
+  width: 17px;
+  height: 17px;
+  background-color: #bcbfbc;
+  display: flex;
+  justify-content: center;
+  padding-right: 2px;
+  font-size: 15px;
+  user-select: none;
+}
+.window-head-btn:active {
+  border-top: 2px #252525 solid;
+  border-left: 2px #252525 solid;
+  border-right: 2px #f0ffff solid;
+  border-bottom: 2px #f0ffff solid;
+}
+.window-head-btn:focus {
+  outline: none;
+}
+.window-head-btn-disabled {
+  border-top: 1px #252525 solid;
+  border-left: 1px #252525 solid;
+  border-right: 1px #f0ffff solid;
+  border-bottom: 1px #f0ffff solid;
+  width: 17px;
+  height: 17px;
+  margin-left: 1px;
+  background-color: #adadad;
+  display: flex;
+  color: #505050;
+  justify-content: center;
+  font-size: 15px;
+  user-select: none;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.start-bar-container {
+  background-color: #c0c0c0;
+  border-top: 2px #f0ffff solid;
+  border-left: 2px #f0ffff solid;
+  border-right: 2px #252525 solid;
+  border-bottom: 2px #252525 solid;
+  padding: 2px;
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  width: 300px;
+  height: 500px;
+}
+.start-bar-side {
+  width: 45px;
+  background-color: #808080;
+  height: 99%;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  padding-top: 15px;
+  font-size: 35px;
+  color: #505050;
+}
+.start-bar-side-text {
+  width: 400px;
+}
+.start-bar-group {
+  width: 240px;
+  height: 99%;
+}
+.start-bar-compoB {
+  width: 240px;
+  height: 12.5%;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  margin-left: 4px;
+  gap: 8px;
+}
+.start-bar-compoB:hover {
+  background-color: #01007d;
+  color: white;
+}
+
+.main-game-loading {
+  width: 90%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

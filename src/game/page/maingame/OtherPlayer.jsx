@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
-function StockInfo({ show, setShow }) {
+function OtherPlayer({ show, setShow }) {
   return (
-    <div className={"stockinfo-container"}>
-      <div className={` main-window ${show ? "flex" : "hidden"}`}>
+    <div className={"otherpinfo-container"}>
+      <div className={` main-window ${show ? "flex" : "hidden"} `}>
         <div className="window-head">
-          Stock Info
+          Other Players
           <div className=" ml-auto mr-1 flex items-center">
             <button
               className="window-head-btn items-end"
@@ -22,15 +22,19 @@ function StockInfo({ show, setShow }) {
           </div>
         </div>
         <div className="window-head2">
-          <span className=" underline">F</span>ile
-          <span className="ml-4 underline">E</span>dit
-          <span className="ml-4 underline">V</span>iew
-          <span className="ml-4 underline">H</span>elp
+          {/* <span className=" underline">F</span>ile
+        <span className="ml-4 underline">E</span>dit
+        <span className="ml-4 underline">V</span>iew
+        <span className="ml-4 underline">H</span>elp */}
         </div>
-        <div className="main-window-inside"></div>
+        <div className="other-player-info flex justify-between p-4 flex-grow">
+          <div className=" ">p2</div>
+          <div className=" ">p3</div>
+          <div>p4</div>
+        </div>
       </div>
     </div>
   );
 }
 
-export default StockInfo;
+export default OtherPlayer;

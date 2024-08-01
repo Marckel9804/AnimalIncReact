@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 
-function StockInfo({ show, setShow }) {
+function ItemsWin({ show, setShow }) {
   return (
-    <div className={"stockinfo-container"}>
-      <div className={` main-window ${show ? "flex" : "hidden"}`}>
+    <div className={"itemswin-container"}>
+      <div className={`main-window ${show ? "flex" : "hidden"}`}>
         <div className="window-head">
-          Stock Info
+          Items
           <div className=" ml-auto mr-1 flex items-center">
             <button
               className="window-head-btn items-end"
@@ -33,4 +33,4 @@ function StockInfo({ show, setShow }) {
   );
 }
 
-export default StockInfo;
+export default ItemsWin;

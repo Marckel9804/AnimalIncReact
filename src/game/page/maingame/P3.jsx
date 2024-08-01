@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 
-function StockInfo({ show, setShow }) {
+function P3({ show, setShow, setZ, z }) {
   return (
-    <div className={"stockinfo-container"}>
-      <div className={` main-window ${show ? "flex" : "hidden"}`}>
+    <div
+      className={`p3-container ${z === 0 ? "" : "win-z"}`}
+      onClick={() => {
+        setZ(3);
+      }}
+    >
+      <div className={` main-window ${show ? "flex" : "hidden"} `}>
         <div className="window-head">
-          Stock Info
+          P3 Info
           <div className=" ml-auto mr-1 flex items-center">
             <button
               className="window-head-btn items-end"
@@ -22,15 +27,13 @@ function StockInfo({ show, setShow }) {
           </div>
         </div>
         <div className="window-head2">
-          <span className=" underline">F</span>ile
-          <span className="ml-4 underline">E</span>dit
-          <span className="ml-4 underline">V</span>iew
-          <span className="ml-4 underline">H</span>elp
+          {/* <span className=" underline">F</span>ile
+        <span className="ml-4 underline">E</span>dit
+        <span className="ml-4 underline">V</span>iew
+        <span className="ml-4 underline">H</span>elp */}
         </div>
-        <div className="main-window-inside"></div>
       </div>
     </div>
   );
 }
-
-export default StockInfo;
+export default P3;
