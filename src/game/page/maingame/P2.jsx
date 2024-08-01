@@ -8,7 +8,7 @@ function P2({ show, setShow, setZ, z }) {
         setZ(2);
       }}
     >
-      <div className={` main-window ${show ? "" : "win-hide"} `}>
+      <div className={` main-window ${show ? "flex" : "hidden"} `}>
         <div className="window-head">
           P2 Info
           <div className=" ml-auto mr-1 flex items-center">
