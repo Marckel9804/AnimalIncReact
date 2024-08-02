@@ -9,6 +9,7 @@ import Register from "./login/Register.jsx";
 import BoardListPage from "./community/page/BoardListPage.jsx";
 import BoardDetailPage from "./community/page/BoardDetailPage.jsx";
 import BoardUpdatePage from "./community/page/BoardUpdatePage.jsx";
+import BoardWritePage from "./community/page/BoardWritePage.jsx";
 
 function BoardWritepage() {
     return null;
@@ -24,7 +25,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
         {/*게시판*/}
         <Route path='/board/list' element={<BoardListPage/>}/>
-        <Route path='/board/write' element={<BoardWritepage/>}/>
+        <Route path='/board/write' element={<BoardWritePage/>}/>
         <Route path='/board/detail/:id' element={<BoardDetailPage/>}/>
         <Route path='/board/update/:id' element={<BoardUpdatePage/>}/>
 
