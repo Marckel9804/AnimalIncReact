@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import './Header.css'
-import { getUserInfo, logout, goToBoard, goToMypage, goToStore } from './api'
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import "./Header.css";
+import { getUserInfo, logout, goToBoard, goToMypage, goToStore } from "./api";
 
 const Header = () => {
   const [userInfo, setUserInfo] = useState({
-    userNickname: '',
+    userNickname: "",
     userRuby: 0,
     userPoint: 0,
-  })
+  });
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-      const data = await getUserInfo()
+      const data = await getUserInfo();
       setUserInfo({
         userNickname: data.user_nickname,
         userRuby: data.user_ruby,
         userPoint: data.user_point,
-      })
-    }
-    fetchUserInfo()
-  }, [])
+      });
+    };
+    fetchUserInfo();
+  }, []);
 
   return (
     <header className="header-header-container">
@@ -36,7 +36,7 @@ const Header = () => {
             <i className="nes-icon coin header-points-icon" />
             <span className="header-points-text">{userInfo.userPoint}</span>
           </div>
-          <div className="header-buttons">
+          <div id="header-buttons" className="header-buttons">
             <button className="nes-btn is-board" onClick={goToBoard}>
               게시판
             </button>
@@ -53,7 +53,7 @@ const Header = () => {
         </div>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

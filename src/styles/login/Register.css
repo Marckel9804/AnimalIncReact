@@ -1,5 +1,5 @@
 .register-page {
-  background-image: url("../../image/registerbackground.png"); /* 배경 이미지 경로를 실제 경로로 수정 */
+  background-image: url("../../image/registerbackground.png");
   background-size: cover;
   background-position: center;
   height: 100vh;
@@ -12,54 +12,18 @@
   background-color: rgba(255, 255, 255, 0.8);
   padding: 40px;
   border-radius: 10px;
+  width: 700px; /* 폼의 전체 너비를 더 크게 설정 */
 }
 
 .register-input {
   display: flex;
   align-items: center;
-  justify-content: center;
   margin-bottom: 10px;
-  width: 300px; /* 로그인 페이지와 동일한 너비 */
-  height: 40px; /* 적절한 크기로 수정 */
-  padding: 10px;
-  border: 1px solid #e5e8eb;
-  background-color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  outline: 0;
-  box-sizing: border-box; /* padding 포함하여 width 계산 */
+  width: 100%;
 }
 
-#registerButton {
-  width: 300px; /* 로그인 페이지와 동일한 너비 */
-  height: 40px; /* 적절한 크기로 수정 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-#registerButton:hover {
-  background-color: #e0e0e0; /* hover 시 배경 색상 */
-}
-
-.verify-button {
-  margin-left: 10px;
-  padding: 10px;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.verify-button:hover {
-  background-color: #e0e0e0;
-}
-
-.verification-code {
-  margin-top: 10px;
-  width: calc(100% - 20px);
+.register-input input {
+  width: calc(100% - 160px); /* 인풋 박스 너비를 줄임 */
   height: 40px;
   padding: 10px;
   border: 1px solid #e5e8eb;
@@ -70,7 +34,63 @@
   box-sizing: border-box;
 }
 
-.error-message {
+.register-input.email-input {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* 요소들 간의 간격을 조정 */
+}
+
+.register-input.email-input span {
+  margin: 0 5px;
+}
+
+.register-input.email-input select,
+.register-input.email-input input[type="text"] {
+  width: 137px; /* 도메인 입력 필드와 선택 박스의 너비를 고정 */
+  height: 40px;
+  padding: 10px;
+  border: 1px solid #e5e8eb;
+  background-color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  outline: 0;
+  box-sizing: border-box;
+}
+
+#send-verification-code-button {
+  height: 40px;
+  width: 120px; /* 버튼의 너비를 고정 */
+  margin-left: 5px;
+  font-size: 15px;
+}
+
+#verify-email-button,
+#check-nickname-button {
+  height: 40px;
+  width: 120px; /* 버튼의 너비를 고정 */
+  margin-left: 10px;
+  font-size: 15px; /* 이메일 인증 버튼과 동일한 폰트 크기 */
+}
+
+.button-container {
+  display: flex;
+  justify-content: center; /* 버튼들을 가운데 정렬 */
+  gap: 20px; /* 버튼들 사이에 간격을 줌 */
+  margin-top: 20px;
+}
+
+#registerButton,
+#cancelButton {
+  width: 20%; /* 버튼의 너비를 20%로 설정 */
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#error-message {
   color: red;
   font-size: 12px;
   margin-top: 5px;
