@@ -11,12 +11,11 @@ const SpaceMinigame = ({ onClose }) => {
   const [isKeyPressed, setIsKeyPressed] = useState(false);
   const [hit, setHit] = useState(false);
   const socketRef = useRef(null);
+  const [playerId, setPlayerId] = useState(null);
 
-  const [otherPlayers, setOtherPlayers] = useState([
-    { name: "P2", count: 0 },
-    { name: "P3", count: 0 },
-    { name: "P4", count: 0 },
-  ]);
+  const [otherPlayers, setOtherPlayers] = useState([]);
+
+  const sCnt = useRef([0,0,0,0]);
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:4000");
@@ -26,14 +25,34 @@ const SpaceMinigame = ({ onClose }) => {
       console.log("Connected to WebSocket server");
     };
 
-    socket.onmessage = async (event) => {
-      const text = await event.data.text();
-      const data = JSON.parse(text);
-      if (data.type === 'count') {
-        setCount(data.count);
-        setProgress(data.progress);
-        setOtherPlayers(data.otherPlayers);
-      }
+    socket.onmessage = (event) => {
+      event.data.text().then((text) => {
+        const data = JSON.parse(text);
+
+        if(data.playerNum===1){
+          console.log('메세지 데이터',data);
+          sCnt.current[0] ++
+          console.log('플레이어1 바뀐 연타횟수',sCnt.current);
+        } else if (data.playerNum===2) {
+          sCnt.current[1] ++
+        }
+
+        
+
+        if (data.clientId && !playerId) {
+          setPlayerId(data.clientId);
+        }
+
+        if (data.type === 'count') {
+          setOtherPlayers((prevPlayers) => {
+            const updatedPlayers = prevPlayers.filter(player => player.clientId !== data.clientId);
+            updatedPlayers.push(data);
+            return updatedPlayers;
+          });
+        }
+      }).catch((error) => {
+        console.error("Error parsing message", error);
+      });
     };
 
     socket.onclose = () => {
@@ -43,7 +62,7 @@ const SpaceMinigame = ({ onClose }) => {
     return () => {
       socket.close();
     };
-  }, []);
+  }, [playerId]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -54,10 +73,12 @@ const SpaceMinigame = ({ onClose }) => {
         setProgress(newProgress);
         setIsKeyPressed(true);
         setHit(true);
-        setTimeout(() => setHit(false), 200); // 애니메이션 지속 시간 이후에 hit 상태를 false로 설정
+        setTimeout(() => setHit(false), 200);
+
+        const playerData = { type: 'count', clientId: playerId, count: newCount, progress: newProgress };
 
         if (socketRef.current) {
-          socketRef.current.send(JSON.stringify({ type: 'count', count: newCount, progress: newProgress, otherPlayers }));
+          socketRef.current.send(JSON.stringify(playerData));
         }
       }
     };
@@ -75,7 +96,7 @@ const SpaceMinigame = ({ onClose }) => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [isKeyPressed, gameOver, count, progress, otherPlayers]);
+  }, [isKeyPressed, gameOver, count, progress, playerId]);
 
   useEffect(() => {
     if (count > highScore) {
@@ -102,22 +123,24 @@ const SpaceMinigame = ({ onClose }) => {
           <p>현재 카운트: {count}</p>
         </CountDisplay>
         <ProgressContainer>
-          <progress className="nes-progress is-pattern" value={progress} max="10"></progress>
+          <progress className="minigame-nes-progress is-pattern" value={progress} max="10"></progress>
         </ProgressContainer>
         <PlayerList>
           <Player>
             <Character>P1</Character>
             {count}회
+            {sCnt.current[0]}
           </Player>
           {otherPlayers.map((player, index) => (
             <Player key={index}>
-              <Character>{player.name}</Character>
+              <Character>{player.clientId}</Character>
               {player.count}회
+              {sCnt.current[index+1]}회
             </Player>
           ))}
         </PlayerList>
         <ButtonContainer>
-          <StyledButton hit={hit ? 1 : 0} className="nes-btn">Space Bar</StyledButton>
+          <StyledButton hit={hit ? 1 : 0} className="minigame-nes-btn">Space Bar</StyledButton>
         </ButtonContainer>
         
         {gameMessage && <GameMessage>{gameMessage}</GameMessage>}
