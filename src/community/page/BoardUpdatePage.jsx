@@ -1,12 +1,15 @@
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+import BoardWriteLayout from "../layout/BoardWriteLayout.jsx";
 
 const BoardUpdatePage = () => {
 
   const navi = useNavigate()
 
-  return (
-    <div>
+  const id = useParams();
 
+  return (
+    <div id='BoardUpdatePage' className='flex mt-10 justify-center'>
+      <BoardWriteLayout/>
     </div>
   )
 }

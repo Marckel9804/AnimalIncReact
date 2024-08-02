@@ -19,7 +19,7 @@ const BoardDetailPage = () => {
 
   return(
     <div id='BoardDetailPage' className='flex justify-center'>
-      <BoardDetailLayout info={info}/>
+      <BoardDetailLayout info={info} id={id}/>
     </div>
   )
 }

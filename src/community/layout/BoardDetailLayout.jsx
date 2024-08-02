@@ -1,3 +1,5 @@
+import {useNavigate} from "react-router-dom";
+
 const BoardDetailLayout = (props) => {
 
   const info = props.info
@@ -6,7 +8,13 @@ const BoardDetailLayout = (props) => {
   const content = info.content
   const imgs = info.imgs
   const code = info.code
+  const id = props.id
 
+  const navi = useNavigate()
+
+  const onUpdate = () => {
+    navi(`/board/update/${id}`)
+  }
 
   return(
     <div id='BoardDetailLayout' className='w-4/5 flex justify-center'>
@@ -42,7 +50,9 @@ const BoardDetailLayout = (props) => {
 
           {/* 수정/삭제 버튼들 */}
           <div id='boardDetailBtns' className='pt-4 flex justify-center gap-3'>
-            <button className='nes-btn is-warning' style={{color:'white'}}>수정하기</button>
+            <button className='nes-btn is-warning' style={{color:'white'}}
+                    onClick={onUpdate}
+            >수정하기</button>
             <button className='nes-btn is-error'>삭제하기</button>
           </div>
 
