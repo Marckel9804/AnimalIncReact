@@ -128,7 +128,7 @@ const RoomWait = () => {
               className={`nes-btn ${isReady ? 'is-warning' : 'is-success'}`}
               onClick={handleReadyClick} // READY 버튼 클릭 시 함수 호출
             >
-              {isReady ? 'CANCEL READY' : 'READY'}
+              {isReady ? 'CANCEL' : 'READY'}
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -174,22 +174,24 @@ const RoomWait = () => {
                 </section>
             </div>
           </div>
-          <div className="mt-4 nes-field is-inline flex">
-            <input
-              type="text"
-              id="inline_field"
-              className="nes-input is-success flex-grow"
-              placeholder="채팅 메시지를 입력하세요"
-              value={newMessage}
-              onChange={handleNewMessageChange}
-            />
-            <button
-              type="button"
-              className="nes-btn is-primary ml-2"
-              onClick={handleSendMessage}
-            >
-              전송
-            </button>
+          <div id="room-wait">
+            <div className="mt-4 nes-field is-inline flex">
+              <input
+                type="text"
+                id="inline_field"
+                className="nes-input is-success flex-grow"
+                placeholder="채팅 메시지를 입력하세요"
+                value={newMessage}
+                onChange={handleNewMessageChange}
+              />
+              <button
+                type="button"
+                className="nes-btn is-primary ml-2"
+                onClick={handleSendMessage}
+              >
+                전송
+              </button>
+            </div>
           </div>
         </div>
       </Content>
