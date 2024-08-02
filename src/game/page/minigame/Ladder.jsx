@@ -5,15 +5,11 @@ import bomb from "../../../image/ladder-bomb.jpeg";
 import win from "../../../image/ladder-win.jpeg";
 
 const Ladder = () => {
-  const canvasRef = useRef(null); // 사다리를 그리기 위해 canvas 라이브러리 사용
+  const canvasRef = useRef(null); // 사다리를 그리기 위해 canvas 태그 사용
   const [participants, setParticipants] = useState(["P1", "P2", "P3", "P4"]); // 참가자 목록 (임시)
   const [reward, setReward] = useState([win, bomb, bomb, bomb]); // 리워드 랜덤 출력을 위한 변수
   const [gameStarted, setGameStarted] = useState(true); // 사다리게임 시작하기 위한 변수
   const [modal, setModal] = useState(false); // '로딩중' 모달 띄우기~
-  const [results, setResults] = useState();
-
-  const [isAnimating, setIsAnimating] = useState(true); // 애니메이션 상태
-  const [animationFrame, setAnimationFrame] = useState(0); // 애니메이션 프레임
 
   const drawLadder = (canvas, ctx) => {
     // const canvas = canvasRef.current;
@@ -48,57 +44,6 @@ const Ladder = () => {
     ctx.stroke(); // 선 그리기
   };
 
-  const animateLadder = (ctx) => {
-    const numParticipants = participants.length;
-    const ladderHeight = ctx.canvas.height;
-    const ladderWidth = ctx.canvas.width;
-    const startY = 0; // 시작 위치
-
-    // 애니메이션 프레임 수
-    const frames = 100; // 애니메이션 프레임 수
-    const duration = 2000; // 애니메이션 지속 시간 (ms)
-    const startTime = performance.now();
-
-    const animate = (time) => {
-      const elapsed = time - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-
-      // 참가자 각각의 위치를 계산
-      const participantPositions = participants.map((_, index) => {
-        const endX = (index * ladderWidth) / (numParticipants - 1);
-        const randomY = Math.random() * ladderHeight; // 랜덤 y 위치
-        const currentY = startY + (randomY - startY) * progress;
-        return { x: endX, y: currentY };
-      });
-
-      // 애니메이션 그리기
-      ctx.clearRect(0, 0, ladderWidth, ladderHeight); // 캔버스 초기화
-      drawLadder(ctx); // 사다리 그리기
-      participantPositions.forEach(({ x, y }, index) => {
-        ctx.fillStyle = "red"; // 참가자 색상
-        ctx.beginPath();
-        ctx.arc(x, y, 10, 0, Math.PI * 2); // 참가자 표시
-        ctx.fill();
-        ctx.closePath();
-      });
-
-      if (progress < 1) {
-        setAnimationFrame(requestAnimationFrame(animate));
-      } else {
-        setResults(
-          participantPositions.map(
-            (pos, index) =>
-              `P${index + 1}: (${pos.x.toFixed(2)}, ${pos.y.toFixed(2)})`
-          )
-        ); // 결과 저장
-        setIsAnimating(false); // 애니메이션 종료
-      }
-    };
-
-    setIsAnimating(true);
-    requestAnimationFrame(animate);
-  };
-
   const openModal = () => {
     return (
       <LadderWindow>
@@ -121,12 +66,33 @@ const Ladder = () => {
     setTimeout(() => {
       setModal(false);
       drawLadder(canvas, ctx);
+      animateFill(ctx); // 애니메이션 시작
     }, 1000);
-
-    if (isAnimating) {
-      animateLadder(ctx); // 애니메이션 시작
-    }
   }, [gameStarted]);
+
+  // 애니메이션 함수
+  const lines = [];
+  const animateFill = (ctx) => {
+    let lineIndex = 0;
+    const fillColor = "red";
+    const animationDuration = 2000; // 애니메이션 지속 시간 (ms)
+    const stepDuration = animationDuration / lines.length; // 각 단계의 지속 시간
+
+    const fillNextLine = () => {
+      if (lineIndex < lines.length) {
+        const { x1, y, x2 } = lines[lineIndex];
+
+        // 선을 따라 색을 칠하기
+        ctx.fillStyle = fillColor;
+        ctx.fillRect(x1, y - 5, x2 - x1, 10); // 선 위에 색칠
+
+        lineIndex++;
+        setTimeout(fillNextLine, stepDuration); // 다음 선으로 이동
+      }
+    };
+
+    fillNextLine(); // 애니메이션 시작
+  };
 
   return (
     <LadderContainer>
