@@ -2,3 +2,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: 'DungGeunMo';
+  font-weight: 400;
+  src: url('styles/font/DungGeunMo/DungGeunMo.woff2') format('woff2'),
+    url('styles/font/DungGeunMo/DungGeunMo.woff') format('woff'),
+    url('styles/font/DungGeunMo/DungGeunMo.eot') format('embedded-opentype');
+}
+
+body {
+  font-family: 'DungGeunMo' !important;
+}
+

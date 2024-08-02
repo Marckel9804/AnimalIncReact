@@ -1,0 +1,11 @@
+.kakao-login-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.kakao-login-image {
+    width: 50px; /* 적절한 크기로 설정 */
+    height: 50px; /* 비율을 유지하면서 적절한 크기로 설정 */
+}

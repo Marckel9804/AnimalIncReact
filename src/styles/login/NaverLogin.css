@@ -1,0 +1,14 @@
+.customNaverLoginButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.customNaverLoginButton img {
+    width: 50px; /* 적절한 크기로 설정 */
+    height: 50px; /* 비율을 유지하면서 적절한 크기로 설정 */
+}

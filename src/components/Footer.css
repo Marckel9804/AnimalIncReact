@@ -1,0 +1,45 @@
+/* 푸터 스타일 */
+.footer-container {
+  left: 50%;
+  transform: translate(-50%);
+  display: flex;
+  justify-content: center; /* 요소들을 중앙으로 정렬 */
+  align-items: center;
+  padding: 10px 20px; /* 좌우에 여백 추가 */
+  width: 80%; /* 전체 너비 */
+  background-color: white; /* 배경색을 하얀색으로 설정 */
+  border: 6px solid #4cbdb8; /* 테두리를 더 두껍게 설정 */
+  border-radius: 10px; /* 둥근 모서리 */
+  box-shadow: 0 0 10px rgba(76, 189, 184, 0.5); /* 그림자 추가 */
+  position: absolute;
+  bottom: 20px;
+}
+
+.footer-content {
+  text-align: center;
+  width: 100%;
+  padding: 10px 0; /* 위아래 패딩을 줄임 */
+}
+
+.footer-icons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0px; /* 아이콘과 아래 텍스트 사이의 간격 줄임 */
+  margin-top: -18px;
+}
+
+.footer-icons img {
+  margin: 0 15px;
+  width: 40px; /* 아이콘 크기 조정 */
+  height: 40px; /* 아이콘 크기 조정 */
+  background-color: white; /* 아이콘 배경색 설정 */
+  padding: 5px; /* 아이콘 내부 여백 */
+  border-radius: 100%; /* 아이콘을 원형으로 만들기 위해 둥글게 설정 */
+}
+
+.footer-info {
+  line-height: 1.5;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: -15px;
+}
