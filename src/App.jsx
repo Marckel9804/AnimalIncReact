@@ -19,7 +19,11 @@ import Ladder from "./game/page/minigame/Ladder.jsx";
 import RoomList from "./game/page/rooms/RoomList.jsx";
 
 import "nes.css/css/nes.min.css";
-import "./App.css"; // App.css 파일을 임포트합니다.
+import "./App.css";
+import BoardListPage from "./community/page/BoardListPage.jsx";
+import BoardWritePage from "./community/page/BoardWritePage.jsx";
+import BoardDetailPage from "./community/page/BoardDetailPage.jsx";
+import BoardUpdatePage from "./community/page/BoardUpdatePage.jsx"; // App.css 파일을 임포트합니다.
 
 const App = () => {
   const containerStyle = {
@@ -52,6 +56,12 @@ const App = () => {
           {/* ItemShop 경로를 추가합니다 */}
           <Route path="/createroom" element={<RoomList />} />
           <Route path="/ladder" element={<Ladder />} />
+
+          {/*게시판*/}
+          <Route path='/board/list' element={<BoardListPage/>}/>
+          <Route path='/board/write' element={<BoardWritePage/>}/>
+          <Route path='/board/detail/:id' element={<BoardDetailPage/>}/>
+          <Route path='/board/update/:id' element={<BoardUpdatePage/>}/>
         </Routes>
       </div>
     </Router>
