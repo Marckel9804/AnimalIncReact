@@ -6,8 +6,10 @@
 
 /* 헤더 컨테이너 스타일 */
 .header-header-container {
+  left: 50%;
+  transform: translate(-50%);
+  position: relative;
   margin-top: 20px;
-  margin-left: 215px;
   display: flex;
   justify-content: center; /* 요소들을 중앙으로 정렬 */
   align-items: center;

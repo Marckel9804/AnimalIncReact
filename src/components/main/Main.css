@@ -1,12 +1,12 @@
-body {
+/* body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
   background-image: url('../../assets/images/background.jpg');
-  background-size: cover; /* 배경 이미지 크기 조정 */
-  background-position: center; /* 배경 이미지 위치 조정 */
-  background-repeat: no-repeat; /* 배경 이미지 반복 방지 */
-}
+  background-size: cover; 
+  background-position: center; 
+  background-repeat: no-repeat; 
+} */
 
 .background-overlay {
   position: absolute;
