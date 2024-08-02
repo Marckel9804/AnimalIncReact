@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import kakaoLogin from "../image/kakao.png";
+import axios from '../utils/axios.js';
 import '../styles/login/KakaoLogin.css';
 
 const KakaoLogin = () => {
@@ -8,7 +9,7 @@ const KakaoLogin = () => {
 
     useEffect(() => {
         if (!window.Kakao.isInitialized()) {
-            window.Kakao.init('556a6f2f18618bf8d0ac80fd3c79cc35');
+            window.Kakao.init('63b019d082230f67471565843bf93691');
         }
     }, []);
 
@@ -17,24 +18,16 @@ const KakaoLogin = () => {
             success: async (authObj) => {
                 const accessToken = authObj.access_token;
                 try {
-                    const response = await fetch(`https://kapi.kakao.com/v2/user/me`, {
-                        headers: {
-                            'Authorization': `Bearer ${accessToken}`
-                        }
+                    const userInfo = await window.Kakao.API.request({
+                        url: '/v2/user/me',
                     });
-                    const userInfo = await response.json();
-                    const { email, properties: { nickname: name } } = userInfo.kakao_account;
+                    const { email, name } = userInfo.kakao_account;
 
-                    await fetch('/api/user/social-login', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ email, name })
-                    });
+                    await handleLoginSuccess({ email, name });
                 } catch (error) {
-                    console.error('Kakao login error:', error);
-                    alert('카카오 로그인에 실패했습니다. 다시 시도해 주세요.');
+                    console.error('Kakao API request error:', error);
+                    alert('카카오 API 요청 중 오류가 발생했습니다.');
+                    return;
                 }
             },
             fail: (error) => {
@@ -42,6 +35,29 @@ const KakaoLogin = () => {
                 alert('카카오 로그인에 실패했습니다. 다시 시도해 주세요.');
             }
         });
+    };
+
+    const handleLoginSuccess = async (userInfo) => {
+        const { email, name } = userInfo;
+
+        try {
+            const result = await axios.post('/api/user/social-login', {
+                email,
+                name
+            });
+
+            const tokens = result.data;
+            if (!tokens.accessToken || !tokens.refreshToken) {
+                throw new Error('Token data is not defined in the response.');
+            }
+
+            localStorage.setItem('accessToken', tokens.accessToken);
+            localStorage.setItem('refreshToken', tokens.refreshToken);
+            navigate('/main');
+        } catch (error) {
+            console.error('Social login error:', error);
+            alert('소셜 로그인 중 오류가 발생했습니다.');
+        }
     };
 
     return (

@@ -3,10 +3,7 @@ import {
   Route,
   BrowserRouter as Router,
   Routes,
-  useLocation,
 } from "react-router-dom";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
 import Main from "./components/main/Main";
 import Store from "./components/store/Store";
 import GachaShop from "./components/store/GachaShop";
@@ -17,9 +14,10 @@ import Login from "./login/Login.jsx";
 import Register from "./login/Register.jsx";
 import Ladder from "./game/page/minigame/Ladder.jsx";
 import RoomList from "./game/page/rooms/RoomList.jsx";
+import NaverCallback from "./login/NaverCallback.jsx";
 
 import "nes.css/css/nes.min.css";
-import "./App.css"; // App.css 파일을 임포트합니다.
+import "./App.css";
 
 const App = () => {
   const containerStyle = {
@@ -52,6 +50,7 @@ const App = () => {
           {/* ItemShop 경로를 추가합니다 */}
           <Route path="/createroom" element={<RoomList />} />
           <Route path="/ladder" element={<Ladder />} />
+          <Route path="/naver/callback" element={<NaverCallback />} />
         </Routes>
       </div>
     </Router>

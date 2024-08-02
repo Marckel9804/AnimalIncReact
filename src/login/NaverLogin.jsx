@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import '../styles/login/NaverLogin.css';
 import naverLogin from '../image/naver.png';
+import '../styles/login/NaverLogin.css';
+
 const NaverLogin = () => {
     useEffect(() => {
         const naverLogin = new window.naver.LoginWithNaverId({
@@ -17,7 +18,7 @@ const NaverLogin = () => {
         }
     }, []);
 
-    const handleNaverLogin = () => {
+    const handleLogin = () => {
         const loginButton = document.getElementById('naverIdLogin').firstChild;
         if (loginButton) {
             loginButton.click();
@@ -26,8 +27,8 @@ const NaverLogin = () => {
 
     return (
         <div>
-            <div id="naverIdLogin"/>
-            <button onClick={handleNaverLogin} className="customNaverLoginButton">
+            <div id="naverIdLogin" />
+            <button onClick={handleLogin} className="customNaverLoginButton nes-pointer">
                 <img src={naverLogin} alt="Naver Login" />
             </button>
         </div>
