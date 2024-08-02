@@ -7,7 +7,7 @@ import TaskBar from "./TaskBar";
 import StartBar from "./StartBar";
 import ItemsWin from "./Items";
 import WinChat from "./WinChat";
-import axios from "axios";
+import axios from "../../../utils/axios.js";
 import { useParams } from "react-router-dom";
 
 function MainGame() {
@@ -33,44 +33,43 @@ function MainGame() {
   };
   const [progress, setProgress] = useState(0);
   const [gameStatus, setGameStatus] = useState(null);
-  // const userinfo =
-  //   "#########차후 해당 변수를 유저 정보를 불러오는 코드로 대체#########";
+  const userinfo =
+    "#########차후 해당 변수를 유저 정보를 불러오는 코드로 대체#########";
 
-  // const { room_id } = useParams();
-  // const spring = "http://localhost:8080/game";
+  const { room_id } = useParams();
 
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     setProgress((oldProgress) => {
-  //       if (oldProgress >= 100) {
-  //         clearInterval(timer);
-  //       }
-  //       return Math.min(oldProgress + 10, 100);
-  //     });
-  //   }, 50);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((oldProgress) => {
+        if (oldProgress >= 100) {
+          clearInterval(timer);
+        }
+        return Math.min(oldProgress + 10, 100);
+      });
+    }, 50);
 
-  //   // 여기서 데이터를 불러오는 비동기 함수를 호출합니다.
-  //   axios.get(`${spring}/roomInfo/${room_id}`).then((res) => {
-  //     console.log(res);
-  //     setGameStatus(res);
-  //   });
+    // 여기서 데이터를 불러오는 비동기 함수를 호출합니다.
+    axios.post(`/game/roomInfo`, { roomId: room_id }).then((res) => {
+      console.log(res);
+      setGameStatus(res);
+    });
 
-  //   return () => {
-  //     clearInterval(timer);
-  //   };
-  // }, []);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
-  // if (gameStatus === null || progress < 100) {
-  //   return (
-  //     <div>
-  //       <progress
-  //         className="nes-progress main-game-loading"
-  //         value={progress}
-  //         max="100"
-  //       />
-  //     </div>
-  //   );
-  // }
+  if (gameStatus === null || progress < 100) {
+    return (
+      <div>
+        <progress
+          className="nes-progress main-game-loading"
+          value={progress}
+          max="100"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="maingame-container">
