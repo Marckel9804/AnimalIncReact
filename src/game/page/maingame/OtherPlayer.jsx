@@ -1,34 +1,38 @@
 import React, { useState } from "react";
-import P2 from "./P2";
-import P3 from "./P3";
-import P4 from "./P4";
 
 function OtherPlayer({ show, setShow }) {
-  const [p2z, setP2z] = useState(0);
-  const [p3z, setP3z] = useState(0);
-  const [p4z, setP4z] = useState(10);
-  const setZIndex = (n) => {
-    if (n === 2) {
-      setP2z(10);
-      setP3z(0);
-      setP4z(0);
-    }
-    if (n === 3) {
-      setP2z(0);
-      setP3z(10);
-      setP4z(0);
-    }
-    if (n === 4) {
-      setP2z(0);
-      setP3z(0);
-      setP4z(10);
-    }
-  };
   return (
     <div className={"otherpinfo-container"}>
-      <P2 show={show} setShow={setShow} setZ={setZIndex} z={p2z} />
-      <P3 show={show} setShow={setShow} setZ={setZIndex} z={p3z} />
-      <P4 show={show} setShow={setShow} setZ={setZIndex} z={p4z} />
+      <div className={` main-window ${show ? "flex" : "hidden"} `}>
+        <div className="window-head">
+          Other Players
+          <div className=" ml-auto mr-1 flex items-center">
+            <button
+              className="window-head-btn items-end"
+              onClick={() => {
+                setShow(false);
+              }}
+            >
+              _
+            </button>
+            <button className="window-head-btn-disabled items-center">
+              ㅁ
+            </button>
+            <button className="window-head-btn-disabled items-center">x</button>
+          </div>
+        </div>
+        <div className="window-head2">
+          {/* <span className=" underline">F</span>ile
+        <span className="ml-4 underline">E</span>dit
+        <span className="ml-4 underline">V</span>iew
+        <span className="ml-4 underline">H</span>elp */}
+        </div>
+        <div className="other-player-info flex justify-between p-4 flex-grow">
+          <div className=" ">p2</div>
+          <div className=" ">p3</div>
+          <div>p4</div>
+        </div>
+      </div>
     </div>
   );
 }

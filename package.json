@@ -12,11 +12,13 @@
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
+    "animalincreact": "file:",
     "axios": "^1.7.2",
     "nes.css": "^2.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.25.1"
+    "react-router-dom": "^6.25.1",
+    "styled-components": "^6.1.12"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

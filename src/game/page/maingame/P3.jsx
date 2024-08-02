@@ -8,7 +8,7 @@ function P3({ show, setShow, setZ, z }) {
         setZ(3);
       }}
     >
-      <div className={` main-window ${show ? "" : "win-hide"} `}>
+      <div className={` main-window ${show ? "flex" : "hidden"} `}>
         <div className="window-head">
           P3 Info
           <div className=" ml-auto mr-1 flex items-center">
@@ -29,7 +29,7 @@ function P3({ show, setShow, setZ, z }) {
         <div className="window-head2">
           {/* <span className=" underline">F</span>ile
         <span className="ml-4 underline">E</span>dit
-        <span className="ml-4 underline">Vs</span>iew
+        <span className="ml-4 underline">V</span>iew
         <span className="ml-4 underline">H</span>elp */}
         </div>
       </div>

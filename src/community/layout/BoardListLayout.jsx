@@ -12,13 +12,15 @@ const BoardListLayout = () => {
 
   return (
     <div id='BoardListLayout' className='flex flex-col justify-center w-11/12 '>
+
       <BoardTable/>
       <br/>
       <BoardPagenation/>
-      <div className='w-full flex justify-center'>
+      <div id={'upHeaderbtn'} className='w-full flex justify-center'>
 
-        <button type={"button"}
-                className='justify-center mt-5 nes-btn is-primary'
+        <button id={"header-btn"} type={"button"}
+                className='mt-5 nes-btn is-primary'
+                style={{fontSize:'16px'}}
                 onClick={onWrite}
         >
           글 작성하기

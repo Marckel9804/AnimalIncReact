@@ -1,0 +1,241 @@
+.gacha-container {
+  position: relative;
+  width: 40%;
+  height: 49.5vh;
+  text-align: center;
+  margin: 0 auto;
+  top: 90px;
+  background-color: rgba(255, 255, 255, 0.7); /* 투명한 흰색 배경 */
+  border: 6px solid #4cbdb8; /* 테두리를 더 두껍게 설정 */
+  border-radius: 10px; /* 둥근 모서리 */
+  box-shadow: 0 0 10px rgba(76, 189, 184, 0.5); /* 그림자 추가 */
+  border-radius: 40px; /* 왼쪽 위 꼭지점 둥글게 */
+}
+
+.gacha-container::before {
+  content: '';
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 40px;
+  z-index: -1;
+}
+
+.gacha-header {
+  height: 50px;
+  width: 757px;
+  font-size: 24px;
+  margin-top: 0.8px;
+  padding: 5px;
+  margin-left: 0px;
+  font-weight: bold;
+  background-color: #4cbdb8;
+  border-top-left-radius: 20px; /* 왼쪽 위 꼭지점 둥글게 */
+  border-top-right-radius: 20px; /* 오른쪽 위 꼭지점 둥글게 */
+}
+
+.gacha-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 5ch;
+  transform: translate(-50%, -150%);
+  margin: 0;
+  color: #fefcfc;
+}
+
+.gacha-link {
+  background-color: #fff;
+  color: #4cbdb8;
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 600px;
+}
+.gacha-link:hover {
+  background-color: #e0e0e0;
+}
+
+.gacha-close {
+  cursor: pointer;
+  padding: 10px 15px;
+  font-size: 24px;
+  color: #fff;
+}
+
+.gacha-close:hover {
+  color: #e0e0e0;
+}
+
+.gacha-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gacha-options {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 100px;
+  width: 100%;
+  padding: 20px;
+  margin: 55px 0 10px 0;
+  border-radius: 20px;
+  position: relative;
+}
+
+.gacha-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative; /* 포지션 설정 */
+  bottom: 30px;
+  width: 240px; /* 옵션의 너비를 지정하여 가운데 정렬 보장 */
+  height: 300px;
+}
+
+.gacha-option::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px; /* 둥근 꼭지점 */
+  z-index: -1; /* 콘텐츠 뒤에 배치 */
+  border: 5px dotted black; /* 픽셀화된 테두리 */
+  background-color: rgba(220, 53, 69, 0.5); /* 더욱 진한 배경색 */
+}
+
+/* 아이콘 컨테이너와 텍스트 스타일 */
+.gacha-icon-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 5px;
+  top: 12px;
+}
+
+.gacha-icon-text {
+  font-size: 18px;
+  margin-bottom: 5px;
+  font-weight: bold; /* 글자 굵게 설정 */
+}
+
+/* 아이콘에 그림자 추가 */
+.gacha-animal-icon,
+.gacha-item-icon {
+  position: relative;
+  margin-top: -50px;
+}
+
+.gacha-animal-icon::after,
+.gacha-item-icon::after {
+  content: '';
+  position: absolute;
+  bottom: -15px; /* 아이콘 아래에 그림자 위치 */
+  left: 50%;
+  width: 60%;
+  height: 10px;
+  background-color: rgba(0, 0, 0, 0.3); /* 회색 그림자 */
+  border-radius: 50%; /* 타원형 그림자 */
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+/* 개별 아이콘 클래스 */
+.gacha-animal-icon {
+  font-size: 64px; /* 아이콘 크기를 변수로 설정 */
+  margin-bottom: 5px;
+  top: 50px;
+}
+
+.gacha-item-icon {
+  font-size: 64px;
+  margin-bottom: 5px;
+  top: 40px;
+}
+
+/* 개별 버튼 클래스 */
+.gacha-btn {
+  position: relative;
+  top: 100px;
+  right: 0px;
+  bottom: px;
+  left: 0px;
+  content: '';
+  box-shadow: inset -4px -4px #adafbc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gacha-ruby-icon {
+  position: relative;
+  margin-top: 10px;
+}
+
+.gacha-ruby-text {
+  margin-left: 10px; /* 트로피 아이콘과 숫자 사이의 간격 */
+  font-size: 2em; /* 글자 크기 */
+  font-weight: bold; /* 글자 두께 */
+}
+/* ----------------------------------------- */
+/* 새로운 알림창 스타일 */
+.gacha-alert-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 150px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 4px solid #4cbdb8;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(76, 189, 184, 0.5);
+  z-index: 1000;
+}
+
+.gacha-alert-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+}
+
+.gacha-alert-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.gacha-alert-message {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.gacha-alert-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.gacha-alert-btn {
+  background-color: #4cbdb8;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.gacha-alert-btn:hover {
+  background-color: #36a29f;
+}
