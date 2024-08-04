@@ -18,6 +18,8 @@ import NaverCallback from "./login/NaverCallback.jsx";
 
 import "nes.css/css/nes.min.css";
 import "./App.css";
+import Mypage from "./info/MyPage.jsx";
+import Rank from "./info/Rank.jsx";
 
 const App = () => {
   const containerStyle = {
@@ -51,6 +53,8 @@ const App = () => {
           <Route path="/createroom" element={<RoomList />} />
           <Route path="/ladder" element={<Ladder />} />
           <Route path="/naver/callback" element={<NaverCallback />} />
+          <Route path="/mypage" element={<Mypage />} />
+          <Route path="/rank" element={<Rank />} />
         </Routes>
       </div>
     </Router>
