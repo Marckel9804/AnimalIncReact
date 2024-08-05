@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../utils/axios.js';
 
@@ -6,49 +6,65 @@ const NaverCallback = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const naverLogin = new window.naver.LoginWithNaverId({
-            clientId: 'XtRHdGsf1DCObrQohYWO',
-            callbackUrl: 'http://localhost:3600/naver/callback',
-            isPopup: false
-        });
-        naverLogin.init();
+        const hash = window.location.hash.substring(1);
+        const hashParams = new URLSearchParams(hash);
+        const accessToken = hashParams.get('access_token');
 
-        naverLogin.getLoginStatus(async (status) => {
-            if (status) {
-                const email = naverLogin.user.getEmail();
-                const name = naverLogin.user.getNickName();
-                await handleSocialLoginSuccess({ email, name });
-            } else {
-                console.error('Naver login status:', status);
-                alert('네이버 로그인에 실패했습니다.');
-            }
-        });
-    }, []);
+        if (accessToken) {
+            const fetchUserInfo = async () => {
+                try {
+                    console.log('Fetching user info with access token:', accessToken);
 
-    const handleSocialLoginSuccess = async (userInfo) => {
-        const { email, name } = userInfo;
+                    const profileResponse = await axios.get('/api/user/naver-info', {
+                        params: { access_token: accessToken }
+                    });
 
-        try {
-            const result = await axios.post('/api/user/social-login', {
-                email,
-                name
-            });
+                    console.log('Profile response:', profileResponse.data);
 
-            const tokens = result.data;
-            if (!tokens.accessToken || !tokens.refreshToken) {
-                throw new Error('Token data is not defined in the response.');
-            }
+                    const userInfo = profileResponse.data.response;
+                    const { email, name } = userInfo;
 
-            localStorage.setItem('accessToken', tokens.accessToken);
-            localStorage.setItem('refreshToken', tokens.refreshToken);
-            navigate('/main');
-        } catch (error) {
-            console.error('Social login error:', error);
-            alert('소셜 로그인 중 오류가 발생했습니다.');
+                    const result = await axios.post('/api/user/social-login', { email, name, platform: 'Naver' });
+
+                    const authorizationHeader = result.headers['authorization'];
+                    if (authorizationHeader) {
+                        const newAccessToken = authorizationHeader.split(' ')[1];
+                        localStorage.setItem('accessToken', newAccessToken);
+
+                        const user = result.data.user;
+                        if (!user.userBirthdate || !user.userNickname) {
+                            alert("프로필을 완성해주세요.");
+                            navigate('/check-profile', { state: { token: newAccessToken } });
+                        } else {
+                            navigate('/');
+                        }
+                    } else {
+                        console.error('Authorization header is missing in the response');
+                        throw new Error('Authorization header is missing in the response');
+                    }
+                } catch (error) {
+                    console.error('Naver callback error:', error);
+                    console.error('Error details:', error.response || error.message || error);
+                    if (error.response && error.response.data) {
+                        alert(error.response.data);
+                    } else {
+                        alert('네이버 로그인 중 오류가 발생했습니다.');
+                    }
+                }
+            };
+
+            fetchUserInfo();
+        } else {
+            console.error('Access token is missing in the URL hash parameters.');
+            alert('네이버 로그인 중 오류가 발생했습니다.');
         }
-    };
+    }, [navigate]);
 
-    return <div>Loading...</div>;
+    return (
+        <div>
+            <div>Loading...</div>
+        </div>
+    );
 };
 
 export default NaverCallback;

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import kakaoLogin from "../image/kakao.png";
 import axios from '../utils/axios.js';
@@ -23,11 +23,35 @@ const KakaoLogin = () => {
                     });
                     const { email, name } = userInfo.kakao_account;
 
-                    await handleLoginSuccess({ email, name });
+                    const result = await axios.post('/api/user/social-login', {
+                        email,
+                        name,
+                        platform: 'Kakao'
+                    });
+
+                    const authorizationHeader = result.headers['authorization'];
+                    if (authorizationHeader) {
+                        const newAccessToken = authorizationHeader.split(' ')[1];
+                        localStorage.setItem('accessToken', newAccessToken);
+
+                        const user = result.data.user;
+                        if (!user.userBirthdate || !user.userNickname) {
+                            alert("프로필을 완성해주세요.");
+                            navigate('/check-profile', { state: { token: newAccessToken } });
+                        } else {
+                            navigate('/');
+                        }
+                    } else {
+                        console.error('Authorization header is missing in the response');
+                        throw new Error('Authorization header is missing in the response');
+                    }
                 } catch (error) {
-                    console.error('Kakao API request error:', error);
-                    alert('카카오 API 요청 중 오류가 발생했습니다.');
-                    return;
+                    console.error('Kakao login error:', error);
+                    if (error.response && error.response.data) {
+                        alert(error.response.data);
+                    } else {
+                        alert('카카오 로그인 중 오류가 발생했습니다. 다시 시도해 주세요.');
+                    }
                 }
             },
             fail: (error) => {
@@ -37,33 +61,12 @@ const KakaoLogin = () => {
         });
     };
 
-    const handleLoginSuccess = async (userInfo) => {
-        const { email, name } = userInfo;
-
-        try {
-            const result = await axios.post('/api/user/social-login', {
-                email,
-                name
-            });
-
-            const tokens = result.data;
-            if (!tokens.accessToken || !tokens.refreshToken) {
-                throw new Error('Token data is not defined in the response.');
-            }
-
-            localStorage.setItem('accessToken', tokens.accessToken);
-            localStorage.setItem('refreshToken', tokens.refreshToken);
-            navigate('/main');
-        } catch (error) {
-            console.error('Social login error:', error);
-            alert('소셜 로그인 중 오류가 발생했습니다.');
-        }
-    };
-
     return (
-        <button className="kakao-login-btn" onClick={handleLogin}>
-            <img src={kakaoLogin} alt="kakaoLogin" className="kakao-login-image nes-pointer" />
-        </button>
+        <div className="kakao-div">
+            <button className="kakao-login-btn" onClick={handleLogin}>
+                <img src={kakaoLogin} alt="Kakao Login" className="kakao-login-image nes-pointer" />
+            </button>
+        </div>
     );
 };
 

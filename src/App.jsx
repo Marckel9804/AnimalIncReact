@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {
   Route,
   BrowserRouter as Router,
@@ -20,6 +20,11 @@ import "nes.css/css/nes.min.css";
 import "./App.css";
 import Mypage from "./info/MyPage.jsx";
 import Rank from "./info/Rank.jsx";
+import axios from "./utils/axios.js";
+import GoogleLoginPage from "./login/GoogleLogin.jsx";
+import KakaoLogin from "./login/KakaoLogin.jsx";
+import NaverLogin from "./login/NaverLogin.jsx";
+import CheckProfile from "./login/CheckProfile.jsx";
 
 const App = () => {
   const containerStyle = {
@@ -32,6 +37,22 @@ const App = () => {
   const contentStyle = {
     flex: 1,
   };
+
+  const refreshAccessToken = async () => {
+    try {
+      const response = await axios.post('/api/user/refresh-token');
+      if (response.status === 200) {
+        const newAccessToken = response.headers['authorization'].split(' ')[1];
+        localStorage.setItem('access_token', newAccessToken);
+      }
+    } catch (error) {
+      console.error('Error refreshing access token', error);
+    }
+  }
+
+  useEffect(() => {
+    refreshAccessToken();
+  }, []);
 
   return (
     <Router>
@@ -55,6 +76,9 @@ const App = () => {
           <Route path="/naver/callback" element={<NaverCallback />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/rank" element={<Rank />} />
+          <Route path="/google-login" element={<GoogleLoginPage/>} />
+          <Route path="/kakao-login" element={<KakaoLogin/>} />
+          <Route path="/check-profile" element={<CheckProfile/>} />
         </Routes>
       </div>
     </Router>
