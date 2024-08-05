@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import './Header.css'
-import { getUserInfo, logout, goToBoard, goToMypage, goToStore } from './api'
+import { getUserInfo, goToBoard, goToMypage, goToStore } from './api'
 import axios from "../utils/axios.js";
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import "./Header.css";
-import { getUserInfo, logout, goToBoard, goToMypage, goToStore } from "./api";
 
 const Header = () => {
   const [userInfo, setUserInfo] = useState({

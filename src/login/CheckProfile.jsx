@@ -30,7 +30,7 @@ const CompleteProfile = () => {
     const handleCompleteProfile = async () => {
         try {
             const formattedBirthdate = `${birthdate.slice(0, 4)}-${birthdate.slice(4, 6)}-${birthdate.slice(6, 8)}`;
-            const response = await axios.post('/api/user/complete-profile', {
+            const response = await axios.post('/api/user/check-profile', {
                 birthdate: formattedBirthdate,
                 nickname
             });
