@@ -93,11 +93,11 @@
 #error-message {
   color: red;
   font-size: 12px;
-  margin-top: 5px;
+  margin-top: 1px;
 }
 
-.success-message {
+#success-message {
   color: green;
   font-size: 12px;
-  margin-top: 5px;
+  margin-top: 1px;
 }

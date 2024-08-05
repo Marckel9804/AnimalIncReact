@@ -64,6 +64,7 @@ const Register = () => {
         try {
             const response = await axios.post('/api/user/check-nickname', { nickname });
             setIsNicknameAvailable(response.data.isAvailable);
+            setNicknameError(''); // Clear the error message
         } catch (error) {
             console.error('Nickname check error:', error);
             alert('닉네임 중복 확인 중 오류가 발생했습니다. 다시 시도해 주세요.');
@@ -166,9 +167,9 @@ const Register = () => {
                             onClick={checkNicknameAvailability}>중복 확인
                     </button>
                 </div>
-                {nicknameError && <div className="error-message">{nicknameError}</div>}
-                {isNicknameAvailable === false && <div className="error-message">이미 사용 중인 닉네임입니다...</div>}
-                {isNicknameAvailable === true && <div className="success-message">사용 가능한 닉네임입니다!!!</div>}
+                {nicknameError && <div id="error-message">{nicknameError}</div>}
+                {isNicknameAvailable === false && <div id="error-message">이미 사용 중인 닉네임입니다...</div>}
+                {isNicknameAvailable === true && <div id="success-message">사용 가능한 닉네임입니다!!!</div>}
                 <div className="register-input">
                     <input type="text" value={birthdate} onChange={(e) => setBirthdate(e.target.value)}
                            placeholder="생년월일 (YYYYMMDD)"/>
