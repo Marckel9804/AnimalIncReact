@@ -19,21 +19,23 @@ const Login = () => {
         userEmail: email,
         userPw: password,
       });
-      console.log(response);
 
-      const tokens = response.data;
-      console.log(tokens);
-
-      if (!tokens) {
-        throw new Error("Token data is not defined in the response.");
+      const authorizationHeader = response.headers["authorization"];
+      if (authorizationHeader) {
+        const accessToken = authorizationHeader.split(" ")[1];
+        localStorage.setItem("accessToken", accessToken);
+        navigate("/");
+      } else {
+        console.error("Authorization header is missing in the response");
+        throw new Error("Authorization header is missing in the response");
       }
-
-      localStorage.setItem("accessToken", tokens.accessToken);
-      localStorage.setItem("refreshToken", tokens.refreshToken);
-      navigate("/main");
     } catch (error) {
       console.error("Login error:", error);
-      alert("로그인 중 오류가 발생했습니다. 다시 시도해 주세요.");
+      if (error.response && error.response.data) {
+        alert(error.response.data);
+      } else {
+        alert("로그인 중 오류가 발생했습니다. 다시 시도해 주세요.");
+      }
     }
   };
 
@@ -51,6 +53,7 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="아이디(이메일 주소)"
+                  className="login-input" // 입력 필드에 클래스 추가
                 />
               </div>
               <div className="login-pw">
@@ -59,6 +62,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="비밀번호"
+                  className="login-input" // 입력 필드에 클래스 추가
                 />
               </div>
               <button

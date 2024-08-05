@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import "./Header.css";
-import { getUserInfo, logout, goToBoard, goToMypage, goToStore } from "./api";
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import './Header.css'
+import { getUserInfo, goToBoard, goToMypage, goToStore } from './api'
+import axios from "../utils/axios.js";
 
 const Header = () => {
   const [userInfo, setUserInfo] = useState({
@@ -21,6 +22,17 @@ const Header = () => {
     };
     fetchUserInfo();
   }, []);
+
+  const logout = async () => {
+    try {
+      await axios.post('/api/user/logout');
+      localStorage.removeItem('accessToken');
+      window.location.href = '/'
+    } catch (error) {
+      console.error('Logout Error:', error);
+      alert('로그아웃에 실패했습니다.');
+    }
+  }
 
   return (
     <header className="header-header-container">

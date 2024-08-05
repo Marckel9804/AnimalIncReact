@@ -9,7 +9,7 @@
 }
 
 .register-form {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: #EBE8DF;
   padding: 40px;
   border-radius: 10px;
   width: 700px; /* 폼의 전체 너비를 더 크게 설정 */
@@ -27,7 +27,7 @@
   height: 40px;
   padding: 10px;
   border: 1px solid #e5e8eb;
-  background-color: #fff;
+  background-color: #F5F5DC;
   font-size: 16px;
   font-weight: 700;
   outline: 0;
@@ -50,7 +50,7 @@
   height: 40px;
   padding: 10px;
   border: 1px solid #e5e8eb;
-  background-color: #fff;
+  background-color: #F5F5DC;
   font-size: 16px;
   font-weight: 700;
   outline: 0;
@@ -93,11 +93,11 @@
 #error-message {
   color: red;
   font-size: 12px;
-  margin-top: 5px;
+  margin-top: 1px;
 }
 
-.success-message {
+#success-message {
   color: green;
   font-size: 12px;
-  margin-top: 5px;
+  margin-top: 1px;
 }
