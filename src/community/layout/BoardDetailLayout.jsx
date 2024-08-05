@@ -2,18 +2,12 @@ import {useNavigate} from "react-router-dom";
 
 const BoardDetailLayout = (props) => {
 
-  const info = props.info
-  const title = info.title
-  const name = info.author
-  const content = info.content
-  const imgs = info.imgs
-  const code = info.code
-  const id = props.id
+  const data = props.data;
 
   const navi = useNavigate()
 
   const onUpdate = () => {
-    navi(`/board/update/${id}`)
+    navi(`/board/update/${data.bcId}`)
   }
 
   return(
@@ -24,17 +18,17 @@ const BoardDetailLayout = (props) => {
         >
           <p className="title"
              style={{text:'top', lineHeight:'0.75', fontSize:'30px'}}
-          >{title}</p>
+          >{data.title}</p>
           <div className='float-right text-2xl'>
-            {name}
+            {data.userNum}
           </div>
           <a href="#" className="nes-badge">
-            <span className="is-primary">{code}</span>
+            <span className="is-primary">{data.bcCode}</span>
           </a>
           <br/>
           <br/>
           <div className='mb-4'>
-            {content}
+            {data.content}
           </div>
 
           <div>

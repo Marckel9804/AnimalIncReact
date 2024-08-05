@@ -26,12 +26,12 @@ let faqTuple = [
   { id: 5, title: 'FAQ 제목5  123123', author: 'user5' },
 ];
 
-const BoardTable = () => {
+const BoardTable = (props) => {
   const navi = useNavigate();
   const [activeTab, setActiveTab] = useState('notice');
   const [hoveredTab, setHoveredTab] = useState(null);
 
-  const tuples = faqTuple;
+  const tuples = props.list;
 
   const onDetail = (index) => {
     navi(`/board/detail/${index}`);
@@ -124,8 +124,8 @@ const BoardTable = () => {
           <tbody>
           {tuples.map((tuple, index) => (
             <tr key={index}>
-              <td className='text-center'>{tuple.id}</td>
-              <td onClick={() => onDetail(tuple.id)}
+              <td className='text-center'>{tuple.bcId}</td>
+              <td onClick={() => onDetail(tuple.bcId)}
                   style={{ padding: '10px 20px' }}
                   className='nes-pointer'
               >

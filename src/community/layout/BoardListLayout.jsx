@@ -1,21 +1,39 @@
 import BoardTable from "../component/BoardTable.jsx";
 import BoardPagenation from "../component/BoardPagenation.jsx";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+import CommunityAPI from "../CommunityAPI.jsx";
+import {useEffect, useState} from "react";
+import axios from "../../utils/axios.js";
 
-const BoardListLayout = () => {
+const BoardListLayout = (props) => {
 
   const navi = useNavigate()
+  const [list, setList] = useState([])
+  const api = CommunityAPI();
+
+  const page = props.page
+
+  const params = useParams()
 
   const onWrite = () => {
     navi('/board/write')
   }
 
+  useEffect(() => {
+    axios.get('/api/board',{params:{page:page}})
+      .then((res) => {
+        console.log(page)
+        setList(res.data.content)
+        console.log(res.data.content)
+      })
+  }, []);
+
   return (
     <div id='BoardListLayout' className='flex flex-col justify-center w-11/12 '>
 
-      <BoardTable/>
+      <BoardTable list={list}/>
       <br/>
-      <BoardPagenation/>
+      <BoardPagenation page={page}/>
       <div id={'upHeaderbtn'} className='w-full flex justify-center'>
 
         <button id={"header-btn"} type={"button"}

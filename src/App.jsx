@@ -58,7 +58,7 @@ const App = () => {
           <Route path="/ladder" element={<Ladder />} />
 
           {/*게시판*/}
-          <Route path='/board/list' element={<BoardListPage/>}/>
+          <Route path='/board/list/:page' element={<BoardListPage/>}/>
           <Route path='/board/write' element={<BoardWritePage/>}/>
           <Route path='/board/detail/:id' element={<BoardDetailPage/>}/>
           <Route path='/board/update/:id' element={<BoardUpdatePage/>}/>

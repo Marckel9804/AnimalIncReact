@@ -5,9 +5,9 @@ const BoardWriteLayout = () => {
         <p className='title' style={{lineHeight: '0.4', fontSize: '2rem'}}> 자유게시글 작성 </p>
 
         {/* 태그 선택 */}
-        <div id='board-write-code-select' className='flex w-4/5 justify-center' style={{marginTop: '40px'}}>
-          <div className='text-xl self-center' style={{width:'128px'}}>∙태그</div>
-          <div className="nes-select is-success" style={{width:'100%-128px'}}>
+        <div id='board-write-code-select' className='nes-field is-inline w-4/5' style={{marginTop: '40px'}}>
+          <div className='text-xl' style={{width:'2000px'}} >∙태그</div>
+          <div className="nes-select is-success" >
             <select>
               <option value="x" hidden>...</option>
               <option value="잡담">잡담</option>
