@@ -24,8 +24,8 @@ import BoardListPage from "./community/page/BoardListPage.jsx";
 import BoardWritePage from "./community/page/BoardWritePage.jsx";
 import BoardDetailPage from "./community/page/BoardDetailPage.jsx";
 import BoardUpdatePage from "./community/page/BoardUpdatePage.jsx"; // App.css 파일을 임포트합니다.
-import RoomWait from './game/page/rooms/RoomWait';
-import SpaceMinigame from './game/page/rooms/SpaceMinigame';
+import RoomWait from "./game/page/rooms/RoomWait";
+import SpaceMinigame from "./game/page/rooms/SpaceMinigame";
 
 const App = () => {
   const containerStyle = {
@@ -56,21 +56,25 @@ const App = () => {
           {/* GachaResult 경로를 추가합니다 */}
           <Route path="/shop/item" element={<ItemShop />} />{" "}
           {/* ItemShop 경로를 추가합니다 */}
-          <Route path="/createroom" element={<RoomList />} />
-          <Route path="/ladder" element={<Ladder />} />
-
+          <Route path="/game/createroom" element={<RoomList />} />
+          <Route path="/game/ladder" element={<Ladder />} />
           {/*게시판*/}
-          <Route path='/board/list' element={<BoardListPage/>}/>
-          <Route path='/board/write' element={<BoardWritePage/>}/>
-          <Route path='/board/detail/:id' element={<BoardDetailPage/>}/>
-          <Route path='/board/update/:id' element={<BoardUpdatePage/>}/>
-
+          <Route path="/board/list" element={<BoardListPage />} />
+          <Route path="/board/write" element={<BoardWritePage />} />
+          <Route path="/board/detail/:id" element={<BoardDetailPage />} />
+          <Route path="/board/update/:id" element={<BoardUpdatePage />} />
           {/* 태경 경로 */}
           {/* <Route exact path="/" element={<RoomWait />} /> */}
-          <Route exact path="/game/page/rooms/RoomWait" element={<RoomWait />} />
-          <Route path="/game/page/rooms/SpaceMinigame" element={<SpaceMinigame />} />
+          <Route
+            exact
+            path="/game/page/rooms/RoomWait"
+            element={<RoomWait />}
+          />
+          <Route
+            path="/game/page/rooms/SpaceMinigame"
+            element={<SpaceMinigame />}
+          />
           {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
-
         </Routes>
       </div>
     </Router>

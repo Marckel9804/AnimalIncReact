@@ -5,8 +5,11 @@ import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
 
 const RoomList = () => {
-  const [modal, setModal] = useState(false);
+  // 유저 정보 (임시)
+  const userNum = 3;
 
+  // 방 만들기 모달 켜고 끄는 메서드
+  const [modal, setModal] = useState(false);
   function createRoom() {
     if (modal === false) {
       setModal(true);
@@ -49,21 +52,21 @@ const RoomList = () => {
             <div className="nes-container is-rounded bg-white">
               * 공지사항
               <ul className="nes-list is-disc">
-                <li>[공지] 랭크게임 일정 (09/01 ~ 09/30) </li>
-                <li>[공지] 07.25 패치노트 유료 아이템 추가</li>
-                <li>[공지] 7월 PC방 혜택</li>
+                <GameList>[공지] 랭크게임 일정 (09/01 ~ 09/30) </GameList>
+                <GameList>[공지] 07.25 패치노트 유료 아이템 추가</GameList>
+                <GameList>[공지] 7월 PC방 혜택</GameList>
               </ul>
             </div>
             <div className="nes-container is-rounded bg-white">
               <ul className="nes-list is-circle">
                 * 게임방
-                <li>[자유] (1/4) 즐겜하실분~</li>
-                <li>[자유] (3/4) 묻고 더블로 가</li>
-                <li>[골드] (2/4) 헬루!!</li>
+                <GameList>[자유] (1/4) 즐겜하실분~</GameList>
+                <GameList>[자유] (3/4) 묻고 더블로 가</GameList>
+                <GameList>[골드] (2/4) 헬루!!</GameList>
               </ul>
             </div>
           </div>
-          {modal ? <CreateRoom func={createRoom} /> : null}
+          {modal ? <CreateRoom func={createRoom} userNum={userNum} /> : null}
         </div>
       </RoomBody>
       <Footer />
@@ -84,6 +87,13 @@ const ChannelList = styled.div`
 const ChanelButton = styled.button`
   width: 100%;
   margin-top: 40px;
+`;
+
+const GameList = styled.li`
+  &:hover {
+    cursor: pointer;
+    background-color: #cccccc;
+  }
 `;
 
 export default RoomList;

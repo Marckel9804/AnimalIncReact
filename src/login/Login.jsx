@@ -9,24 +9,24 @@ import Footer from "../components/Footer.jsx";
 import Header from "../components/Header.jsx";
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-    const handleLogin = async () => {
-        try {
-            const response = await axios.post('/api/user/login', {
-                userEmail: email,
-                userPw: password,
-            });
-            console.log(response);
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post("/api/user/login", {
+        userEmail: email,
+        userPw: password,
+      });
+      console.log(response);
 
-            const tokens = response.data;
-            console.log(tokens);
+      const tokens = response.data;
+      console.log(tokens);
 
-            if (!tokens) {
-                throw new Error('Token data is not defined in the response.');
-            }
+      if (!tokens) {
+        throw new Error("Token data is not defined in the response.");
+      }
 
       localStorage.setItem("accessToken", tokens.accessToken);
       localStorage.setItem("refreshToken", tokens.refreshToken);
