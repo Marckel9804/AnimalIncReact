@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function MyInfo({ show, setShow }) {
+function MyInfo({ show, setShow, getUserInfo }) {
   const [chartStatus, setChartStatus] = useState(true);
   const toggleChart = () => {
     if (chartStatus) {
@@ -30,7 +30,10 @@ function MyInfo({ show, setShow }) {
           </div>
         </div>
         <div className="window-head2">
-          <span className=" underline">F</span>ile
+          <span className=" underline" onClick={getUserInfo}>
+            F
+          </span>
+          ile
           <span className="ml-4 underline">E</span>dit
           <span className="ml-4 underline">V</span>iew
           <span className="ml-4 underline">H</span>elp
