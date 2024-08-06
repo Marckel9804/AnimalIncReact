@@ -6,6 +6,7 @@ const BoardDetailLayout = (props) => {
   const data = props.data;
   const reContent = data.content.split('\n')
   console.log(reContent)
+  const mEmail = props.mEmail;
 
   const navi = useNavigate()
 
@@ -57,15 +58,18 @@ const BoardDetailLayout = (props) => {
           </div>
 
           {/* 수정/삭제 버튼들 */}
-          <div id='boardDetailBtns' className='pt-4 flex justify-center gap-3'>
-            <button className='nes-btn is-warning' style={{color:'white'}}
-                    onClick={onUpdate}
-            >수정하기</button>
-            <button className='nes-btn is-error'
-                    onClick={onDelete}
-            >삭제하기</button>
-          </div>
-
+          {
+            mEmail===data.userEmail?(
+              <div id='boardDetailBtns' className='pt-4 flex justify-center gap-3'>
+                <button className='nes-btn is-warning' style={{color:'white'}}
+                        onClick={onUpdate}
+                >수정하기</button>
+                <button className='nes-btn is-error'
+                        onClick={onDelete}
+                >삭제하기</button>
+              </div>
+            ):('')
+          }
 
         </div>
       </div>
