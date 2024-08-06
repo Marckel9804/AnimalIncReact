@@ -1,9 +1,9 @@
 .store-container {
-  /* position: relative; */
+  position: relative;
   width: 40%;
   height: 49.5vh;
   text-align: center;
-  margin: 40px auto;
+  margin: 0 auto;
   top: 90px;
   background-color: rgba(255, 255, 255, 0.7); /* 투명한 흰색 배경 */
   border: 6px solid #4cbdb8; /* 테두리를 더 두껍게 설정 */
@@ -13,7 +13,7 @@
 }
 
 .store-container::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0%;
   left: 0%;
@@ -41,7 +41,7 @@
   position: relative;
   left: 50%;
   transform: translateX(-50%);
-  top: 5%;
+  bottom: 15px;
   transform: translate(-50%, -50%);
   margin: 0;
   color: #fff;
@@ -64,7 +64,8 @@
   cursor: pointer;
   padding: 10px 15px;
   font-size: 24px;
-  color: #fff;
+  color: black;
+  /*  이거 위치 이동이 안되서 나중에 하겠음 */
 }
 
 .header-close:hover {
@@ -84,7 +85,7 @@
   gap: 100px;
   width: 100%;
   padding: 20px;
-  margin: 50px 0 10px 0;
+  margin: 55px 0 10px 0;
   border-radius: 20px;
   position: relative;
 }
@@ -94,13 +95,13 @@
   flex-direction: column;
   align-items: center;
   position: relative; /* 포지션 설정 */
-  bottom: 28px;
+  bottom: 30px;
   width: 240px; /* 옵션의 너비를 지정하여 가운데 정렬 보장 */
   height: 300px;
 }
 
 .option::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
@@ -136,7 +137,7 @@
 
 .animal-icon::after,
 .item-icon::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: -15px; /* 아이콘 아래에 그림자 위치 */
   left: 50%;
@@ -163,21 +164,39 @@
 
 /* 개별 버튼 클래스 */
 .animal-btn {
-  position: absolute;
-  top: 105px;
-  right: 0px;
-  bottom: -4px;
-  left: 0px;
-  content: "";
-  box-shadow: inset -4px -4px #adafbc;
+  display: flex;
+  align-items: center;
+  top: 90px;
+  justify-content: center; /* 텍스트를 수직 및 수평 중앙에 배치 */
+  padding: 10px 20px; /* 버튼 내부 여백 (위아래, 좌우) */
+  font-size: 1.2em; /* 버튼 글자 크기 조정 */
+  font-weight: bold; /* 글씨 두껍게 설정 */
+  border: 2px solid transparent; /* 버튼 테두리 설정 */
+  border-radius: 5px; /* 버튼 테두리 둥글게 */
+  text-align: center;
+  height: 40px; /* 버튼 높이 설정 */
+  width: 120px; /* 버튼 너비 설정 */
+  color: black; /* 버튼 글자 색상 */
+  box-sizing: border-box; /* 패딩과 테두리를 포함한 크기 설정 */
+  background-color: rgba(0, 0, 0, 0.1); /* 배경색에 투명도 추가 */
+  line-height: 0.8; /* 텍스트 위치 조정 */
 }
 
 .item-btn {
-  position: absolute;
+  display: flex;
+  align-items: center;
   top: 90px;
-  right: 0px;
-  bottom: -4px;
-  left: 0px;
-  content: "";
-  box-shadow: inset -4px -4px #adafbc;
+  justify-content: center; /* 텍스트를 수직 및 수평 중앙에 배치 */
+  padding: 10px 20px; /* 버튼 내부 여백 (위아래, 좌우) */
+  font-size: 1.2em; /* 버튼 글자 크기 조정 */
+  font-weight: bold; /* 글씨 두껍게 설정 */
+  border: 2px solid transparent; /* 버튼 테두리 설정 */
+  border-radius: 5px; /* 버튼 테두리 둥글게 */
+  text-align: center;
+  height: 40px; /* 버튼 높이 설정 */
+  width: 120px; /* 버튼 너비 설정 */
+  color: black; /* 버튼 글자 색상 */
+  box-sizing: border-box; /* 패딩과 테두리를 포함한 크기 설정 */
+  background-color: rgba(0, 0, 0, 0.1); /* 배경색에 투명도 추가 */
+  line-height: 0.8; /* 텍스트 위치 조정 */
 }
