@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import './Header.css'
 import { getUserInfo, goToBoard, goToMypage, goToStore } from './api'
 import axios from "../utils/axios.js";
@@ -11,8 +11,14 @@ const Header = () => {
     userPoint: 0,
   });
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchUserInfo = async () => {
+      const token = localStorage.getItem('accessToken');
+
+      if (!token) {return;}
+
       const data = await getUserInfo();
       setUserInfo({
         userNickname: data.user_nickname,
@@ -33,6 +39,13 @@ const Header = () => {
       alert('로그아웃에 실패했습니다.');
     }
   }
+
+  const login = () => {
+    navigate('/login');
+  }
+
+  const token = localStorage.getItem('accessToken');
+  const isLoggedIn = !!token;
 
   return (
     <header className="header-header-container">
@@ -58,9 +71,16 @@ const Header = () => {
             <button className="nes-btn is-store" onClick={goToStore}>
               상점
             </button>
-            <button className="nes-btn is-logout" onClick={logout}>
-              로그아웃
-            </button>
+            { isLoggedIn ? (
+              <button className="nes-btn is-logout" onClick={logout}>
+                로그아웃
+              </button>
+            ) : (
+                <button className="nes-btn is-login" onClick={login}>
+                  로그인
+                </button>
+
+            )}
           </div>
         </div>
       </div>

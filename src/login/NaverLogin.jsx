@@ -18,7 +18,6 @@ const NaverLogin = () => {
                 loginButton: { color: 'green', type: 1, height: 20 }
             });
             naverLogin.init();
-            console.log('Naver login script initialized');
 
             const loginButton = document.getElementById('naverIdLogin');
             if (loginButton) {

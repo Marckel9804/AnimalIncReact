@@ -31,6 +31,7 @@ import BoardDetailPage from "./community/page/BoardDetailPage.jsx";
 import BoardUpdatePage from "./community/page/BoardUpdatePage.jsx"; // App.css 파일을 임포트합니다.
 import RoomWait from './game/page/rooms/RoomWait';
 import SpaceMinigame from './game/page/rooms/SpaceMinigame';
+import FindPassword from "./login/FindPassword.jsx";
 
 const App = () => {
   const containerStyle = {
@@ -79,14 +80,14 @@ const App = () => {
           {/* ItemShop 경로를 추가합니다 */}
           <Route path="/createroom" element={<RoomList />} />
           <Route path="/ladder" element={<Ladder />} />
-            
+          {/*태웅 경로 */}
           <Route path="/naver/callback" element={<NaverCallback />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/rank" element={<Rank />} />
           <Route path="/google-login" element={<GoogleLoginPage/>} />
           <Route path="/kakao-login" element={<KakaoLogin/>} />
           <Route path="/check-profile" element={<CheckProfile/>} />
-
+          <Route path="/find-password" element={<FindPassword />} />
           {/*게시판*/}
           <Route path='/board/list' element={<BoardListPage/>}/>
           <Route path='/board/write' element={<BoardWritePage/>}/>
