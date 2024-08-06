@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "../../../utils/axios.js";
 import styled from "styled-components";
 import CreateRoom from "./CreateRoom";
 import Header from "../../../components/Header";
@@ -6,7 +7,11 @@ import Footer from "../../../components/Footer";
 
 const RoomList = () => {
   // 유저 정보 (임시)
-  const user = [{ userNum: 47, userGrade: "gold" }];
+  const user = [{ userNum: 47, userGrade: "silver" }];
+
+  // userGrade에 따라 선택할 수 있는 채널이 달라짐
+  const channelList = ["bronze", "silver", "Gold"];
+  const channelKR = ["브론즈 채널", "실버 채널", "골드 채널"];
 
   // 방 만들기 모달 켜고 끄는 메서드
   const [modal, setModal] = useState(false);
@@ -19,6 +24,25 @@ const RoomList = () => {
     }
   }
 
+  // 게임방 리스트 불러오기
+  const [roomLists, setRoomLists] = useState([]);
+  const getGameRooms = () => {
+    axios
+      .get(`/api/user/game/selectAllRoom`)
+      .then((res) => {
+        console.log(res.data);
+        setRoomLists([res.data]);
+        console.log("roomLists : ", roomLists);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    getGameRooms();
+  }, []);
+
   return (
     <>
       <Header />
@@ -30,15 +54,19 @@ const RoomList = () => {
               <ChanelButton className="nes-btn is-primary">
                 자유 채널
               </ChanelButton>
-              <ChanelButton className="nes-btn is-primary">
-                브론즈 채널
-              </ChanelButton>
-              <ChanelButton className="nes-btn is-primary">
-                실버 채널
-              </ChanelButton>
-              <ChanelButton className="nes-btn is-primary">
-                골드 채널
-              </ChanelButton>
+              {channelList.map((item, index) => {
+                let active = "";
+                {
+                  user[0].userGrade === item
+                    ? (active = "nes-btn is-primary")
+                    : (active = "nes-btn is-disabled");
+                }
+                return (
+                  <ChanelButton className={active} key={index}>
+                    {channelKR[index]}
+                  </ChanelButton>
+                );
+              })}
             </div>
             <ChanelButton className="nes-btn" onClick={() => createRoom()}>
               방 만들기
