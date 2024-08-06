@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import './Header.css'
 
 const getUserInfo = async (userId) => {
@@ -44,6 +44,8 @@ const Header = () => {
     userRuby: 0,
     userPoint: 0,
   })
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchUserInfo = async () => {
