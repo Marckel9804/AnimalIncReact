@@ -221,3 +221,9 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.win-chart-container {
+  width: 80%;
+  height: auto;
+  display: flex;
+}
