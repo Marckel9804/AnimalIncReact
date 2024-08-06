@@ -47,14 +47,15 @@ const App = () => {
   }
 
   const refreshAccessToken = async () => {
-    const response = await axios.post('/api/user/refresh-token')
-        .then((res) => {
-          const newAccessToken = res.headers['authorization'].split(' ')[1];
-          localStorage.setItem('accessToken', newAccessToken);
-        })
-        .catch((err) => {
-          console.log('Error refreshing access token', err)
-        })
+    try {
+      const response = await axios.post('/api/user/refresh-token')
+      if (response.status === 200) {
+        const newAccessToken = response.headers['authorization'].split(' ')[1];
+        localStorage.setItem('accessToken', newAccessToken);
+      }
+    } catch (error) {
+      console.error('Error refreshing access token', error)
+    }
   }
 
   useEffect(() => {

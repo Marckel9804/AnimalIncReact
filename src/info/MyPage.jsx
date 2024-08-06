@@ -98,8 +98,13 @@ const Mypage = () => {
             alert('회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.')
         }
     }
-    const changePassword = async () => {
-    }
+
+
+    /*    const changePassword = async () => {
+            try {
+                await
+            }
+        }*/
 
     return (
         <>
@@ -142,7 +147,9 @@ const Mypage = () => {
                         </div>
                         <div className="button-section">
                             <button className="nes-btn is-primary" onClick={openEditModal}>정보 수정</button>
+{/*
                             <button className="nes-btn is-warning" onClick={changePassword}>비밀번호 변경</button>
+*/}
                             <button className="nes-btn is-error" onClick={openDeleteModal}>회원 탈퇴</button>
                         </div>
                     </div>
