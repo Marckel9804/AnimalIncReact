@@ -188,11 +188,19 @@
 }
 
 .gacha-result-btn {
-  margin-top: 20px;
   background-color: #4cbdb8;
-  color: #fff;
+  color: white;
+  border: none;
   padding: 10px 20px;
   border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  height: 40px; /* 버튼 높이 설정 */
+  width: 120px; /* 버튼 너비 설정 */
+  color: black; /* 버튼 글자 색상 */
+  box-sizing: border-box; /* 패딩과 테두리를 포함한 크기 설정 */
+  background-color: rgba(0, 0, 0, 0.1); /* 배경색에 투명도 추가 */
+  line-height: 0.8; /* 텍스트 위치 조정 */
 }
 
 /* 새로운 옵션 도형 스타일 */
