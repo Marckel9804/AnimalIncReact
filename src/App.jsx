@@ -46,7 +46,7 @@ const App = () => {
       const response = await axios.post('/api/user/refresh-token')
       if (response.status === 200) {
         const newAccessToken = response.headers['authorization'].split(' ')[1]
-        localStorage.setItem('access_token', newAccessToken)
+        localStorage.setItem('accessToken', newAccessToken)
       }
     } catch (error) {
       console.error('Error refreshing access token', error)

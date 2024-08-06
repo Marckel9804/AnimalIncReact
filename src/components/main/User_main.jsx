@@ -26,7 +26,7 @@ const User_main = () => {
   }, [])
 
   const goToMypage = () => {
-    navigate(`/mypage/${userInfo.user_tier}`)
+    navigate(`/mypage`)
   }
 
   const goToStore = () => {
@@ -34,7 +34,7 @@ const User_main = () => {
   }
 
   const goToGameStart = () => {
-    navigate('/game/roomlists')
+    navigate('/CreateRoom')
   }
 
   return (
