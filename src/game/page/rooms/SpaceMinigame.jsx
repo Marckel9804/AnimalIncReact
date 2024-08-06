@@ -11,16 +11,14 @@ const SpaceMinigame = ({ onClose }) => {
   const [isKeyPressed, setIsKeyPressed] = useState(false);
   const [hit, setHit] = useState(false);
   const socketRef = useRef(null);
-  const [playerId, setPlayerId] = useState(null);
-  const [playerNum, setPlayerNum] = useState(null);
+  const [clientId, setClientId] = useState(null);
+  const [playerNum, setPlayerNum] = useState(1); // 초기 값 null
 
-  const [otherPlayers, setOtherPlayers] = useState([]);
-
-  const sCnt = useRef([0, 0, 0, 0]);
+  const [playerCounts, setPlayerCounts] = useState([0, 0, 0, 0]);
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:4000");
-    socketRef.current = socket;
+    socketRef.current = socket; // WebSocket 객체를 참조에 할당
 
     socket.onopen = () => {
       console.log("Connected to WebSocket server");
@@ -31,32 +29,18 @@ const SpaceMinigame = ({ onClose }) => {
       const data = JSON.parse(text);
 
       if (data.type === 'init' && data.clientId) {
-        setPlayerId(data.clientId);
+        setClientId(data.clientId);
         setPlayerNum(data.playerNum);
       }
 
       if (data.type === 'count') {
         console.log('Received message:', data);
 
-        if (data.playerNum === 1) {
-          console.log('메세지 데이터', data);
-          sCnt.current[0]++;
-          console.log('플레이어1 바뀐 연타횟수', sCnt.current);
-        } else if (data.playerNum === 2) {
-          sCnt.current[1]++;
-        }
-
-        if (data.clientId && !playerId) {
-          setPlayerId(data.clientId);
-        }
-
-        if (data.type === 'count') {
-          setOtherPlayers((prevPlayers) => {
-            const updatedPlayers = prevPlayers.filter(player => player.clientId !== data.clientId);
-            updatedPlayers.push(data);
-            return updatedPlayers;
-          });
-        }
+        setPlayerCounts((prevCounts) => {
+          const newCounts = [...prevCounts];
+          newCounts[data.playerNum - 1] = data.count;
+          return newCounts;
+        });
       }
     };
 
@@ -67,11 +51,11 @@ const SpaceMinigame = ({ onClose }) => {
     return () => {
       socket.close();
     };
-  }, [playerId]);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.code === "Space" && !isKeyPressed && !gameOver) {
+      if (event.code === "Space" && !isKeyPressed && !gameOver && playerNum !== null) {
         const newCount = count + 1;
         const newProgress = Math.min(progress + 1, 10);
         setCount(newCount);
@@ -80,11 +64,17 @@ const SpaceMinigame = ({ onClose }) => {
         setHit(true);
         setTimeout(() => setHit(false), 200);
 
-        const playerData = { type: 'count', clientId: playerId, count: newCount, progress: newProgress, playerNum };
+        const playerData = { type: 'count', clientId, count: newCount, progress: newProgress, playerNum };
 
         if (socketRef.current) {
           socketRef.current.send(JSON.stringify(playerData));
         }
+
+        setPlayerCounts((prevCounts) => {
+          const newCounts = [...prevCounts];
+          newCounts[playerNum - 1] = newCount;
+          return newCounts;
+        });
       }
     };
 
@@ -101,7 +91,7 @@ const SpaceMinigame = ({ onClose }) => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [isKeyPressed, gameOver, count, progress, playerId, playerNum]);
+  }, [isKeyPressed, gameOver, count, progress, clientId, playerNum]);
 
   useEffect(() => {
     if (count > highScore) {
@@ -135,16 +125,20 @@ const SpaceMinigame = ({ onClose }) => {
         <PlayerList>
           <Player>
             <Character>P1</Character>
-            {count}회
-            {sCnt.current[0]}
+            {playerNum === 1 ? `${count}회` : `${playerCounts[0]}회`}
           </Player>
-          {otherPlayers.map((player, index) => (
-            <Player key={index}>
-              <Character>{player.clientId}</Character>
-              {player.count}회
-              {sCnt.current[index + 1]}회
-            </Player>
-          ))}
+          <Player>
+            <Character>P2</Character>
+            {playerNum === 2 ? `${count}회` : `${playerCounts[1]}회`}
+          </Player>
+          <Player>
+            <Character>P3</Character>
+            {playerNum === 3 ? `${count}회` : `${playerCounts[2]}회`}
+          </Player>
+          <Player>
+            <Character>P4</Character>
+            {playerNum === 4 ? `${count}회` : `${playerCounts[3]}회`}
+          </Player>
         </PlayerList>
         <ButtonContainer>
           <StyledButton hit={hit ? 1 : 0} className="minigame-nes-btn">Space Bar</StyledButton>
@@ -220,10 +214,8 @@ const ProgressContainer = styled.div`
 const hitAnimation = keyframes`
   0% {
     transform: translateY(0);
-  }
   50% {
     transform: translateY(-150px);
-  }
   100% {
     transform: translateY(0);
   }
@@ -263,10 +255,8 @@ const StyledButton = styled.button`
 const sparkle = keyframes`
   0% {
     opacity: 1;
-  }
   50% {
     opacity: 0.5;
-  }
   100% {
     opacity: 1;
   }

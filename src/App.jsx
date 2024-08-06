@@ -98,6 +98,10 @@ const App = () => {
           {/* 게시판 끝 */}
           {/* 태경 경로 */}
           {/* <Route exact path="/" element={<RoomWait />} /> */}
+<<<<<<< HEAD
+          <Route exact path="/roomwait" element={<RoomWait />} />
+          <Route path="/game/page/rooms/SpaceMinigame" element={<SpaceMinigame />} />
+=======
           <Route
             exact
             path="/game/page/rooms/RoomWait"
@@ -107,6 +111,7 @@ const App = () => {
             path="/game/page/rooms/SpaceMinigame"
             element={<SpaceMinigame />}
           />
+>>>>>>> dev
           {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
         </Routes>
       </div>
