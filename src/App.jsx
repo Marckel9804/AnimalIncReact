@@ -3,10 +3,8 @@ import {
   Route,
   BrowserRouter as Router,
   Routes,
-<<<<<<< HEAD
-  useLocation, Navigate,
-=======
->>>>>>> dev
+  useLocation,
+  Navigate,
 } from "react-router-dom";
 import Main from "./components/main/Main";
 import Store from "./components/store/Store";
