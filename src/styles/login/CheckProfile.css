@@ -1,0 +1,44 @@
+.complete-profile-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f8f8f8;
+}
+
+.complete-profile-form {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+.complete-profile-input {
+    margin-bottom: 1rem;
+}
+
+.complete-profile-input input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+}
+
+#error-message {
+    color: red;
+    font-size: 1rem;
+    margin-top: 5px;
+}
+
+#success-message {
+    color: green;
+    font-size: 1rem;
+    margin-top: 5px;
+}

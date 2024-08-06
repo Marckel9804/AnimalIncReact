@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./GachaResult.css";
-import characterImage from "../../assets/images/character.jpg"; // 이미지 경로를 import
-import Header from "../Header";
-import Footer from "../Footer";
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import './GachaResult.css'
+import characterImage from '../../assets/images/character.jpg' // 이미지 경로를 import
+import Header from '../Header'
+import Footer from '../Footer'
 
 const GachaResult = () => {
-  const navigate = useNavigate();
-  const [showResult, setShowResult] = useState(false);
+  const navigate = useNavigate()
+  const [showResult, setShowResult] = useState(false)
   const [animalData] = useState({
-    animal_name: "오라 버니",
-    animal_description: "이 동물은 경험치 추가 5% 효과를 가지고 있습니다.",
+    animal_name: '오라 버니',
+    animal_description: '이 동물은 경험치 추가 5% 효과를 가지고 있습니다.',
     animal_image: characterImage, // 임시 이미지 경로
-    animal_catalog_number: "도감 번호",
-    animal_rarity: "희귀성",
-  });
+    animal_catalog_number: '도감 번호',
+    animal_rarity: '희귀성',
+  })
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowResult(true);
-    }, 3000);
+      setShowResult(true)
+    }, 3000)
 
-    return () => clearTimeout(timer);
-  }, []);
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
     <>
@@ -33,7 +33,7 @@ const GachaResult = () => {
             도감
           </Link>
           <h2 className="gacha-result-title">가차 결과</h2>
-          <span className="gacha-result-close" onClick={() => navigate("/")}>
+          <span className="gacha-result-close" onClick={() => navigate('/')}>
             X
           </span>
         </div>
@@ -69,7 +69,7 @@ const GachaResult = () => {
                 </div>
                 <button
                   className="nes-btn gacha-result-btn"
-                  onClick={() => navigate("/shop/animal")}
+                  onClick={() => navigate('/shop/animal')}
                 >
                   확인
                 </button>
@@ -85,7 +85,7 @@ const GachaResult = () => {
       <div id="backImg" />
       <Footer />
     </>
-  );
-};
+  )
+}
 
-export default GachaResult;
+export default GachaResult
