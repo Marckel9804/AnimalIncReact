@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './Header.css'
-<<<<<<< HEAD
+
 import axios from '../utils/axios.js'
 
 const getUserInfo = async () => {
@@ -17,22 +17,7 @@ const getUserInfo = async () => {
     }
   }
 }
-=======
-import axios from 'axios'
 
-// Axios 인스턴스 생성 및 설정
-const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080', // 백엔드 API 기본 URL
-})
-
-axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
->>>>>>> dev
 
 const logout = () => {
   console.log('로그아웃')
@@ -44,11 +29,8 @@ const goToBoard = () => {
   console.log('게시판으로 이동')
 }
 
-<<<<<<< HEAD
-const goToMypage = (userNum) => {
-=======
 const goToMypage = (userNickname) => {
->>>>>>> dev
+
   console.log('마이페이지로 이동')
   window.location.href = `/mypage`
 }
@@ -75,10 +57,9 @@ const Header = () => {
       }
 
       const data = await getUserInfo()
-<<<<<<< HEAD
-=======
-      console.log('Fetched user info:', data) // 로그 추가
->>>>>>> dev
+
+      // console.log('Fetched user info:', data) // 로그 추가
+
       setUserInfo({
         userNickname: data.userNickname,
         userRuby: data.userRuby,

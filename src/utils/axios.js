@@ -10,28 +10,11 @@ const instance = axios.create({
 });
 
 instance.interceptors.request.use((config) => {
-<<<<<<< HEAD
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
-//   const member = JSON.parse(sessionStorage.getItem("users"));
-//   const token = localStorage.getItem("accessToken");
-//   if (member && member.token) {
-//     // Assuming 'token' is stored in 'member'
-//     // config.headers.Authorization = `Bearer ${member.token}`;
-//   }
-//   config.headers.Authorization = `Bearer ${token}`;
-//   console.log("Starting Request", config);
-//   return config;
-=======
-  const member = JSON.parse(sessionStorage.getItem('users'));
-  if (member && member.token) {  // Assuming 'token' is stored in 'member'
-    config.headers.Authorization = `Bearer ${member.token}`;
-  }
-  return config;
->>>>>>> dev
 });
 
 export default instance;
