@@ -83,16 +83,30 @@ const Login = () => {
                 회원 가입
               </a>{" "}
               |
-              <a href="/find-id" className="find-id-link">
-                ID 찾기
-              </a>{" "}
-              |
               <a href="/find-password" className="find-password-link">
                 비밀번호 찾기
               </a>
             </div>
           </div>
         </div>
+      </div>
+      <div className="login-btns">
+        <GoogleLogin />
+        <KakaoLogin />
+        <NaverLogin />
+      </div>
+      <div className="find">
+        <a href="/register" className="register-link">
+          회원 가입
+        </a>{" "}
+        |
+        <a href="/find-id" className="find-id-link">
+          ID 찾기
+        </a>{" "}
+        |
+        <a href="/find-password" className="find-password-link">
+          비밀번호 찾기
+        </a>
       </div>
       <div id="backImg" />
       <Footer />
