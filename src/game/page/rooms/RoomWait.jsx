@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { v4 as uuidv4 } from 'uuid'; // UUID 라이브러리 추가
-import backgroundImage from "../../../assets/background.jpg"; // 배경 이미지 경로 수정
+import { v4 as uuidv4 } from 'uuid';
+import backgroundImage from "../../../assets/background.jpg";
 import axios from 'axios';
 
 // 전체 배경 컨테이너 스타일
@@ -49,11 +49,11 @@ const MessageContainer = styled.section`
 const RoomWait = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [isReady, setIsReady] = useState(false); // 플레이어 1의 준비 상태를 관리하는 state 추가
-  const [players, setPlayers] = useState([]); // 플레이어 데이터를 관리하는 state 추가
+  const [isReady, setIsReady] = useState(false);
+  const [players, setPlayers] = useState([]);
   const navigate = useNavigate();
-  const socketRef = useRef(null); // useRef를 사용하여 WebSocket 객체 유지
-  const clientId = useRef(uuidv4()); // 각 클라이언트를 고유하게 식별하는 clientId 생성
+  const socketRef = useRef(null);
+  const clientId = useRef(uuidv4());
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:4000");
@@ -81,7 +81,10 @@ const RoomWait = () => {
   useEffect(() => {
     // 플레이어 데이터 가져오기
     axios.get("http://localhost:8080/api/user/players")
-      .then(response => setPlayers(response.data.slice(0, 4))) // 최대 4명까지만 설정
+      .then(response => {
+        console.log("Player data:", response.data); // 콘솔에 데이터 출력
+        setPlayers(response.data.slice(0, 4)); // 최대 4명까지만 설정
+      })
       .catch(error => console.error('Error fetching player data:', error));
   }, []);
 
@@ -98,14 +101,17 @@ const RoomWait = () => {
   };
 
   const handleBackButtonClick = () => {
-    navigate("/CreateRoom"); // 해당 경로로 이동
+    navigate("/CreateRoom");
   };
 
   const handleReadyClick = () => {
-    setIsReady(!isReady); // READY 버튼 클릭 시 상태를 토글
+    setIsReady(!isReady);
     if (!isReady) {
+      console.log("Player is ready. Navigating to game in 5 seconds..."); // 디버깅용 로그
       setTimeout(() => {
-        navigate(`/game/${uuidv4()}`); // 5초 뒤에 경로로 이동
+        const roomId = uuidv4();
+        console.log(`Navigating to /game/${roomId}`); // 디버깅용 로그
+        navigate(`/game/${roomId}`);
       }, 5000);
     }
   };
@@ -125,7 +131,7 @@ const RoomWait = () => {
             <button
               type="button"
               className={`nes-btn ${isReady ? 'is-warning' : 'is-success'}`}
-              onClick={handleReadyClick} // READY 버튼 클릭 시 함수 호출
+              onClick={handleReadyClick}
             >
               {isReady ? 'CANCEL' : 'READY'}
             </button>
@@ -137,7 +143,7 @@ const RoomWait = () => {
                   style={{ backgroundColor: "#4CBDB8" }}
                   className="p-2 rounded text-white nes-text"
                 >
-                  {player.userNickname} {index === 0 && isReady && <span>(Ready)</span>} {/* 플레이어 1이 준비 상태일 때 Ready 표시 */}
+                  {player.userNickname} {index === 0 && isReady && <span>(Ready)</span>}
                 </div>
                 <div className="bg-gray-100 p-4 rounded mt-2 nes-container">
                   <div className="flex items-center">
@@ -147,7 +153,7 @@ const RoomWait = () => {
                       className="rounded"
                     />
                     <div className="ml-4">
-                      <p className="nes-text">{player.userGrade} {player.userPoint}P</p> {/* 등급과 포인트 표시 */}
+                      <p className="nes-text">{player.userGrade} {player.userPoint}P</p>
                     </div>
                   </div>
                 </div>
@@ -159,17 +165,17 @@ const RoomWait = () => {
               style={{ backgroundColor: "#4CBDB8", height: "300px", overflowY: "scroll" }}
               className="nes-container is-rounded p-4 text-white"
             >
-                <section className="message-list">
-                  {chatMessages.map((message, index) => (
-                    <MessageContainer key={index} className={message.sender === clientId.current ? 'right' : 'left'}>
-                      {message.sender !== clientId.current && <i className="nes-bcrikko"></i>}
-                      <MessageBalloon className={`nes-balloon ${message.sender === clientId.current ? 'from-right' : 'from-left'} nes-pointer`}>
-                        <p>{message.text}</p>
-                      </MessageBalloon>
-                      {message.sender === clientId.current && <i className="nes-bcrikko"></i>}
-                    </MessageContainer>
-                  ))}
-                </section>
+              <section className="message-list">
+                {chatMessages.map((message, index) => (
+                  <MessageContainer key={index} className={message.sender === clientId.current ? 'right' : 'left'}>
+                    {message.sender !== clientId.current && <i className="nes-bcrikko"></i>}
+                    <MessageBalloon className={`nes-balloon ${message.sender === clientId.current ? 'from-right' : 'from-left'} nes-pointer`}>
+                      <p>{message.text}</p>
+                    </MessageBalloon>
+                    {message.sender === clientId.current && <i className="nes-bcrikko"></i>}
+                  </MessageContainer>
+                ))}
+              </section>
             </div>
           </div>
           <div id="room-wait">
