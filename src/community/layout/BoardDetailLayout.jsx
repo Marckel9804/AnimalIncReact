@@ -1,13 +1,22 @@
 import {useNavigate} from "react-router-dom";
+import axios from "../../utils/axios.js";
 
 const BoardDetailLayout = (props) => {
 
   const data = props.data;
+  const reContent = data.content.split('\n')
+  console.log(reContent)
 
   const navi = useNavigate()
 
   const onUpdate = () => {
     navi(`/board/update/${data.bcId}`)
+  }
+
+  const onDelete = async () => {
+    await axios.delete(`/api/board/${data.bcId}`)
+    console.log('type',data.type)
+    navi(`/board/list/0`,{state:{type:data.type}})
   }
 
   return(
@@ -20,7 +29,7 @@ const BoardDetailLayout = (props) => {
              style={{text:'top', lineHeight:'0.75', fontSize:'30px'}}
           >{data.title}</p>
           <div className='float-right text-2xl'>
-            {data.userNum}
+            {data.userEmail}
           </div>
           <a href="#" className="nes-badge">
             <span className="is-primary">{data.bcCode}</span>
@@ -28,7 +37,12 @@ const BoardDetailLayout = (props) => {
           <br/>
           <br/>
           <div className='mb-4'>
-            {data.content}
+            {reContent.map((item, index) => (
+              <div key={index}>
+                {item}
+                <br />
+              </div>
+            ))}
           </div>
 
           <div>
@@ -47,7 +61,9 @@ const BoardDetailLayout = (props) => {
             <button className='nes-btn is-warning' style={{color:'white'}}
                     onClick={onUpdate}
             >수정하기</button>
-            <button className='nes-btn is-error'>삭제하기</button>
+            <button className='nes-btn is-error'
+                    onClick={onDelete}
+            >삭제하기</button>
           </div>
 
 

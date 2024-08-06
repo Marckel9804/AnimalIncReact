@@ -3,7 +3,7 @@ import {
   Route,
   BrowserRouter as Router,
   Routes,
-  useLocation,
+  useLocation, Navigate,
 } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -57,11 +57,14 @@ const App = () => {
           <Route path="/createroom" element={<RoomList />} />
           <Route path="/ladder" element={<Ladder />} />
 
-          {/*게시판*/}
+          {/* 게시판 시작 */}
           <Route path='/board/list/:page' element={<BoardListPage/>}/>
-          <Route path='/board/write' element={<BoardWritePage/>}/>
+          <Route path='/board' element={<Navigate to="/board/list/0" />}/>
+          <Route path='/board/write/:type' element={<BoardWritePage/>}/>
           <Route path='/board/detail/:id' element={<BoardDetailPage/>}/>
           <Route path='/board/update/:id' element={<BoardUpdatePage/>}/>
+          {/* 게시판 끝 */}
+
         </Routes>
       </div>
     </Router>

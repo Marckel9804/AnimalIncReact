@@ -16,7 +16,7 @@ const BoardDetailPage = () => {
     axios.get(`/api/board/${id}`)
       .then((res)=> {
         setData(res.data)
-        console.log(res.data)
+        // console.log(res.data)
       })
   }, [id]);
 
