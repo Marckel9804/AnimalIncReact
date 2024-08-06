@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { useEffect } from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-=======
-import React, {useEffect} from "react";
 import {
   Route,
   BrowserRouter as Router,
@@ -10,7 +6,6 @@ import {
   useLocation,
   Navigate,
 } from "react-router-dom";
->>>>>>> dev
 import Main from "./components/main/Main";
 import Store from "./components/store/Store";
 import GachaShop from "./components/store/GachaShop";
@@ -86,38 +81,21 @@ const App = () => {
           {/* ItemShop 경로를 추가합니다 */}
           <Route path="/createroom" element={<RoomList />} />
           <Route path="/ladder" element={<Ladder />} />
-<<<<<<< HEAD
+          {/*태웅 경로 */}
           <Route path="/naver/callback" element={<NaverCallback />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/rank" element={<Rank />} />
           <Route path="/google-login" element={<GoogleLoginPage />} />
           <Route path="/kakao-login" element={<KakaoLogin />} />
           <Route path="/check-profile" element={<CheckProfile />} />
-          {/*게시판*/}
-          <Route path="/board/list" element={<BoardListPage />} />
-          <Route path="/board/write" element={<BoardWritePage />} />
+          <Route path="/find-password" element={<FindPassword />} />
+          {/* 게시판 시작 */}
+          <Route path="/board/list/:page" element={<BoardListPage />} />
+          <Route path="/board" element={<Navigate to="/board/list/0" />} />
+          <Route path="/board/write/:type" element={<BoardWritePage />} />
           <Route path="/board/detail/:id" element={<BoardDetailPage />} />
           <Route path="/board/update/:id" element={<BoardUpdatePage />} />
-=======
-
-          {/*태웅 경로 */}
-          <Route path="/naver/callback" element={<NaverCallback />} />
-          <Route path="/mypage" element={<Mypage />} />
-          <Route path="/rank" element={<Rank />} />
-          <Route path="/google-login" element={<GoogleLoginPage/>} />
-          <Route path="/kakao-login" element={<KakaoLogin/>} />
-          <Route path="/check-profile" element={<CheckProfile/>} />
-          <Route path="/find-password" element={<FindPassword />} />
-
-          {/* 게시판 시작 */}
-          <Route path='/board/list/:page' element={<BoardListPage/>}/>
-          <Route path='/board' element={<Navigate to="/board/list/0" />}/>
-          <Route path='/board/write/:type' element={<BoardWritePage/>}/>
-          <Route path='/board/detail/:id' element={<BoardDetailPage/>}/>
-          <Route path='/board/update/:id' element={<BoardUpdatePage/>}/>
           {/* 게시판 끝 */}
-
->>>>>>> dev
           {/* 태경 경로 */}
           {/* <Route exact path="/" element={<RoomWait />} /> */}
           <Route
