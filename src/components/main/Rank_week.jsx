@@ -27,7 +27,13 @@ const Rank_week = () => {
     <div className="ranking-section-wrapper">
       <div className="ranking-section nes-container with-title is-rounded">
         {/* 섹션 제목을 버튼으로 변경 */}
-        <button className="ranktitle nes-btn is-success1">금주의 랭킹</button>
+        <textarea
+          id="textarea_field"
+          className="nes-textarea ranktitle"
+          readOnly
+        >
+          금주의 랭킹
+        </textarea>
 
         <ul className="ranking-list">
           {/* rankingData를 순회하여 각 항목을 렌더링 */}
@@ -62,7 +68,7 @@ const Rank_week = () => {
           ))}
         </ul>
         {/* 더보기 버튼 */}
-        <button className="nes-btn is-primary1 more-button">더보기</button>
+        <button className="nes-btn more-button">더보기</button>
       </div>
     </div>
   )

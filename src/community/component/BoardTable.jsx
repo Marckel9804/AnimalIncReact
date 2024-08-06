@@ -4,34 +4,13 @@ import yFolderClick from "../../assets/community/y-folder5.png"; // Clicked imag
 import yFolderInactive from "../../assets/community/w-folder.png"; // Inactive image
 import { useNavigate } from "react-router-dom";
 
-let noticeTuple = [
-  { id: 1, title: '공지사항 제목1  123123', author: 'user1' },
-  { id: 2, title: '공지사항 제목2  123123', author: 'user2' },
-  { id: 3, title: '공지사항 제목3  123123', author: 'user3' },
-  { id: 4, title: '공지사항 제목4  123123', author: 'user4' },
-  { id: 5, title: '공지사항 제목5  123123', author: 'user5' },
-];
-let freeTuple = [
-  { id: 1, title: '자유게시판 제목1  123123', author: 'user1' },
-  { id: 2, title: '자유게시판 제목2  123123', author: 'user2' },
-  { id: 3, title: '자유게시판 제목3  123123', author: 'user3' },
-  { id: 4, title: '자유게시판 제목4  123123', author: 'user4' },
-  { id: 5, title: '자유게시판 제목5  123123', author: 'user5' },
-];
-let faqTuple = [
-  { id: 1, title: 'FAQ 제목1  123123', author: 'user1' },
-  { id: 2, title: 'FAQ 제목2  123123', author: 'user2' },
-  { id: 3, title: 'FAQ 제목3  123123', author: 'user3' },
-  { id: 4, title: 'FAQ 제목4  123123', author: 'user4' },
-  { id: 5, title: 'FAQ 제목5  123123', author: 'user5' },
-];
 
-const BoardTable = () => {
+const BoardTable = (props) => {
   const navi = useNavigate();
-  const [activeTab, setActiveTab] = useState('notice');
+  const [activeTab, setActiveTab] = useState(props.type);
   const [hoveredTab, setHoveredTab] = useState(null);
 
-  const tuples = faqTuple;
+  const list = props.list;
 
   const onDetail = (index) => {
     navi(`/board/detail/${index}`);
@@ -47,6 +26,7 @@ const BoardTable = () => {
 
   const handleClick = (tab) => {
     setActiveTab(tab);
+    props.setType(tab);
     document.getElementById('notice').style.width='160px';
     document.getElementById('free').style.width='160px';
     document.getElementById('faq').style.width='160px';
@@ -68,7 +48,7 @@ const BoardTable = () => {
             id='notice'
             className="mt-4 ml-5 mr-3 pt-5 font-bold text-2xl content-center text-center nes-pointer"
             style={{
-              width: '180px',
+              width: activeTab==='notice'?'180px':'160px',
               height: '80px',
               backgroundImage: `url(${getBackgroundImage('notice')})`,
               backgroundSize: 'cover',
@@ -84,7 +64,7 @@ const BoardTable = () => {
             id='free'
             className="mt-4 ml-2 mr-3 pt-5 font-bold text-2xl content-center text-center nes-pointer"
             style={{
-              width: '160px',
+              width: activeTab==='free'?'180px':'160px',
               height: '80px',
               backgroundImage: `url(${getBackgroundImage('free')})`,
               backgroundSize: 'cover',
@@ -100,7 +80,7 @@ const BoardTable = () => {
             id='faq'
             className="mt-4 ml-2 mr-3 pt-5 text-3xl content-center text-center nes-pointer"
             style={{
-              width: '160px',
+              width: activeTab==='faq'?'180px':'160px',
               height: '80px',
               backgroundImage: `url(${getBackgroundImage('faq')})`,
               backgroundSize: 'cover',
@@ -122,16 +102,16 @@ const BoardTable = () => {
           </tr>
           </thead>
           <tbody>
-          {tuples.map((tuple, index) => (
+          {list.map((item, index) => (
             <tr key={index}>
-              <td className='text-center'>{tuple.id}</td>
-              <td onClick={() => onDetail(tuple.id)}
+              <td className='text-center'>{item.bcId}</td>
+              <td onClick={() => onDetail(item.bcId)}
                   style={{ padding: '10px 20px' }}
                   className='nes-pointer'
               >
-                {tuple.title}
+                {item.title}
               </td>
-              <td className='text-center'>{tuple.author}</td>
+              <td className='text-center'>{item.userEmail}</td>
             </tr>
           ))}
           </tbody>

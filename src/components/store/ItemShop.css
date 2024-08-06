@@ -73,30 +73,34 @@
 
 .itemshop-main {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  overflow-x: auto; /* 스크롤바를 표시 */
 }
 
 .itemshop-options {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
-  gap: 100px;
-  width: 100%;
+  flex-direction: row; /* 가로 정렬 */
+  justify-content: flex-start;
+  align-items: center;
+  gap: 20px; /* 아이템 간 간격 */
+  width: auto;
   padding: 20px;
-  margin: 55px 0 10px 0;
+  margin: 10px 0;
   border-radius: 20px;
-  position: relative;
+  transition: transform 0.3s ease-in-out; /* 부드러운 이동을 위한 트랜지션 */
 }
 
 .itemshop-option {
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative; /* 포지션 설정 */
-  top: 45px;
-
-  height: 300px;
+  position: relative;
+  width: 240px; /* 아이템 너비를 조정 */
+  height: 300px; /* 아이템 높이를 조정 */
+  background-color: rgba(255, 255, 255, 0.9); /* 투명한 흰색 배경 */
+  border-radius: 20px; /* 둥근 꼭지점 */
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
 }
 
 .itemshop-option::before {
@@ -112,28 +116,18 @@
   background-color: rgba(220, 53, 69, 0.5); /* 더욱 진한 배경색 */
 }
 
-.itemshop-icon-container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 5px;
-  top: 12px;
-}
-
 .item-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: 0px;
+  margin-bottom: 10px;
 }
 
 .itemshop-icon-text {
   font-size: 18px;
-  margin-bottom: 5px;
   font-weight: bold; /* 글자 굵게 설정 */
-  margin-left: 30px;
+  margin-left: 70px;
 }
 
 .itemshop-item-description-icon {
@@ -154,8 +148,8 @@
 }
 
 .itemshop-item-image {
-  width: 100%;
-  height: 30%;
+  width: 80%;
+  height: 40%;
   border-radius: 10px;
 }
 
@@ -172,8 +166,8 @@
   display: flex;
   align-items: center; /* 아이콘과 텍스트의 수직 정렬 */
   justify-content: center;
-  width: 100%; /* 네모난 도형의 너비 */
-  height: 40%; /* 네모난 도형의 높이 */
+  width: 80%; /* 네모난 도형의 너비 */
+  height: auto; /* 네모난 도형의 높이 자동 설정 */
   border-radius: 10px; /* 둥근 모서리 */
   border: 2px solid #000; /* 검정색 테두리 */
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2); /* 픽셀 느낌의 그림자 */
@@ -182,12 +176,101 @@
   font-weight: bold; /* 글자 두껍게 */
   color: #000; /* 글자색 검정색 */
   padding: 0 30px; /* 좌우 패딩 */
+  margin-bottom: 10px; /* 아래 여백 추가 */
 }
 
 .itemshop-btn {
-  margin-top: 20px;
   background-color: #4cbdb8;
-  color: #fff;
+  color: white;
+  border: none;
   padding: 10px 20px;
   border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  height: 40px; /* 버튼 높이 설정 */
+  width: 120px; /* 버튼 너비 설정 */
+  color: black; /* 버튼 글자 색상 */
+  box-sizing: border-box; /* 패딩과 테두리를 포함한 크기 설정 */
+  background-color: rgba(0, 0, 0, 0.1); /* 배경색에 투명도 추가 */
+  line-height: 0.8; /* 텍스트 위치 조정 */
+}
+
+/* 화살표 버튼 스타일 */
+.arrow-button {
+  position: absolute;
+  top: 85%;
+
+  color: #4cbdb8;
+
+  font-size: 24px;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.arrow-button.left {
+  left: 10px;
+}
+
+.arrow-button.right {
+  right: 10px;
+}
+.itemshop-alert-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 150px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 4px solid #4cbdb8;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(76, 189, 184, 0.5);
+  z-index: 1000;
+}
+
+.itemshop-alert-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+}
+
+.itemshop-alert-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.itemshop-alert-message {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.itemshop-alert-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.itemshop-alert-btn {
+  background-color: #4cbdb8;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  height: 40px;
+  width: 120px;
+  color: black;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.1);
+  line-height: 0.8;
+}
+
+.itemshop-alert-btn:hover {
+  background-color: #36a29f;
 }

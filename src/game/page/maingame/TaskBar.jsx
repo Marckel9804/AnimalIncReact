@@ -63,10 +63,10 @@ function TaskBar(props) {
       <button
         className="task-btn w-48"
         onClick={() => {
-          if (props.showIw) {
-            props.setShowIw(false);
+          if (props.showIW) {
+            props.setShowIW(false);
           } else {
-            props.setShowIw(true);
+            props.setShowIW(true);
           }
         }}
       >

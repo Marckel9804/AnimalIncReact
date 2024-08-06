@@ -1,68 +1,75 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Modal from "react-modal";
-import axios from "../utils/axios.js";
-import "../styles/login/MyPage.css";
-import Header from "../components/Header.jsx";
-import Footer from "../components/Footer.jsx";
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Modal from 'react-modal'
+import axios from '../utils/axios.js'
+import '../styles/login/MyPage.css'
+import Header from '../components/Header.jsx'
+import Footer from '../components/Footer.jsx'
 
-Modal.setAppElement('#root'); //모달을 앱 요소로 설정
+Modal.setAppElement('#root') //모달을 앱 요소로 설정
 
 const Mypage = () => {
-    const [userInfo, setUserInfo] = useState(null);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [updatedInfo, setUpdatedInfo] = useState({
-        userNickname: '',
-        userRealname: '',
-        userBirthdate: '',
-    });
-    const navigate = useNavigate();
+  const [userInfo, setUserInfo] = useState(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [updatedInfo, setUpdatedInfo] = useState({
+    userNickname: '',
+    userRealname: '',
+    userBirthdate: '',
+  })
+  const navigate = useNavigate()
 
-    useEffect(() => {
-        const fetchUserInfo = async () => {
-            try {
-                const token = localStorage.getItem('accessToken');
-                if (!token) {
-                    alert('로그인을 먼저 해주세요!');
-                    navigate('/login');
-                    return;
-                }
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem('accessToken')
+        if (!token) {
+          alert('로그인을 먼저 해주세요!')
+          navigate('/login')
+          return
+        }
 
-                const response = await axios.get('/api/user/get-profile', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
+        const response = await axios.get('/api/user/get-profile', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
 
-                setUserInfo(response.data);
-                setUpdatedInfo({
-                    userNickname: response.data.userNickname,
-                    userBirthdate: response.data.userBirthdate,
-                });
-            } catch (error) {
-                console.error('Error fetching user info:', error);
-                alert('로그인을 먼저 해주세요!');
-                navigate('/login');
-            }
-        };
+        setUserInfo(response.data)
+        setUpdatedInfo({
+          userNickname: response.data.userNickname,
+          userRealname: response.data.userRealname,
+          userBirthdate: response.data.userBirthdate,
+        })
+      } catch (error) {
+        console.error('Error fetching user info:', error)
+        alert('로그인을 먼저 해주세요!')
+        navigate('/login')
+      }
+    }
+      fetchUserInfo()
+  }, [navigate])
 
-        fetchUserInfo();
-    }, [navigate]);
+    if (!userInfo) {
+        return <div>Loading...</div>
+    }
 
     const openEditModal = () => setIsEditModalOpen(true);
     const closeEditModal = () => setIsEditModalOpen(false);
-
     const openDeleteModal = () => setIsDeleteModalOpen(true);
     const closeDeleteModal = () => setIsDeleteModalOpen(false);
 
     const handleUpdate = async () => {
         try {
-            const response = await axios.post('/api/user/update-profile', updatedInfo, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+            const response = await axios.post(
+                '/api/user/update-profile',
+                updatedInfo,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                    },
                 }
-            });
+            )
             setUserInfo(response.data);
             alert('정보가 업데이트되었습니다.');
             closeEditModal();
@@ -70,33 +77,29 @@ const Mypage = () => {
             console.error('Error updating user info:', error);
             alert('정보 업데이트 중 오류가 발생했습니다. 다시 시도해 주세요.');
         }
-    };
+    }
 
     const handleDelete = async () => {
         try {
-            await axios.delete('/api/user/delete', {}, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+            await axios.delete(
+                '/api/user/delete',
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                    },
                 }
-            });
+            )
             alert('회원 탈퇴가 완료되었습니다.');
             localStorage.removeItem('accessToken');
-            window.location.href = '/login'; // 회원 탈퇴 후 로그인 페이지로 이동
+            navigate('/');
         } catch (error) {
-            console.error('Error deleting user:', error);
-            alert('회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            console.error('Error deleting user:', error)
+            alert('회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.')
         }
-    };
-
-    if (!userInfo) {
-        return <div>Loading...</div>;
     }
-
-/*    const changePassword = async () => {
-        try {
-            await
-        }
-    }*/
+    const changePassword = async () => {
+    }
 
     return (
         <>
@@ -139,9 +142,7 @@ const Mypage = () => {
                         </div>
                         <div className="button-section">
                             <button className="nes-btn is-primary" onClick={openEditModal}>정보 수정</button>
-{/*
                             <button className="nes-btn is-warning" onClick={changePassword}>비밀번호 변경</button>
-*/}
                             <button className="nes-btn is-error" onClick={openDeleteModal}>회원 탈퇴</button>
                         </div>
                     </div>
@@ -182,5 +183,4 @@ const Mypage = () => {
         </>
     );
 };
-
-export default Mypage;
+export default Mypage

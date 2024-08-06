@@ -1,13 +1,20 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-function WinChat({ show, setShow }) {
+function WinChat({ show, setShow, showWC, setShowWC, ind, comp, stockInfo }) {
   const [companyName, setCompanyName] = useState("");
   const [serviceType, setServiceType] = useState("");
   const [priceChange, setPriceChange] = useState("");
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const indKor = {
+    food: "식품",
+    ship: "조선",
+    enter: "엔터",
+    elec: "전자",
+    tech: "테크",
+  };
 
   const apiKey = import.meta.env.VITE_GPT_API_KEY;
 
@@ -29,9 +36,11 @@ function WinChat({ show, setShow }) {
       8. 주가 변화가 너무 미미하다고 판단되면, 포괄적인 업종 관련 기사를 작성해도 괜찮아.
 
       여기서 주어진 정보는 다음과 같아:
-      기업 이름: ${companyName}
-      서비스 종류: ${serviceType}
-      주가 변화 예측: ${priceChange}
+      기업 이름: ${ind + comp}
+      서비스 종류: ${indKor[ind]}
+      주가 변화 예측: ${
+        stockInfo[ind + comp].weight[stockInfo[ind + comp].weight.length - 1]
+      }
 
       이 정보를 바탕으로 한국어로 가상의 뉴스를 작성해줘. 주가의 상승, 하락 언급은 절대 하지 말고, 이슈와 상황에 중점을 두어 작성해줘.
     `;
@@ -84,8 +93,8 @@ function WinChat({ show, setShow }) {
           </div>
         </div>
         <div className="main-window-inside flex flex-col">
-          <h1>가상의 뉴스 생성기</h1>
-          <input
+          <h1>{ind + comp} 의 뉴스</h1>
+          {/* <input
             type="text"
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
@@ -96,14 +105,14 @@ function WinChat({ show, setShow }) {
             value={serviceType}
             onChange={(e) => setServiceType(e.target.value)}
             placeholder="서비스 종류 입력"
-          />
+          /> */}
           <div>
-            <input
+            {/* <input
               type="text"
               value={priceChange}
               onChange={(e) => setPriceChange(e.target.value)}
               placeholder="주가 변화 예측 입력"
-            />
+            /> */}
             <button onClick={handleGenerateNews} disabled={loading}>
               {loading ? "생성 중..." : "뉴스 생성"}
             </button>
