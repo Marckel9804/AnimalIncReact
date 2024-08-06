@@ -164,16 +164,22 @@
 
 /* 개별 버튼 클래스 */
 .gacha-btn {
-  position: relative;
-  top: 100px;
-  right: 0px;
-  bottom: px;
-  left: 0px;
-  content: '';
-  box-shadow: inset -4px -4px #adafbc;
   display: flex;
   align-items: center;
-  justify-content: center;
+  top: 90px;
+  justify-content: center; /* 텍스트를 수직 및 수평 중앙에 배치 */
+  padding: 10px 20px; /* 버튼 내부 여백 (위아래, 좌우) */
+  font-size: 1.2em; /* 버튼 글자 크기 조정 */
+  font-weight: bold; /* 글씨 두껍게 설정 */
+  border: 2px solid transparent; /* 버튼 테두리 설정 */
+  border-radius: 5px; /* 버튼 테두리 둥글게 */
+  text-align: center;
+  height: 40px; /* 버튼 높이 설정 */
+  width: 120px; /* 버튼 너비 설정 */
+  color: black; /* 버튼 글자 색상 */
+  box-sizing: border-box; /* 패딩과 테두리를 포함한 크기 설정 */
+  background-color: rgba(0, 0, 0, 0.1); /* 배경색에 투명도 추가 */
+  line-height: 0.8; /* 텍스트 위치 조정 */
 }
 
 .gacha-ruby-icon {
@@ -234,6 +240,13 @@
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+  text-align: center;
+  height: 40px; /* 버튼 높이 설정 */
+  width: 120px; /* 버튼 너비 설정 */
+  color: black; /* 버튼 글자 색상 */
+  box-sizing: border-box; /* 패딩과 테두리를 포함한 크기 설정 */
+  background-color: rgba(0, 0, 0, 0.1); /* 배경색에 투명도 추가 */
+  line-height: 0.8; /* 텍스트 위치 조정 */
 }
 
 .gacha-alert-btn:hover {
