@@ -6,7 +6,7 @@ import Footer from "../../../components/Footer";
 
 const RoomList = () => {
   // 유저 정보 (임시)
-  const userNum = 3;
+  const user = [{ userNum: 47, userGrade: "gold" }];
 
   // 방 만들기 모달 켜고 끄는 메서드
   const [modal, setModal] = useState(false);
@@ -66,7 +66,7 @@ const RoomList = () => {
               </ul>
             </div>
           </div>
-          {modal ? <CreateRoom func={createRoom} userNum={userNum} /> : null}
+          {modal ? <CreateRoom func={createRoom} user={user} /> : null}
         </div>
       </RoomBody>
       <Footer />

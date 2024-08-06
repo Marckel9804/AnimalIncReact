@@ -1,13 +1,18 @@
 import { useRef, useState } from "react";
 import axios from "../../../utils/axios.js";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 const CreateRoom = (props) => {
+  const navigate = useNavigate();
+
   // 유저 정보 받기
-  const userNum = props.userNum;
+  const user = props.user[0];
+  console.log("유저 정보 확인: ", props.user[0]);
   // roomId 생성
   const nowTime = moment().format("YYMMDDHHMM");
-  const roomId = `${nowTime}_R_${userNum}`;
+  const roomId = `${nowTime}_R_${user.userNum}`;
+  console.log("방 번호 확인: ", roomId);
 
   // 방 만들기 컴포넌트 띄우면 NES 캐릭터들 랜덤으로 뜨게 만듬
   const randomRef = useRef([
@@ -23,6 +28,8 @@ const CreateRoom = (props) => {
 
   // 유저가 생성하는 방 정보 저장 및 유효성 검사
   const roomRef = useRef([]);
+  console.log("방 정보: ", roomRef);
+
   const getRoomInfo = () => {
     console.log(roomRef);
     if (roomRef.current[0] === undefined) {
@@ -44,11 +51,18 @@ const CreateRoom = (props) => {
   // 방 생성하기
   const insertRoom = async () => {
     await axios
-      .post(`/api/user/game/insertroom`, {
-        userNum: userNum,
+      .post(`/api/user/game/insertRoom`, {
         gameRoomId: roomId,
+        roomName: roomRef.current[0],
+        tier: roomRef.current[1],
+        players: roomRef.current[2],
+      })
+      .then(() => {
+        alert("📢➰ 게임 방이 만들어졌어요.");
+        location.reload();
       })
       .catch((error) => {
+        alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
         console.log(error);
       });
   };
