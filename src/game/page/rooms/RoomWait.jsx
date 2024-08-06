@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { v4 as uuidv4 } from 'uuid'; // UUID 라이브러리 추가
 import backgroundImage from "../../../assets/background.jpg"; // 배경 이미지 경로 수정
+import axios from 'axios';
 
 // 전체 배경 컨테이너 스타일
 const Container = styled.div`
@@ -45,17 +46,11 @@ const MessageContainer = styled.section`
   }
 `;
 
-const playersData = [
-  { name: "플레이어1", level: 10, tier: "Gold", points: 1500 },
-  { name: "플레이어2", level: 12, tier: "Silver", points: 1200 },
-  { name: "플레이어3", level: 8, tier: "Bronze", points: 800 },
-  { name: "플레이어4", level: 15, tier: "Platinum", points: 2000 },
-];
-
 const RoomWait = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isReady, setIsReady] = useState(false); // 플레이어 1의 준비 상태를 관리하는 state 추가
+  const [players, setPlayers] = useState([]); // 플레이어 데이터를 관리하는 state 추가
   const navigate = useNavigate();
   const socketRef = useRef(null); // useRef를 사용하여 WebSocket 객체 유지
   const clientId = useRef(uuidv4()); // 각 클라이언트를 고유하게 식별하는 clientId 생성
@@ -83,6 +78,13 @@ const RoomWait = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // 플레이어 데이터 가져오기
+    axios.get("http://localhost:8080/api/user/players")
+      .then(response => setPlayers(response.data.slice(0, 4))) // 최대 4명까지만 설정
+      .catch(error => console.error('Error fetching player data:', error));
+  }, []);
+
   const handleNewMessageChange = (e) => {
     setNewMessage(e.target.value);
   };
@@ -95,20 +97,17 @@ const RoomWait = () => {
     }
   };
 
-  const handleMyPageButtonClick = () => {
-    navigate("/info/mypage"); // 마이페이지 경로로 이동
-  };
-
-  const handleStoreButtonClick = () => {
-    navigate("/store"); // 상점 경로로 이동
-  };
-
   const handleBackButtonClick = () => {
-    navigate("/game/page/rooms/RoomList"); // 해당 경로로 이동
+    navigate("/CreateRoom"); // 해당 경로로 이동
   };
 
   const handleReadyClick = () => {
     setIsReady(!isReady); // READY 버튼 클릭 시 상태를 토글
+    if (!isReady) {
+      setTimeout(() => {
+        navigate(`/game/${uuidv4()}`); // 5초 뒤에 경로로 이동
+      }, 5000);
+    }
   };
 
   return (
@@ -132,13 +131,13 @@ const RoomWait = () => {
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {playersData.map((player, index) => (
+            {players.map((player, index) => (
               <div key={index} className="nes-container is-rounded p-4">
                 <div
                   style={{ backgroundColor: "#4CBDB8" }}
                   className="p-2 rounded text-white nes-text"
                 >
-                  {player.name} {index === 0 && isReady && <span>(Ready)</span>} {/* 플레이어 1이 준비 상태일 때 Ready 표시 */}
+                  {player.userNickname} {index === 0 && isReady && <span>(Ready)</span>} {/* 플레이어 1이 준비 상태일 때 Ready 표시 */}
                 </div>
                 <div className="bg-gray-100 p-4 rounded mt-2 nes-container">
                   <div className="flex items-center">
@@ -148,8 +147,7 @@ const RoomWait = () => {
                       className="rounded"
                     />
                     <div className="ml-4">
-                      <p className="nes-text">{player.level} LV</p>
-                      <p className="nes-text">{player.tier} {player.points}P</p>
+                      <p className="nes-text">{player.userGrade} {player.userPoint}P</p> {/* 등급과 포인트 표시 */}
                     </div>
                   </div>
                 </div>
