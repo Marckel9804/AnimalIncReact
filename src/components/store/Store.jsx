@@ -1,11 +1,11 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./Store.css";
-import Header from "../Header";
-import Footer from "../Footer";
+import React from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import './Store.css'
+import Header from '../Header'
+import Footer from '../Footer'
 
 const Store = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   return (
     <>
       <Header />
@@ -15,7 +15,7 @@ const Store = () => {
             도감
           </Link>
           <h2 className="store-title">상점</h2>
-          <span className="header-close" onClick={() => navigate("/")}>
+          <span className="header-close" onClick={() => navigate('/')}>
             X
           </span>
         </div>
@@ -45,7 +45,7 @@ const Store = () => {
       <div id="backImg" />
       <Footer />
     </>
-  );
-};
+  )
+}
 
-export default Store;
+export default Store
