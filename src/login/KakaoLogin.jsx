@@ -49,8 +49,10 @@ const KakaoLogin = () => {
                     console.error('Kakao login error:', error);
                     if (error.response && error.response.data) {
                         alert(error.response.data);
+                        navigate('/login');
                     } else {
                         alert('카카오 로그인 중 오류가 발생했습니다. 다시 시도해 주세요.');
+                        navigate('/login');
                     }
                 }
             },

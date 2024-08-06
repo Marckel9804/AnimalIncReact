@@ -9,7 +9,7 @@
 }
 
 .register-form {
-  background-color: #EBE8DF;
+  background-color: rgba(255, 255, 255, 0.8);
   padding: 40px;
   border-radius: 10px;
   width: 700px; /* 폼의 전체 너비를 더 크게 설정 */
@@ -27,7 +27,7 @@
   height: 40px;
   padding: 10px;
   border: 1px solid #e5e8eb;
-  background-color: #F5F5DC;
+  background-color: #fff;
   font-size: 16px;
   font-weight: 700;
   outline: 0;
@@ -41,16 +41,15 @@
 }
 
 .register-input.email-input span {
-  margin: 0 5px;
+  margin: 0 15px;
 }
 
 .register-input.email-input select,
 .register-input.email-input input[type="text"] {
   width: 137px; /* 도메인 입력 필드와 선택 박스의 너비를 고정 */
   height: 40px;
-  padding: 10px;
   border: 1px solid #e5e8eb;
-  background-color: #F5F5DC;
+  background-color: #fff;
   font-size: 16px;
   font-weight: 700;
   outline: 0;
@@ -100,4 +99,9 @@
   color: green;
   font-size: 12px;
   margin-top: 1px;
+}
+
+.email-at {
+  font-size: 20px;
+  font-weight: bold;
 }

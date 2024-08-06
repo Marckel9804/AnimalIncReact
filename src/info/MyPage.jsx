@@ -92,6 +92,12 @@ const Mypage = () => {
         return <div>Loading...</div>;
     }
 
+/*    const changePassword = async () => {
+        try {
+            await
+        }
+    }*/
+
     return (
         <>
             <Header />
@@ -133,6 +139,9 @@ const Mypage = () => {
                         </div>
                         <div className="button-section">
                             <button className="nes-btn is-primary" onClick={openEditModal}>정보 수정</button>
+{/*
+                            <button className="nes-btn is-warning" onClick={changePassword}>비밀번호 변경</button>
+*/}
                             <button className="nes-btn is-error" onClick={openDeleteModal}>회원 탈퇴</button>
                         </div>
                     </div>

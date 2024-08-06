@@ -33,9 +33,17 @@ const Login = () => {
             console.error("Login error:", error);
             if (error.response && error.response.data) {
                 alert(error.response.data);
+                return;
             } else {
                 alert('로그인 중 오류가 발생했습니다. 다시 시도해 주세요.');
+                return;
             }
+        }
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleLogin();
         }
     };
 
@@ -63,6 +71,7 @@ const Login = () => {
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="비밀번호"
                                     className="login-input" // 입력 필드에 클래스 추가
+                                    onKeyPress={handleKeyPress}
                                 />
                             </div>
                             <button
