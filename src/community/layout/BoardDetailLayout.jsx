@@ -1,12 +1,24 @@
+import {useNavigate} from "react-router-dom";
+import axios from "../../utils/axios.js";
+
 const BoardDetailLayout = (props) => {
 
-  const info = props.info
-  const title = info.title
-  const name = info.author
-  const content = info.content
-  const imgs = info.imgs
-  const code = info.code
+  const data = props.data;
+  const reContent = data.content.split('\n')
+  console.log(reContent)
+  const mEmail = props.mEmail;
 
+  const navi = useNavigate()
+
+  const onUpdate = () => {
+    navi(`/board/update/${data.bcId}`)
+  }
+
+  const onDelete = async () => {
+    await axios.delete(`/api/board/${data.bcId}`)
+    console.log('type',data.type)
+    navi(`/board/list/0`,{state:{type:data.type}})
+  }
 
   return(
     <div id='BoardDetailLayout' className='w-4/5 flex justify-center'>
@@ -16,17 +28,22 @@ const BoardDetailLayout = (props) => {
         >
           <p className="title"
              style={{text:'top', lineHeight:'0.75', fontSize:'30px'}}
-          >{title}</p>
+          >{data.title}</p>
           <div className='float-right text-2xl'>
-            {name}
+            {data.userEmail}
           </div>
           <a href="#" className="nes-badge">
-            <span className="is-primary">{code}</span>
+            <span className="is-primary">{data.bcCode}</span>
           </a>
           <br/>
           <br/>
           <div className='mb-4'>
-            {content}
+            {reContent.map((item, index) => (
+              <div key={index}>
+                {item}
+                <br />
+              </div>
+            ))}
           </div>
 
           <div>
@@ -41,11 +58,18 @@ const BoardDetailLayout = (props) => {
           </div>
 
           {/* 수정/삭제 버튼들 */}
-          <div id='boardDetailBtns' className='pt-4 flex justify-center gap-3'>
-            <button className='nes-btn is-warning' style={{color:'white'}}>수정하기</button>
-            <button className='nes-btn is-error'>삭제하기</button>
-          </div>
-
+          {
+            mEmail===data.userEmail?(
+              <div id='boardDetailBtns' className='pt-4 flex justify-center gap-3'>
+                <button className='nes-btn is-warning' style={{color:'white'}}
+                        onClick={onUpdate}
+                >수정하기</button>
+                <button className='nes-btn is-error'
+                        onClick={onDelete}
+                >삭제하기</button>
+              </div>
+            ):('')
+          }
 
         </div>
       </div>

@@ -1,25 +1,34 @@
 import {useNavigate, useParams} from "react-router-dom";
 import BoardDetailLayout from "../layout/BoardDetailLayout.jsx";
+import {useEffect, useState} from "react";
+import axios from "../../utils/axios.js";
+import {jwtDecode} from "jwt-decode";
 
-let faqTuple = [
-  { id: 1, title: 'FAQ 제목1  123123', code:'잡담', author: 'user1', content: '글1 내용 내용 <br/> 내용내용' , imgs:[], date:'2024-08-01' },
-  { id: 2, title: 'FAQ 제목2  123123', code:'공략', author: 'user2', content: '글1 내용 내용 <br/> 내용내용' , imgs:[], date:'2024-08-01' },
-  { id: 3, title: 'FAQ 제목3  123123', code:'정보', author: 'user3', content: '글1 내용 내용 <br/> 내용내용' , imgs:[], date:'2024-08-01' },
-  { id: 4, title: 'FAQ 제목4  123123', code:'정보', author: 'user4', content: '글1 내용 내용 <br/> 내용내용' , imgs:[], date:'2024-08-01' },
-  { id: 5, title: 'FAQ 제목5  123123', code:'잡담', author: 'user5', content: '글1 내용 내용 <br/> 내용내용' , imgs:[], date:'2024-08-01' },
-];
+
 
 const BoardDetailPage = () => {
 
   const params = useParams()
 
   const id = params.id;
+  const [data, setData] = useState({bcId:0,content:'',title:'',userNum:0,code:''});
 
-  const info = faqTuple[id-1];
+  const token = localStorage.getItem('accessToken')
+  const decodeToken = jwtDecode(token)
+  const mEmail = decodeToken.userEmail;
+  console.log('role ', mEmail)
+
+  useEffect(() => {
+    axios.get(`/api/board/${id}`)
+      .then((res)=> {
+        setData(res.data)
+        // console.log(res.data)
+      })
+  }, [id]);
 
   return(
     <div id='BoardDetailPage' className='flex justify-center'>
-      <BoardDetailLayout info={info}/>
+      <BoardDetailLayout data={data} mEmail={mEmail}/>
     </div>
   )
 }

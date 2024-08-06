@@ -1,12 +1,19 @@
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import axios from "../../utils/axios.js";
+import BoardUpdateLayout from "../layout/BoardUpdateLayout.jsx";
+
+
 
 const BoardUpdatePage = () => {
+  console.log("BoardUpdatePage component rendered");
 
-  const navi = useNavigate()
+  const params = useParams();
+  const id = params.id;
 
   return (
-    <div>
-
+    <div id='BoardUpdatePage' className='flex mt-10 justify-center'>
+      <BoardUpdateLayout id={id}/>
     </div>
   )
 }
