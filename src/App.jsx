@@ -1,5 +1,11 @@
 import React, { useEffect } from 'react'
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import {
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  useLocation,
+  Navigate,
+} from 'react-router-dom'
 import Main from './components/main/Main'
 import Store from './components/store/Store'
 import GachaShop from './components/store/GachaShop'
@@ -11,9 +17,6 @@ import Register from './login/Register.jsx'
 import Ladder from './game/page/minigame/Ladder.jsx'
 import RoomList from './game/page/rooms/RoomList.jsx'
 import NaverCallback from './login/NaverCallback.jsx'
-
-import 'nes.css/css/nes.min.css'
-import './App.css'
 import Mypage from './info/MyPage.jsx'
 import Rank from './info/Rank.jsx'
 import axios from './utils/axios.js'
@@ -28,6 +31,8 @@ import BoardUpdatePage from './community/page/BoardUpdatePage.jsx' // App.css �
 import RoomWait from './game/page/rooms/RoomWait'
 import SpaceMinigame from './game/page/rooms/SpaceMinigame'
 import FindPassword from './login/FindPassword.jsx'
+import './App.css'
+import 'nes.css/css/nes.min.css'
 
 const App = () => {
   const containerStyle = {
@@ -84,11 +89,13 @@ const App = () => {
           <Route path="/kakao-login" element={<KakaoLogin />} />
           <Route path="/check-profile" element={<CheckProfile />} />
           <Route path="/find-password" element={<FindPassword />} />
-          {/*게시판*/}
-          <Route path="/board/list" element={<BoardListPage />} />
-          <Route path="/board/write" element={<BoardWritePage />} />
+          {/* 게시판 시작 */}
+          <Route path="/board/list/:page" element={<BoardListPage />} />
+          <Route path="/board" element={<Navigate to="/board/list/0" />} />
+          <Route path="/board/write/:type" element={<BoardWritePage />} />
           <Route path="/board/detail/:id" element={<BoardDetailPage />} />
           <Route path="/board/update/:id" element={<BoardUpdatePage />} />
+          {/* 게시판 끝 */}
           {/* 태경 경로 */}
           {/* <Route exact path="/" element={<RoomWait />} /> */}
           <Route

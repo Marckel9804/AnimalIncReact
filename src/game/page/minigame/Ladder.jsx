@@ -1,102 +1,188 @@
+import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import { useState, useRef, useEffect } from "react";
-import "./loading.css";
 import bomb from "../../../image/ladder-bomb.jpeg";
 import win from "../../../image/ladder-win.jpeg";
+import "./loading.css";
 
 const Ladder = () => {
-  const canvasRef = useRef(null); // 사다리를 그리기 위해 canvas 라이브러리 사용
-  const [participants, setParticipants] = useState(["P1", "P2", "P3", "P4"]); // 참가자 목록 (임시)
-  const [reward, setReward] = useState([win, bomb, bomb, bomb]); // 리워드 랜덤 출력을 위한 변수
-  const [gameStarted, setGameStarted] = useState(true); // 사다리게임 시작하기 위한 변수
-  const [modal, setModal] = useState(false); // '로딩중' 모달 띄우기~
-  const [results, setResults] = useState();
+  // 임시 사용자 id
+  const userId = "P1";
+  const canvasRef = useRef(null);
+  const [participants] = useState(["P1", "P2", "P3", "P4"]);
+  const [rewards, setRewards] = useState([win, bomb, bomb, bomb]);
+  const [gameState, setGameState] = useState("start");
+  const [results, setResults] = useState([]);
+  const [ladder, setLadder] = useState([]);
+  const [modal, setModal] = useState(false);
 
-  const [isAnimating, setIsAnimating] = useState(true); // 애니메이션 상태
-  const [animationFrame, setAnimationFrame] = useState(0); // 애니메이션 프레임
+  const canvasWidth = 896 * 2; // 가로 길이를 2배로 늘림
+  const canvasHeight = 300; // 기존 높이 유지
 
-  const drawLadder = (canvas, ctx) => {
-    // const canvas = canvasRef.current;
-    // const ctx = canvas.getContext("2d");
+  // 1단계 : 사다리 그리기
+  const drawLadder = (ctx, width, height) => {
     const numParticipants = participants.length;
-    const ladderHeight = 400; // 사다리 높이
-    const ladderWidth = 300; // 사다리 너비
+    ctx.clearRect(0, 0, width, height);
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 2;
 
-    // 초기화
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // 캔버스 전체를 지워버림
-    ctx.strokeStyle = "#000"; // 선의 색깔을 설정
-    ctx.lineWidth = 0.5; // 선의 두께를 설정
+    const verticalGap = width / (numParticipants + 1);
+    const horizontalGap = height / 15;
 
-    // 수직 선 그리기
-    for (let i = 0; i < numParticipants; i++) {
-      const x = (i * ladderWidth) / (numParticipants - 1);
+    let maxHorizontalLines = Math.floor(Math.random() * 10) * 2 + 2; // 2, 4, ..., 20
+
+    const newLadder = Array.from({ length: maxHorizontalLines }, () =>
+      Array(numParticipants - 1).fill(false)
+    );
+
+    // 수직선 그리기
+    for (let i = 1; i <= numParticipants; i++) {
+      const x = i * verticalGap;
+      ctx.beginPath();
       ctx.moveTo(x, 0);
-      ctx.lineTo(x, ladderHeight);
+      ctx.lineTo(x, height);
+      ctx.stroke();
     }
 
-    // 수평 선 그리기 (랜덤으로)
-    for (let i = 1; i < numParticipants; i++) {
-      for (let j = 0; j < numParticipants - 1; j++) {
-        const x1 = (j * ladderWidth) / (numParticipants - 1);
-        const x2 = ((j + 1) * ladderWidth) / (numParticipants - 1);
-        const y = Math.random() * 500;
-        ctx.moveTo(x1, y);
-        ctx.lineTo(x2, y);
-      }
+    // 수평선 그리기
+    for (let row = 0; row < maxHorizontalLines; row++) {
+      const y = (row + 1) * horizontalGap;
+      const col = Math.floor(Math.random() * (numParticipants - 1));
+
+      newLadder[row][col] = true;
+      const x1 = (col + 1) * verticalGap;
+      const x2 = (col + 2) * verticalGap;
+      ctx.beginPath();
+      ctx.moveTo(x1, y);
+      ctx.lineTo(x2, y);
+      ctx.stroke();
     }
 
-    ctx.stroke(); // 선 그리기
+    return newLadder;
   };
 
-  const animateLadder = (ctx) => {
-    const numParticipants = participants.length;
-    const ladderHeight = ctx.canvas.height;
-    const ladderWidth = ctx.canvas.width;
-    const startY = 0; // 시작 위치
+  // 2단계 : 사다리타기 애니메이션 실행 !
+  const animatePath = (ctx, startCol, ladder, width, height, color) => {
+    return new Promise((resolve) => {
+      let col = startCol;
+      let row = 0;
+      const verticalGap = width / (participants.length + 1);
+      const horizontalGap = height / 15;
 
-    // 애니메이션 프레임 수
-    const frames = 100; // 애니메이션 프레임 수
-    const duration = 2000; // 애니메이션 지속 시간 (ms)
-    const startTime = performance.now();
-
-    const animate = (time) => {
-      const elapsed = time - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-
-      // 참가자 각각의 위치를 계산
-      const participantPositions = participants.map((_, index) => {
-        const endX = (index * ladderWidth) / (numParticipants - 1);
-        const randomY = Math.random() * ladderHeight; // 랜덤 y 위치
-        const currentY = startY + (randomY - startY) * progress;
-        return { x: endX, y: currentY };
-      });
-
-      // 애니메이션 그리기
-      ctx.clearRect(0, 0, ladderWidth, ladderHeight); // 캔버스 초기화
-      drawLadder(ctx); // 사다리 그리기
-      participantPositions.forEach(({ x, y }, index) => {
-        ctx.fillStyle = "red"; // 참가자 색상
+      const animate = () => {
         ctx.beginPath();
-        ctx.arc(x, y, 10, 0, Math.PI * 2); // 참가자 표시
-        ctx.fill();
-        ctx.closePath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+
+        const startX = (col + 1) * verticalGap;
+        const startY = row * horizontalGap;
+        const endY = (row + 1) * horizontalGap;
+
+        // Vertical movement
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(startX, endY);
+        ctx.stroke();
+
+        // Horizontal movement
+        if (row < ladder.length) {
+          if (ladder[row][col]) {
+            // Move right
+            const endX = (col + 2) * verticalGap;
+            ctx.moveTo(startX, endY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+            col++; // Move right
+          } else if (col > 0 && ladder[row][col - 1]) {
+            // Move left
+            const endX = col * verticalGap;
+            ctx.moveTo(startX, endY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+            col--; // Move left
+          }
+        }
+
+        row++;
+
+        if (row <= ladder.length) {
+          setTimeout(() => requestAnimationFrame(animate), 100);
+        } else {
+          const finalY = height;
+          const finalX = (col + 1) * verticalGap;
+          ctx.beginPath();
+          ctx.moveTo(finalX, ladder.length * horizontalGap);
+          ctx.lineTo(finalX, finalY);
+          ctx.stroke();
+          resolve(col);
+        }
+      };
+
+      animate();
+    });
+  };
+
+  // 사다리 타기 게임을 시작하는 함수~~
+  const startGame = async () => {
+    setModal(false);
+    setGameState("running");
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    // 기존 사다리 구조를 사용
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    drawLadderFromStructure(ctx, ladder, canvasWidth, canvasHeight);
+
+    const colors = ["red", "blue", "green", "yellow"];
+    const newResults = [];
+
+    for (let i = 0; i < participants.length; i++) {
+      const result = await animatePath(
+        ctx,
+        i,
+        ladder,
+        canvasWidth,
+        canvasHeight,
+        colors[i]
+      );
+      newResults.push(result);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
+    setResults(newResults);
+    setGameState("end");
+  };
+
+  // 사다리 구조를 기반으로 사다리 다시 그리기
+  const drawLadderFromStructure = (ctx, ladder, width, height) => {
+    const numParticipants = participants.length;
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 10;
+
+    const verticalGap = width / (numParticipants + 1);
+    const horizontalGap = height / 15;
+
+    // 수직선 그리기
+    for (let i = 1; i <= numParticipants; i++) {
+      const x = i * verticalGap;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    }
+
+    // 수평선 그리기
+    ladder.forEach((row, rowIndex) => {
+      row.forEach((hasLine, colIndex) => {
+        if (hasLine) {
+          const y = (rowIndex + 1) * horizontalGap;
+          const x1 = (colIndex + 1) * verticalGap;
+          const x2 = (colIndex + 2) * verticalGap;
+          ctx.beginPath();
+          ctx.moveTo(x1, y);
+          ctx.lineTo(x2, y);
+          ctx.stroke();
+        }
       });
-
-      if (progress < 1) {
-        setAnimationFrame(requestAnimationFrame(animate));
-      } else {
-        setResults(
-          participantPositions.map(
-            (pos, index) =>
-              `P${index + 1}: (${pos.x.toFixed(2)}, ${pos.y.toFixed(2)})`
-          )
-        ); // 결과 저장
-        setIsAnimating(false); // 애니메이션 종료
-      }
-    };
-
-    setIsAnimating(true);
-    requestAnimationFrame(animate);
+    });
   };
 
   const openModal = () => {
@@ -107,6 +193,11 @@ const Ladder = () => {
         </LadderHead>
         <Loading>
           <div className="ladder-loader-hhy"></div>
+          {gameState === "start" && (
+            <button className="nes-btn is-warning" onClick={startGame}>
+              Start Game
+            </button>
+          )}
         </Loading>
       </LadderWindow>
     );
@@ -115,18 +206,14 @@ const Ladder = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
+    const newLadder = drawLadder(ctx, canvasWidth, canvasHeight);
 
     // 로딩중 화면 띄우기 => 0.1초 뒤 닫히고 사다리 만들어짐
     setModal(true);
-    setTimeout(() => {
-      setModal(false);
-      drawLadder(canvas, ctx);
-    }, 1000);
+    setTimeout(() => {});
 
-    if (isAnimating) {
-      animateLadder(ctx); // 애니메이션 시작
-    }
-  }, [gameStarted]);
+    setLadder(newLadder);
+  }, []);
 
   return (
     <LadderContainer>
@@ -134,27 +221,35 @@ const Ladder = () => {
         <LadderHead>
           Ladder Game <BoxIcon>x</BoxIcon>
         </LadderHead>
-        <PlayerList>
-          {participants.map((item, index) => {
-            return (
+        <GameContent>
+          <PlayerList>
+            {participants.map((item, index) => (
               <Player key={index}>
                 {item}
-                <Character>^m^</Character>🐳
+                <Character>^m^</Character>
               </Player>
-            );
-          })}
-        </PlayerList>
+            ))}
+          </PlayerList>
+          <canvas
+            ref={canvasRef}
+            width={canvasWidth}
+            height={canvasHeight}
+            style={{ margin: "20px 0", display: "block", width: "100%" }}
+          />
+          <RewardList>
+            {participants.map((item, index) => (
+              <RewardItem key={index}>
+                <Reward src={rewards[index]} alt={`Reward ${index + 1}`} />
+                {gameState === "end" && (
+                  <ParticipantId>
+                    {participants[results.indexOf(index)]}
+                  </ParticipantId>
+                )}
+              </RewardItem>
+            ))}
+          </RewardList>
+        </GameContent>
         {modal ? openModal() : null}
-        <canvas
-          ref={canvasRef}
-          style={{ width: "75%", height: "50%", margin: "0 auto" }}
-        />
-
-        <RewardList>
-          {participants.map((item, index) => {
-            return <Reward src={reward[index]} key={index} />;
-          })}
-        </RewardList>
       </LadderGame>
     </LadderContainer>
   );
@@ -170,6 +265,7 @@ const LadderContainer = styled.div`
 `;
 
 const LadderGame = styled.div`
+  position: relative;
   border-top: 2px #f0ffff solid;
   border-left: 2px #f0ffff solid;
   border-right: 2px #252525 solid;
@@ -177,6 +273,13 @@ const LadderGame = styled.div`
   background-color: #c0c0c0;
   width: 90%;
   height: 80%;
+`;
+
+const GameContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 `;
 
 const LadderHead = styled.div`
@@ -204,15 +307,9 @@ const BoxIcon = styled.div`
   align-items: center;
 `;
 
-const Loading = styled.div`
-  height: 90%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
 const PlayerList = styled.div`
   margin-top: 5px;
+  width: 70%;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -230,19 +327,9 @@ const Character = styled.div`
   box-shadow: 1px 1px 0px 1px #cccccc;
 `;
 
-const LadderWindow = styled.div`
-  width: 80vw;
-  height: 50vh;
-  background-color: #c0c0c0;
-  border-top: 2px #f0ffff solid;
-  border-left: 2px #f0ffff solid;
-  border-right: 2px #252525 solid;
-  border-bottom: 2px #252525 solid;
-  margin: auto;
-`;
-
 const RewardList = styled.div`
   display: flex;
+  width: 70%;
   flex-direction: row;
   justify-content: space-around;
   margin-top: 10px;
@@ -252,6 +339,39 @@ const Reward = styled.img`
   width: 50px;
   height: 50px;
   border-radius: 50%;
+`;
+
+const Loading = styled.div`
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const LadderWindow = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #c0c0c0;
+  border-top: 2px #f0ffff solid;
+  border-left: 2px #f0ffff solid;
+  border-right: 2px #252525 solid;
+  border-bottom: 2px #252525 solid;
+  z-index: 10; // 다른 요소들 위에 표시되도록 z-index 설정
+`;
+
+const RewardItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const ParticipantId = styled.div`
+  margin-top: 5px;
+  font-weight: bold;
 `;
 
 export default Ladder;
