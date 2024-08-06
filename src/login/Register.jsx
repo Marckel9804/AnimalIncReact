@@ -12,6 +12,7 @@ const Register = () => {
     const [nickname, setNickname] = useState('');
     const [birthdate, setBirthdate] = useState('');
     const [isNicknameAvailable, setIsNicknameAvailable] = useState(null);
+    const [nicknameError, setNicknameError] = useState('');
     const [isEmailVerified, setIsEmailVerified] = useState(false);
     const [verificationCode, setVerificationCode] = useState('');
     const [isVerificationCodeSent, setIsVerificationCodeSent] = useState(false);
@@ -55,9 +56,15 @@ const Register = () => {
     };
 
     const checkNicknameAvailability = async () => {
+        if (nickname.trim() === '') {
+            setNicknameError('닉네임을 입력해주세요.');
+            setIsNicknameAvailable(null);
+            return;
+        }
         try {
             const response = await axios.post('/api/user/check-nickname', { nickname });
             setIsNicknameAvailable(response.data.isAvailable);
+            setNicknameError(''); // Clear the error message
         } catch (error) {
             console.error('Nickname check error:', error);
             alert('닉네임 중복 확인 중 오류가 발생했습니다. 다시 시도해 주세요.');
@@ -160,8 +167,9 @@ const Register = () => {
                             onClick={checkNicknameAvailability}>중복 확인
                     </button>
                 </div>
-                {isNicknameAvailable === false && <div className="error-message">이미 사용 중인 닉네임입니다...</div>}
-                {isNicknameAvailable === true && <div className="success-message">사용 가능한 닉네임입니다!!!</div>}
+                {nicknameError && <div id="error-message">{nicknameError}</div>}
+                {isNicknameAvailable === false && <div id="error-message">이미 사용 중인 닉네임입니다...</div>}
+                {isNicknameAvailable === true && <div id="success-message">사용 가능한 닉네임입니다!!!</div>}
                 <div className="register-input">
                     <input type="text" value={birthdate} onChange={(e) => setBirthdate(e.target.value)}
                            placeholder="생년월일 (YYYYMMDD)"/>
