@@ -3,6 +3,8 @@ import {
   Route,
   BrowserRouter as Router,
   Routes,
+  useLocation,
+  Navigate,
 } from "react-router-dom";
 import Main from "./components/main/Main";
 import Store from "./components/store/Store";
@@ -80,6 +82,7 @@ const App = () => {
           {/* ItemShop 경로를 추가합니다 */}
           <Route path="/createroom" element={<RoomList />} />
           <Route path="/ladder" element={<Ladder />} />
+
           {/*태웅 경로 */}
           <Route path="/naver/callback" element={<NaverCallback />} />
           <Route path="/mypage" element={<Mypage />} />
@@ -88,11 +91,14 @@ const App = () => {
           <Route path="/kakao-login" element={<KakaoLogin/>} />
           <Route path="/check-profile" element={<CheckProfile/>} />
           <Route path="/find-password" element={<FindPassword />} />
-          {/*게시판*/}
-          <Route path='/board/list' element={<BoardListPage/>}/>
-          <Route path='/board/write' element={<BoardWritePage/>}/>
+
+          {/* 게시판 시작 */}
+          <Route path='/board/list/:page' element={<BoardListPage/>}/>
+          <Route path='/board' element={<Navigate to="/board/list/0" />}/>
+          <Route path='/board/write/:type' element={<BoardWritePage/>}/>
           <Route path='/board/detail/:id' element={<BoardDetailPage/>}/>
           <Route path='/board/update/:id' element={<BoardUpdatePage/>}/>
+          {/* 게시판 끝 */}
 
           {/* 태경 경로 */}
           {/* <Route exact path="/" element={<RoomWait />} /> */}
