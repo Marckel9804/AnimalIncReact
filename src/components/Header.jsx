@@ -51,7 +51,7 @@ const Header = () => {
 
       const data = await getUserInfo()
 
-      // console.log('Fetched user info:', data) // 로그 추가
+      // console.log('Fetched user info:', dnpmata) // 로그 추가
 
       setUserInfo({
         userNickname: data.userNickname,
