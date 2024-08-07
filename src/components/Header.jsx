@@ -18,13 +18,6 @@ const getUserInfo = async () => {
   }
 }
 
-
-const logout = () => {
-  console.log('로그아웃')
-  localStorage.removeItem('accessToken')
-  window.location.href = '/'
-}
-
 const goToBoard = () => {
   console.log('게시판으로 이동')
 }
@@ -72,6 +65,17 @@ const Header = () => {
   const login = () => {
     navigate('/login')
   }
+
+  const logout = async () => {
+    try {
+      await axios.post('/api/user/logout');
+      localStorage.removeItem('accessToken');
+      navigate('/');
+    } catch (error) {
+      console.error('Logout Error:', error);
+      alert('로그아웃에 실패했습니다.');
+    }
+  };
 
   const token = localStorage.getItem('accessToken')
   const isLoggedIn = !!token
