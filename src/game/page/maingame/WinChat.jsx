@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 function WinChat({ show, setShow, showWC, setShowWC, ind, comp, stockInfo }) {
@@ -16,7 +16,13 @@ function WinChat({ show, setShow, showWC, setShowWC, ind, comp, stockInfo }) {
     tech: "테크",
   };
 
-  const apiKey = import.meta.env.VITE_GPT_API_KEY;
+  const [apiKey, setApiKey] = useState("");
+  useEffect(() => {
+    axios.get("/ncp/aniinc/gpt.txt", { responseType: "text" }).then((res) => {
+      console.log("ncp", res);
+      setApiKey(res.data);
+    });
+  }, []);
 
   const handleGenerateNews = async () => {
     setLoading(true);
@@ -49,7 +55,7 @@ function WinChat({ show, setShow, showWC, setShowWC, ind, comp, stockInfo }) {
       const response = await axios.post(
         "https://api.openai.com/v1/chat/completions",
         {
-          model: "gpt-4",
+          model: "gpt-3.5-turbo",
           messages: [
             { role: "system", content: "뉴스 기사를 생성하는 역할을 합니다." },
             { role: "user", content: prompt },
