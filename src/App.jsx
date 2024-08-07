@@ -31,6 +31,8 @@ import BoardUpdatePage from './community/page/BoardUpdatePage.jsx' // App.css �
 import RoomWait from './game/page/rooms/RoomWait'
 import SpaceMinigame from './game/page/rooms/SpaceMinigame'
 import FindPassword from './login/FindPassword.jsx'
+import Terms from './components/Terms'
+import Privacy from './components/Privacy'
 import './App.css'
 import 'nes.css/css/nes.min.css'
 
@@ -70,6 +72,10 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Main />} />
+          {/* 약관 페이지 추가 */}
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
           <Route path="/shop" element={<Store />} />
           <Route path="/shop/animal" element={<GachaShop />} />
           <Route
@@ -81,7 +87,6 @@ const App = () => {
           {/* ItemShop 경로를 추가합니다 */}
           <Route path="/createroom" element={<RoomList />} />
           <Route path="/ladder" element={<Ladder />} />
-
           {/*태웅 경로 */}
           <Route path="/naver/callback" element={<NaverCallback />} />
           <Route path="/mypage" element={<Mypage />} />
@@ -91,7 +96,6 @@ const App = () => {
           <Route path="/check-profile" element={<CheckProfile />} />
           <Route path="/find-password" element={<FindPassword />} />
           {/* 태웅 경로 끝 */}
-
           {/* 게시판 시작 */}
           <Route path="/board/list/:page" element={<BoardListPage />} />
           <Route path="/board" element={<Navigate to="/board/list/0" />} />
@@ -99,21 +103,14 @@ const App = () => {
           <Route path="/board/detail/:id" element={<BoardDetailPage />} />
           <Route path="/board/update/:id" element={<BoardUpdatePage />} />
           {/* 게시판 끝 */}
-
           {/* 태경 경로 */}
           {/* <Route exact path="/" element={<RoomWait />} /> */}
-          <Route
-            exact
-            path="/roomwait"
-            element={<RoomWait />}
-          />
+          <Route exact path="/roomwait" element={<RoomWait />} />
           <Route
             path="/game/page/rooms/SpaceMinigame"
             element={<SpaceMinigame />}
           />
           {/* 태경 경로 끝 */}
-
-          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
         </Routes>
       </div>
     </Router>
