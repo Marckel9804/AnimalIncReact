@@ -9,14 +9,22 @@ import Footer from '../components/Footer.jsx'
 Modal.setAppElement('#root') //모달을 앱 요소로 설정
 
 const Mypage = () => {
-  const [userInfo, setUserInfo] = useState(null)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [userInfo, setUserInfo] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
   const [updatedInfo, setUpdatedInfo] = useState({
     userNickname: '',
     userRealname: '',
     userBirthdate: '',
-  })
+  });
+
+  const [passwordInfo, setPasswordInfo] = useState({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+  });
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -58,6 +66,8 @@ const Mypage = () => {
     const closeEditModal = () => setIsEditModalOpen(false);
     const openDeleteModal = () => setIsDeleteModalOpen(true);
     const closeDeleteModal = () => setIsDeleteModalOpen(false);
+    const openChangePasswordModal = () => setIsChangePasswordModalOpen(true);
+    const closeChangePasswordModal = () => setIsChangePasswordModalOpen(false);
 
     const handleUpdate = async () => {
         try {
@@ -100,11 +110,30 @@ const Mypage = () => {
     }
 
 
-    /*    const changePassword = async () => {
-            try {
-                await
-            }
-        }*/
+    const handleChangePassword = async () => {
+        if (passwordInfo.newPassword !== passwordInfo.confirmPassword) {
+            alert('새 비밂번호가 일치하지 않습니다.');
+            return;
+        }
+
+        try {
+            await axios.post('/api/user/change-password', {
+                    currentPassword: passwordInfo.currentPassword,
+                    newPassword: passwordInfo.newPassword,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                    },
+                }
+            );
+            alert('비밀번호가 성공적으로 변경되었습니다!');
+            closeChangePasswordModal();
+        } catch (error) {
+            console.error('Error changing password:', error);
+            alert('비밀번호 변경 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        }
+    }
 
     return (
         <>
@@ -146,16 +175,16 @@ const Mypage = () => {
                             <span className="info-value">{userInfo.userItem}</span>
                         </div>
                         <div className="button-section">
-                            <button className="nes-btn is-primary" onClick={openEditModal}>정보 수정</button>
-{/*
-                            <button className="nes-btn is-warning" onClick={changePassword}>비밀번호 변경</button>
-*/}
-                            <button className="nes-btn is-error" onClick={openDeleteModal}>회원 탈퇴</button>
+                            <button className="nes-btn is-primary" id="mypage-btn" onClick={openEditModal}>정보 수정</button>
+                            {!userInfo.slogin && (
+                                <button className="nes-btn is-warning" onClick={openChangePasswordModal}>비밀번호 변경</button>
+                            )}
+                            <button className="nes-btn is-error" id="mypage-btn" onClick={openDeleteModal}>회원 탈퇴</button>
                         </div>
                     </div>
                 </div>
                 <Modal isOpen={isEditModalOpen} onRequestClose={closeEditModal} className="modal">
-                    <h2>정보 수정</h2>
+                    <h2 className="modal-title">정보 수정</h2>
                     <div className="modal-content">
                         <div className="modal-item">
                             <label>닉네임</label>
@@ -178,11 +207,42 @@ const Mypage = () => {
                     </div>
                 </Modal>
                 <Modal isOpen={isDeleteModalOpen} onRequestClose={closeDeleteModal} className="modal">
-                    <h2>회원 탈퇴</h2>
+                    <h2 className="modal-title">회원 탈퇴</h2>
                     <div className="modal-content">
                         <p>정말로 탈퇴하시겠습니까?</p>
                         <button className="nes-btn is-error" onClick={handleDelete}>탈퇴</button>
                         <button className="nes-btn" onClick={closeDeleteModal}>닫기</button>
+                    </div>
+                </Modal>
+                <Modal isOpen={isChangePasswordModalOpen} onRequestClose={closeChangePasswordModal} className="modal">
+                    <h2 className="modal-title">비밀번호 변경</h2>
+                    <div className="modal-content">
+                        <div className="modal-item">
+                            <label>현재 비밀번호</label>
+                            <input
+                                type="password"
+                                value={passwordInfo.currentPassword}
+                                onChange={(e) => setPasswordInfo({...passwordInfo, currentPassword: e.target.value })}
+                            />
+                        </div>
+                        <div className="modal-item">
+                            <label>새 비밀번호</label>
+                            <input
+                                type="password"
+                                value={passwordInfo.newPassword}
+                                onChange={(e) => setPasswordInfo({...passwordInfo, newPassword: e.target.value })}
+                            />
+                        </div>
+                        <div className="modal-item">
+                            <label>비밀번호 확인</label>
+                            <input
+                                type="password"
+                                value={passwordInfo.confirmPassword}
+                                onChange={(e) => setPasswordInfo({...passwordInfo, confirmPassword: e.target.value })}
+                            />
+                        </div>
+                        <button className = "nes-btn is-primary" onClick={handleChangePassword}>변경하기</button>
+                        <button className="nes-btn" onClick={closeChangePasswordModal}>닫기</button>
                     </div>
                 </Modal>
             </div>

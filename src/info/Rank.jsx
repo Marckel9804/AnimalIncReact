@@ -1,14 +1,64 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/login/Rank.css";
 import Footer from "../components/Footer.jsx";
 import Header from "../components/Header.jsx";
+import axios from "../utils/axios.js";
 
 const Rank = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [rankings, setRankings] = useState([]);
+    const [filteredRankings, setFilteredRankings] = useState([]);
+    const [selectedTab, setSelectedTab] = useState('');
 
     const handleSearch = () => {
-        // 검색 기능 구현
-        console.log("Searching for:", searchTerm);
+        if (searchTerm.trim() === '') {
+            filterRankings(selectedTab);
+        } else {
+            const filtered = rankings.filter(user =>
+                user.userNickname.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            setFilteredRankings(filtered);
+        }
+    };
+
+    const filterRankings = (grade) => {
+        if (grade === '') {
+            setFilteredRankings(rankings);
+        } else {
+            const filtered = rankings.filter(user => user.userGrade === grade);
+            setFilteredRankings(filtered);
+        }
+    };
+
+    useEffect(() => {
+        const fetchRankings = async () => {
+            try {
+                const response = await axios.get('/api/user/rankings');
+                setRankings(response.data);
+                setFilteredRankings(response.data); // 초기에는 모든 사용자 표시
+            } catch (error) {
+                console.error('Error fetching rankings:', error);
+            }
+        }
+        fetchRankings();
+    }, []);
+
+    useEffect(() => {
+        filterRankings(selectedTab);
+    }, [selectedTab, rankings]);
+
+    const handleTabClick = (grade) => {
+        if (selectedTab === grade) {
+            setSelectedTab(''); // 탭 해제
+        } else {
+            setSelectedTab(grade); // 탭 선택
+        }
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
     };
 
     return (
@@ -17,14 +67,16 @@ const Rank = () => {
             <div className="ranking-page">
                 <div className="ranking-header">
                     <div className="tab-section">
-                        <button className="tab-button">KR</button>
-                        <button className="tab-button">ALL</button>
+                        <button className={`tab-button ${selectedTab === 'Gold' ? 'active' : ''}`} onClick={() => handleTabClick('Gold')}>Gold</button>
+                        <button className={`tab-button ${selectedTab === 'Silver' ? 'active' : ''}`} onClick={() => handleTabClick('Silver')}>Silver</button>
+                        <button className={`tab-button ${selectedTab === 'Bronze' ? 'active' : ''}`} onClick={() => handleTabClick('Bronze')}>Bronze</button>
                     </div>
                     <div className="search-section">
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyPress={handleKeyPress} // 엔터키 이벤트 추가
                             placeholder="검색"
                             className="search-input"
                         />
@@ -41,55 +93,14 @@ const Rank = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {/* 데이터가 여기에 들어갑니다. */}
-                    <tr>
-                        <td>1</td>
-                        <td>hide on bush</td>
-                        <td>골드</td>
-                        <td>90 p</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>canyon</td>
-                        <td>골드</td>
-                        <td>30 p</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>chovy</td>
-                        <td>골드</td>
-                        <td>20 p</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>khan</td>
-                        <td>골드</td>
-                        <td>10 p</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>teddy</td>
-                        <td>실버</td>
-                        <td>90 p</td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>oner</td>
-                        <td>실버</td>
-                        <td>50 p</td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>bang</td>
-                        <td>실버</td>
-                        <td>30 p</td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>dopa</td>
-                        <td>실버</td>
-                        <td>10 p</td>
-                    </tr>
+                    {filteredRankings.map((user, index) => (
+                        <tr key={user.userEmail}>
+                            <td>{index + 1}</td>
+                            <td>{user.userNickname}</td>
+                            <td>{user.userGrade}</td>
+                            <td>{user.userPoint}</td>
+                        </tr>
+                    ))}
                     </tbody>
                 </table>
                 <Footer />
