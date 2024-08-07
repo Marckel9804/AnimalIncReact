@@ -1,45 +1,44 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './Header.css'
-
 import axios from '../utils/axios.js'
 
-const getUserInfo = async () => {
-  try {
-    const response = await axios.get('/api/get-profile') // 백엔드 API 경로
-    return response.data
-  } catch (error) {
-    console.error('Error fetching user info:', error)
-    return {
-      userNum: '',
-      userRuby: 0,
-      userPoint: 0,
+const Header = () => {
+  const navigate = useNavigate()
+
+  const getUserInfo = async () => {
+    try {
+      const response = await axios.get('/api/user/get-profile')
+      // Axios 인스턴스를 사용하여 요청
+      return response.data
+    } catch (error) {
+      console.error('Error fetching user info:', error)
+      return {
+        userNickname: '',
+        userRuby: 0,
+        userPoint: 0,
+      }
     }
   }
-}
 
-const goToBoard = () => {
-  console.log('게시판으로 이동')
-}
+  const goToBoard = () => {
+    console.log('게시판으로 이동')
+    navigate('/board')
+  }
 
-const goToMypage = (userNickname) => {
+  const goToMypage = (userNickname, navigate) => {
+    console.log('마이페이지로 이동')
+    navigate(`/mypage`)
+  }
 
-  console.log('마이페이지로 이동')
-  window.location.href = `/mypage`
-}
-
-const goToStore = () => {
-  window.location.href = '/shop'
-}
-
-const Header = () => {
+  const goToStore = (navigate) => {
+    navigate('/shop')
+  }
   const [userInfo, setUserInfo] = useState({
     userNickname: '',
     userRuby: 0,
     userPoint: 0,
   })
-
-  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -50,11 +49,10 @@ const Header = () => {
       }
 
       const data = await getUserInfo()
-
-      // console.log('Fetched user info:', data) // 로그 추가
-
+      console.log('Fetched user info:', data) // 로그 추가
       setUserInfo({
         userNickname: data.userNickname,
+
         userRuby: data.userRuby,
         userPoint: data.userPoint,
       })
@@ -68,14 +66,14 @@ const Header = () => {
 
   const logout = async () => {
     try {
-      await axios.post('/api/user/logout');
-      localStorage.removeItem('accessToken');
-      navigate('/');
+      await axios.post('/api/user/logout')
+      localStorage.removeItem('accessToken')
+      navigate('/')
     } catch (error) {
-      console.error('Logout Error:', error);
-      alert('로그아웃에 실패했습니다.');
+      console.error('Logout Error:', error)
+      alert('로그아웃에 실패했습니다.')
     }
-  };
+  }
 
   const token = localStorage.getItem('accessToken')
   const isLoggedIn = !!token
@@ -83,7 +81,9 @@ const Header = () => {
   return (
     <header className="header-header-container">
       <div className="header-header-content">
-        <div className="header-title">Animal 주식회사</div>
+        <div className="header-title" onClick={() => navigate('/')}>
+          Animal 주식회사
+        </div>
         <div className="header-user-info">
           <span className="header-user-name">{userInfo.userNickname}</span>
           <div className="header-ruby-info">
@@ -100,11 +100,14 @@ const Header = () => {
             </button>
             <button
               className="nes-btn header-btn is-mypage"
-              onClick={() => goToMypage(userInfo.userNickname)}
+              onClick={() => goToMypage(userInfo.userNickname, navigate)}
             >
               마이페이지
             </button>
-            <button className="nes-btn header-btn is-store" onClick={goToStore}>
+            <button
+              className="nes-btn header-btn is-store"
+              onClick={() => goToStore(navigate)}
+            >
               상점
             </button>
             {isLoggedIn ? (
