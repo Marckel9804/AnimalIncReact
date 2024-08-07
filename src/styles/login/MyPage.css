@@ -5,12 +5,6 @@
     padding: 20px;
 }
 
-.mypage-header {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
 .mypage-content {
     display: flex;
     flex-direction: row;
@@ -31,33 +25,48 @@
     border-right: 1px solid #ccc;
 }
 
-.profile-image {
+.profile-image-wrapper {
     width: 100px;
     height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50%;
+    overflow: hidden;
     margin-bottom: 10px;
+    background-color: white; /* 필요 시 추가 */
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .profile-name {
     font-weight: bold;
     margin-bottom: 10px;
+
 }
 
-.profile-icon {
-    width: 80px;
-    height: 80px;
+.profile-icon-wrapper {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 10px;
 }
 
-.profile-score {
-    font-size: 1.5em;
-    font-weight: bold;
+.profile-icon {
+    width: 100%;
+    height: 100%;
 }
 
 .info-section {
     flex: 2;
     padding: 20px;
-    background-color: #f5f5f5;
+    background-color: #fff;
 }
 
 .info-item {
@@ -143,4 +152,17 @@
 
 #mypage-btn {
     margin: 0 auto;
+}
+
+.mypage-background {
+    position: fixed;
+    opacity: 40%;
+    top: 0px;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background-image: url("../../assets/images/background.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }

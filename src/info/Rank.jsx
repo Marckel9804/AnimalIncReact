@@ -9,6 +9,8 @@ const Rank = () => {
     const [rankings, setRankings] = useState([]);
     const [filteredRankings, setFilteredRankings] = useState([]);
     const [selectedTab, setSelectedTab] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(5);
 
     const handleSearch = () => {
         if (searchTerm.trim() === '') {
@@ -18,6 +20,7 @@ const Rank = () => {
                 user.userNickname.toLowerCase().includes(searchTerm.toLowerCase())
             );
             setFilteredRankings(filtered);
+            setCurrentPage(1);
         }
     };
 
@@ -28,6 +31,7 @@ const Rank = () => {
             const filtered = rankings.filter(user => user.userGrade === grade);
             setFilteredRankings(filtered);
         }
+        setCurrentPage(1);
     };
 
     useEffect(() => {
@@ -53,6 +57,7 @@ const Rank = () => {
         } else {
             setSelectedTab(grade); // 탭 선택
         }
+        setCurrentPage(1);
     };
 
     const handleKeyPress = (e) => {
@@ -60,6 +65,35 @@ const Rank = () => {
             handleSearch();
         }
     };
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredRankings.slice(indexOfFirstItem, indexOfLastItem);
+
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(filteredRankings.length / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) setCurrentPage(currentPage -1);
+    }
+
+    const handleNextPage = () => {
+        if (currentPage < pageNumbers.length) setCurrentPage(currentPage + 1);
+    }
+
+    const handlePrevTenPages = () => {
+        if (currentPage > 5) setCurrentPage(currentPage - 5);
+        else setCurrentPage(1);
+    }
+
+    const handleNextTenPages = () => {
+        if (currentPage + 5 <= pageNumbers.length) setCurrentPage(currentPage + 5);
+        else setCurrentPage(pageNumbers.length);
+    }
 
     return (
         <>
@@ -93,9 +127,9 @@ const Rank = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {filteredRankings.map((user, index) => (
+                    {currentItems.map((user, index) => (
                         <tr key={user.userEmail}>
-                            <td>{index + 1}</td>
+                            <td>{indexOfFirstItem + index + 1}</td>
                             <td>{user.userNickname}</td>
                             <td>{user.userGrade}</td>
                             <td>{user.userPoint}</td>
@@ -103,8 +137,20 @@ const Rank = () => {
                     ))}
                     </tbody>
                 </table>
-                <Footer />
+                <div className="pagination">
+                    <button onClick={handlePrevTenPages} disabled={currentPage <= 5}>5 이전</button>
+                    <button onClick={handlePrevPage} disabled={currentPage === 1}>이전</button>
+                    {pageNumbers.map(number => (
+                        <button key={number} onClick={() => paginate(number)} className={currentPage === number ? 'active' : ''}>
+                            {number}
+                        </button>
+                    ))}
+                    <button onClick={handleNextPage} disabled={currentPage >= pageNumbers.length}>다음</button>
+                    <button onClick={handleNextTenPages} disabled={currentPage + 5 > pageNumbers.length}>5 다음</button>
+                </div>
             </div>
+            <div className="rank-back"/>
+            <Footer />
         </>
     );
 };

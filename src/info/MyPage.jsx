@@ -139,15 +139,15 @@ const Mypage = () => {
         <>
             <Header />
             <div className="mypage">
-                <header className="mypage-header">
-                    <h1>마이페이지</h1>
-                </header>
                 <div className="mypage-content">
                     <div className="profile-section">
-                        <img src="path/to/profile-image.jpg" alt="프로필" className="profile-image" />
+                        <div className="profile-image-wrapper">
+                            <img src="src/image/Profile.jpg" alt="프로필" className="profile-image"/>
+                        </div>
                         <div className="profile-name">{userInfo.userNickname}</div>
-                        <img src="path/to/rabbit-image.jpg" alt="토끼" className="profile-icon" />
-                        <div className="profile-score">{userInfo.userGrade}</div>
+                        <div className="profile-icon-wrapper">
+                            <img src="src/image/Silver.png" alt="티어 아이콘" className="profile-icon"/>
+                        </div>
                     </div>
                     <div className="info-section">
                         <div className="info-item">
@@ -175,11 +175,14 @@ const Mypage = () => {
                             <span className="info-value">{userInfo.userItem}</span>
                         </div>
                         <div className="button-section">
-                            <button className="nes-btn is-primary" id="mypage-btn" onClick={openEditModal}>정보 수정</button>
+                            <button className="nes-btn is-primary" id="mypage-btn" onClick={openEditModal}>정보 수정
+                            </button>
                             {!userInfo.slogin && (
-                                <button className="nes-btn is-warning" onClick={openChangePasswordModal}>비밀번호 변경</button>
+                                <button className="nes-btn is-warning" onClick={openChangePasswordModal}>비밀번호
+                                    변경</button>
                             )}
-                            <button className="nes-btn is-error" id="mypage-btn" onClick={openDeleteModal}>회원 탈퇴</button>
+                            <button className="nes-btn is-error" id="mypage-btn" onClick={openDeleteModal}>회원 탈퇴
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -246,6 +249,7 @@ const Mypage = () => {
                     </div>
                 </Modal>
             </div>
+            <div className="mypage-background" />
             <Footer />
         </>
     );
