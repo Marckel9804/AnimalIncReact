@@ -31,6 +31,8 @@ import BoardUpdatePage from './community/page/BoardUpdatePage.jsx' // App.css �
 import RoomWait from './game/page/rooms/RoomWait'
 import SpaceMinigame from './game/page/rooms/SpaceMinigame'
 import FindPassword from './login/FindPassword.jsx'
+import Terms from './components/Terms'
+import Privacy from './components/Privacy'
 import './App.css'
 import 'nes.css/css/nes.min.css'
 
@@ -47,80 +49,74 @@ const App = () => {
   }
 
   const refreshAccessToken = async () => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('accessToken')
     if (token) {
       try {
-        const response = await axios.post('/api/user/refresh-token');
-        const newAccessToken = response.headers['authorization'].split(' ')[1];
-        localStorage.setItem('accessToken', newAccessToken);
+        const response = await axios.post('/api/user/refresh-token')
+        const newAccessToken = response.headers['authorization'].split(' ')[1]
+        localStorage.setItem('accessToken', newAccessToken)
       } catch (err) {
-        console.log('Error refreshing access token', err);
-        localStorage.removeItem('accessToken');
-        console.log('Tokens removed due to refresh error.');
+        console.log('Error refreshing access token', err)
+        localStorage.removeItem('accessToken')
+        console.log('Tokens removed due to refresh error.')
       }
     }
-  };
+  }
 
   useEffect(() => {
-    refreshAccessToken();
-  }, [location]);
-
+    refreshAccessToken()
+  }, [location])
 
   return (
-      <Router>
-        <div className="flex flex-col relative min-h-screen">
-          <Routes>
-            <Route pathq="/game/:room_id" element={<MainGame />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Main />} />
-            <Route path="/shop" element={<Store />} />
-            <Route path="/shop/animal" element={<GachaShop />} />
-            <Route
-                path="/shop/animal-store/gacha"
-                element={<GachaResult />}
-            />{' '}
-            {/* GachaResult 경로를 추가합니다 */}
-            <Route path="/shop/item" element={<ItemShop />} />{' '}
-            {/* ItemShop 경로를 추가합니다 */}
-            <Route path="/createroom" element={<RoomList />} />
-            <Route path="/ladder" element={<Ladder />} />
-
-            {/*태웅 경로 */}
-            <Route path="/naver/callback" element={<NaverCallback />} />
-            <Route path="/mypage" element={<Mypage />} />
-            <Route path="/rank" element={<Rank />} />
-            <Route path="/google-login" element={<GoogleLoginPage />} />
-            <Route path="/kakao-login" element={<KakaoLogin />} />
-            <Route path="/check-profile" element={<CheckProfile />} />
-            <Route path="/find-password" element={<FindPassword />} />
-            {/* 태웅 경로 끝 */}
-
-            {/* 게시판 시작 */}
-            <Route path="/board/list/:page" element={<BoardListPage />} />
-            <Route path="/board" element={<Navigate to="/board/list/0" />} />
-            <Route path="/board/write/:type" element={<BoardWritePage />} />
-            <Route path="/board/detail/:id" element={<BoardDetailPage />} />
-            <Route path="/board/update/:id" element={<BoardUpdatePage />} />
-            {/* 게시판 끝 */}
-
-            {/* 태경 경로 */}
-            {/* <Route exact path="/" element={<RoomWait />} /> */}
-            <Route
-                exact
-                path="/roomwait"
-                element={<RoomWait />}
-            />
-            <Route
-                path="/game/page/rooms/SpaceMinigame"
-                element={<SpaceMinigame />}
-            />
-            {/* 태경 경로 끝 */}
-
-            {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
-          </Routes>
-        </div>
-      </Router>
+    <Router>
+      <div className="flex flex-col relative min-h-screen">
+        <Routes>
+          <Route path="/game/:room_id" element={<MainGame />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Main />} />
+          {/* 약관 페이지 추가 */}
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+          <Route path="/shop" element={<Store />} />
+          <Route path="/shop/animal" element={<GachaShop />} />
+          <Route
+            path="/shop/animal-store/gacha"
+            element={<GachaResult />}
+          />{' '}
+          {/* GachaResult 경로를 추가합니다 */}
+          <Route path="/shop/item" element={<ItemShop />} />{' '}
+          {/* ItemShop 경로를 추가합니다 */}
+          <Route path="/createroom" element={<RoomList />} />
+          <Route path="/ladder" element={<Ladder />} />
+          {/*태웅 경로 */}
+          <Route path="/naver/callback" element={<NaverCallback />} />
+          <Route path="/mypage" element={<Mypage />} />
+          <Route path="/rank" element={<Rank />} />
+          <Route path="/google-login" element={<GoogleLoginPage />} />
+          <Route path="/kakao-login" element={<KakaoLogin />} />
+          <Route path="/check-profile" element={<CheckProfile />} />
+          <Route path="/find-password" element={<FindPassword />} />
+          {/* 태웅 경로 끝 */}
+          {/* 게시판 시작 */}
+          <Route path="/board/list/:page" element={<BoardListPage />} />
+          <Route path="/board" element={<Navigate to="/board/list/0" />} />
+          <Route path="/board/write/:type" element={<BoardWritePage />} />
+          <Route path="/board/detail/:id" element={<BoardDetailPage />} />
+          <Route path="/board/update/:id" element={<BoardUpdatePage />} />
+          {/* 게시판 끝 */}
+          {/* 태경 경로 */}
+          {/* <Route exact path="/" element={<RoomWait />} /> */}
+          <Route exact path="/roomwait" element={<RoomWait />} />
+          <Route
+            path="/game/page/rooms/SpaceMinigame"
+            element={<SpaceMinigame />}
+          />
+          {/* 태경 경로 끝 */}
+        </Routes>
+      </div>
+    </Router>
   )
 }
 
