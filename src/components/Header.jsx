@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './Header.css'
-import axiosInstance from '../utils/axios.js'
+import axios from '../utils/axios.js'
 
 const Header = () => {
+  const navigate = useNavigate()
+
   const getUserInfo = async () => {
     try {
-      const response = await axiosInstance.get('/api/user/get-profile')
+      const response = await axios.get('/api/user/get-profile')
       // Axios 인스턴스를 사용하여 요청
       return response.data
     } catch (error) {
@@ -19,14 +21,9 @@ const Header = () => {
     }
   }
 
-  const logout = () => {
-    console.log('로그아웃')
-    localStorage.removeItem('accessToken')
-    window.location.href = '/'
-  }
-
   const goToBoard = () => {
     console.log('게시판으로 이동')
+    navigate('/board')
   }
 
   const goToMypage = (userNickname, navigate) => {
@@ -42,8 +39,6 @@ const Header = () => {
     userRuby: 0,
     userPoint: 0,
   })
-
-  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -67,6 +62,17 @@ const Header = () => {
 
   const login = () => {
     navigate('/login')
+  }
+
+  const logout = async () => {
+    try {
+      await axios.post('/api/user/logout')
+      localStorage.removeItem('accessToken')
+      navigate('/')
+    } catch (error) {
+      console.error('Logout Error:', error)
+      alert('로그아웃에 실패했습니다.')
+    }
   }
 
   const token = localStorage.getItem('accessToken')
