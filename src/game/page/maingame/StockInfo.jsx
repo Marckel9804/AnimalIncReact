@@ -6,6 +6,8 @@ import {
   PointElement,
   LineElement,
   BarElement,
+  plugins,
+  Tooltip,
 } from "chart.js";
 import { Bar, Chart, Line } from "react-chartjs-2";
 
@@ -18,13 +20,16 @@ function StockInfo({
   setInd,
   comp,
   setComp,
+  gameStatus,
 }) {
   ChartJS.register(
     CategoryScale,
     LinearScale,
     PointElement,
     LineElement,
-    BarElement
+    BarElement,
+    plugins,
+    Tooltip
   );
 
   const indColor = {
@@ -40,33 +45,50 @@ function StockInfo({
   const compCheck = (e) => {
     setComp(e.target.value);
   };
+  const options = {
+    plugins: {
+      Tooltip: {
+        callbacks: {
+          label: function (tooltipItem, data) {
+            let label = data.datasets[tooltipItem.datasetIndex].label || "";
+            if (label) {
+              label += ": ";
+            }
+            label += Math.round(tooltipItem.yLabel * 100) / 100;
+            return label;
+          },
+          events: ["hover"],
+        },
+      },
+    },
+  };
 
   const data = {
     labels: [
-      "January",
-      "February",
-      "March",
-      "April",
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
       "May",
       "June",
       "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
+      "Aug",
+      "Sept",
+      "Oct",
+      "Nov",
+      "Dec",
     ],
     datasets: [
       {
         type: "line",
-        label: "Dataset 1",
+        label: "Line",
         borderColor: "rgb(54, 162, 235)",
         borderWidth: 1,
         data: stockInfo[ind + comp].price,
       },
       {
         type: "bar",
-        label: "Dataset 2",
+        label: "Bar",
         backgroundColor: indColor[ind],
         data: stockInfo[ind + comp].price,
         borderColor: "black",
@@ -102,18 +124,16 @@ function StockInfo({
         </div>
         <div className="main-window-inside">
           <div className="flex gap-6">
-            <input className="nes-input" type="nuber" id="turn" />
             <button
               className="nes-btn primary"
               onClick={() => {
-                const turn = document.querySelector("#turn").value;
-                testCall(turn);
+                testCall(gameStatus.turn);
               }}
             >
-              테스트
+              다음 턴({gameStatus.turn + 1})
             </button>
           </div>
-          <div className="mt-5">
+          <div className="mt-5 flex gap-5">
             <label>
               <input
                 type="radio"
@@ -171,8 +191,8 @@ function StockInfo({
             </label>
           </div>
           <div className="win-chart-container">
-            <div>
-              <label>
+            <div className=" flex-col gap-4 mt-6">
+              <label className="flex">
                 <input
                   type="radio"
                   value={"1"}
@@ -182,7 +202,7 @@ function StockInfo({
                 />
                 <span>{ind + "1"}</span>
               </label>
-              <label>
+              <label className="flex">
                 <input
                   type="radio"
                   value={"2"}
@@ -192,7 +212,7 @@ function StockInfo({
                 />
                 <span>{ind + "2"}</span>
               </label>
-              <label>
+              <label className="flex">
                 <input
                   type="radio"
                   value={"3"}
@@ -202,7 +222,7 @@ function StockInfo({
                 />
                 <span>{ind + "3"}</span>
               </label>
-              <label>
+              <label className="flex">
                 <input
                   type="radio"
                   value={"4"}
@@ -213,10 +233,8 @@ function StockInfo({
                 <span>{ind + "4"}</span>
               </label>
             </div>
-            <Chart data={data} />
+            <Chart data={data} options={options} />
           </div>
-          {/* <Bar /> */}
-          {/* <Chart data={data} /> */}
         </div>
       </div>
     </div>

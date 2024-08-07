@@ -8,7 +8,7 @@ import StartBar from "./StartBar.jsx";
 import ItemsWin from "./Items.jsx";
 import WinChat from "./WinChat.jsx";
 import axios from "../../../utils/axios.js";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function MainGame() {
   const [showMI, setShowMI] = useState(true);
@@ -33,7 +33,8 @@ function MainGame() {
   };
   const [progress, setProgress] = useState(0);
   const [gameStatus, setGameStatus] = useState(null);
-  const [userInfo, setUserInfo] = useState([]);
+  const [myStatus, setMyStatus] = useState(null);
+  const [otherStatus, setOtherStatus] = useState([]);
   const [stockInfo, setStockInfo] = useState([]);
 
   const [ind, setInd] = useState("food");
@@ -42,12 +43,45 @@ function MainGame() {
     "#########차후 해당 변수를 유저 정보를 불러오는 코드로 대체#########";
 
   const { room_id } = useParams();
+  const navigate = useNavigate();
+  const formatNumber = (number) => {
+    const hundredMillion = Math.floor(number / 100000000);
+    const remainderAfterHundredMillion = number % 100000000;
+    const tenThousand = Math.floor(remainderAfterHundredMillion / 10000);
+    const remainder = remainderAfterHundredMillion % 10000;
+
+    let result = "";
+    if (hundredMillion > 0) {
+      result += `${hundredMillion}억 `;
+    }
+    if (tenThousand > 0) {
+      result += `${tenThousand}만 `;
+    }
+    if (remainder !== 0) {
+      result += remainder;
+    }
+
+    return result.trim();
+  };
 
   const getUserInfo = () => {
-    axios.get(`/game/userStatus/${room_id}`).then((res) => {
-      console.log("user list", res);
-      setUserInfo(res.data);
-    });
+    axios
+      .get(`/game/userStatus/${room_id}`)
+      .then((res) => {
+        console.log("users", res.data);
+        // 데이터 분배
+        const myStatusData = res.data.find((item) => item.me === true);
+        const otherStatusData = res.data.filter((item) => item.me === false);
+        console.log("me", myStatusData);
+        console.log("others", otherStatusData);
+
+        // 상태 업데이트
+        setMyStatus(myStatusData);
+        setOtherStatus(otherStatusData);
+      })
+      .catch((error) => {
+        console.error("Error fetching user info:", error);
+      });
   };
 
   const getStockInfo = () => {
@@ -63,9 +97,6 @@ function MainGame() {
         },
         {}
       );
-      if (res.data.length == 0) {
-        testCall(1);
-      }
       console.log("stock list", res);
       console.log("processed data", processedData);
       setStockInfo(processedData);
@@ -74,7 +105,13 @@ function MainGame() {
 
   const getRoomInfo = () => {
     axios.get(`/game/roomInfo/${room_id}`).then((res) => {
-      console.log(res);
+      console.log("gameStatus", res.data);
+      if (res.data.turn == 0) {
+        testCall(0);
+      } else {
+        getUserInfo();
+        getStockInfo();
+      }
       setGameStatus(res.data);
     });
   };
@@ -82,6 +119,10 @@ function MainGame() {
   const testCall = (turn) => {
     axios.get(`/game/test/${room_id}/${turn}`).then((res) => {
       console.log("test", res);
+
+      setTimeout(() => {
+        getStockInfo(), getRoomInfo(), getUserInfo(0);
+      }, 3000);
     });
   };
 
@@ -97,15 +138,26 @@ function MainGame() {
 
     // 여기서 데이터를 불러오는 비동기 함수를 호출합니다.
     getRoomInfo();
-    getUserInfo();
-    getStockInfo();
 
     return () => {
       clearInterval(timer);
     };
   }, []);
 
-  if (gameStatus === null || progress < 100) {
+  useEffect(() => {
+    if (otherStatus.length === 4 && progress === 100) {
+      console.log("댓츠 노노");
+      navigate("/");
+    }
+  }, [otherStatus, progress]);
+
+  if (
+    gameStatus === null ||
+    myStatus === null ||
+    stockInfo === null ||
+    otherStatus == null ||
+    progress < 100
+  ) {
     return (
       <div>
         <progress
@@ -120,7 +172,12 @@ function MainGame() {
   return (
     <div className="maingame-container">
       <div className="flex pt-4 pr-4 pl-4 pb-12 ">
-        <MyInfo show={showMI} setShow={setShowMI} getUserInfo={getUserInfo} />
+        <MyInfo
+          show={showMI}
+          setShow={setShowMI}
+          myStatus={myStatus}
+          formatNumber={formatNumber}
+        />
         <div className="flex-col" style={{ width: "50%" }}>
           <StockInfo
             show={showSI}
@@ -131,11 +188,17 @@ function MainGame() {
             setInd={setInd}
             comp={comp}
             setComp={setComp}
+            gameStatus={gameStatus}
           />
           <ItemsWin show={showIW} setShow={setShowIW} />
         </div>
         <div className="flex-col" style={{ width: "28%" }}>
-          <OtherPlayer show={showOP} setShow={setShowOP} />
+          <OtherPlayer
+            show={showOP}
+            setShow={setShowOP}
+            otherStatus={otherStatus}
+            formatNumber={formatNumber}
+          />
           <WinChat
             show={showWC}
             setShow={setShowWC}
