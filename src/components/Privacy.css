@@ -1,0 +1,101 @@
+.privacy-page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.privacy-content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.privacy-tabs {
+  display: flex;
+  border-bottom: 2px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.privacy-tabs button {
+  padding: 15px 58px;
+  border: none;
+  background-color: #e0e0e0;
+  color: #666;
+  cursor: pointer;
+  outline: none;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  margin-right: 2px;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #fffcfc;
+}
+
+.privacy-tabs button.active {
+  background-color: #fff;
+  color: #000;
+  border: 6px solid rgba(76, 189, 184, 0.3);
+  border-bottom: none;
+  font-weight: bold;
+}
+
+.privacy-tabs button:not(.active):hover {
+  background-color: #d0d0d0;
+}
+
+.privacy-tabs button:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 189, 184, 0.5);
+}
+
+.privacy-content {
+  flex: 1;
+  width: 100%;
+  max-width: 1520px;
+  max-height: 550px; /* 최소 높이 설정 */
+  padding: 20px;
+  background: white;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  resize: both; /* 크기 조절 가능하게 설정 */
+  min-height: 150px; /* 최소 높이 설정 */
+  min-width: 300px; /* 최소 너비 설정 */
+}
+
+.privacy-content-text {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+}
+
+.privacy-content-text h4 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.privacy-content-text h3 {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.privacy-content-text h2 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.privacy-content-text p {
+  font-size: 14px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.privacy-content-text br {
+  line-height: 2;
+}

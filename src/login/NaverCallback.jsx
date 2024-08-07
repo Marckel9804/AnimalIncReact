@@ -47,8 +47,10 @@ const NaverCallback = () => {
                     console.error('Error details:', error.response || error.message || error);
                     if (error.response && error.response.data) {
                         alert(error.response.data);
+                        navigate('/login');
                     } else {
                         alert('네이버 로그인 중 오류가 발생했습니다.');
+                        navigate('/login');
                     }
                 }
             };

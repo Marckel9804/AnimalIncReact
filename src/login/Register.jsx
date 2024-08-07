@@ -128,10 +128,12 @@ const Register = () => {
                 <div className="register-input email-input">
                     <input type="text" value={emailUser} onChange={(e) => setEmailUser(e.target.value)}
                            placeholder="이메일"/>
-                    <span>@</span>
-                    <input type="text" value={emailDomain} onChange={(e) => setEmailDomain(e.target.value)}
+                    <span className="email-at">@</span>
+                    <input type="text"
+                           value={emailDomain}
+                           onChange={(e) => setEmailDomain(e.target.value)}
                            placeholder="도메인"/>
-                    <select onChange={handleDomainChange}>
+                    <select onChange={handleDomainChange} className="register-select nes-pointer">
                         <option value="custom">직접 입력</option>
                         <option value="naver.com">naver.com</option>
                         <option value="gmail.com">gmail.com</option>

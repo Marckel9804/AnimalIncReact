@@ -47,178 +47,147 @@ const Mypage = () => {
         navigate('/login')
       }
     }
-
-    fetchUserInfo()
+      fetchUserInfo()
   }, [navigate])
 
-  const openEditModal = () => setIsEditModalOpen(true)
-  const closeEditModal = () => setIsEditModalOpen(false)
-
-  const openDeleteModal = () => setIsDeleteModalOpen(true)
-  const closeDeleteModal = () => setIsDeleteModalOpen(false)
-
-  const handleUpdate = async () => {
-    try {
-      const response = await axios.post(
-        '/api/user/update-profile',
-        updatedInfo,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
-        }
-      )
-      setUserInfo(response.data)
-      alert('정보가 업데이트되었습니다.')
-      closeEditModal()
-    } catch (error) {
-      console.error('Error updating user info:', error)
-      alert('정보 업데이트 중 오류가 발생했습니다. 다시 시도해 주세요.')
+    if (!userInfo) {
+        return <div>Loading...</div>
     }
-  }
 
-  const handleDelete = async () => {
-    try {
-      await axios.delete(
-        '/api/user/delete',
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
+    const openEditModal = () => setIsEditModalOpen(true);
+    const closeEditModal = () => setIsEditModalOpen(false);
+    const openDeleteModal = () => setIsDeleteModalOpen(true);
+    const closeDeleteModal = () => setIsDeleteModalOpen(false);
+
+    const handleUpdate = async () => {
+        try {
+            const response = await axios.post(
+                '/api/user/update-profile',
+                updatedInfo,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                    },
+                }
+            )
+            setUserInfo(response.data);
+            alert('정보가 업데이트되었습니다.');
+            closeEditModal();
+        } catch (error) {
+            console.error('Error updating user info:', error);
+            alert('정보 업데이트 중 오류가 발생했습니다. 다시 시도해 주세요.');
         }
-      )
-      alert('회원 탈퇴가 완료되었습니다.')
-      localStorage.removeItem('accessToken')
-      window.location.href = '/login' // 회원 탈퇴 후 로그인 페이지로 이동
-    } catch (error) {
-      console.error('Error deleting user:', error)
-      alert('회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.')
     }
-  }
 
-  if (!userInfo) {
-    return <div>Loading...</div>
-  }
-
-  return (
-    <>
-      <Header />
-      <div className="mypage">
-        <header className="mypage-header">
-          <h1>마이페이지</h1>
-        </header>
-        <div className="mypage-content">
-          <div className="profile-section">
-            <img
-              src="path/to/profile-image.jpg"
-              alt="프로필"
-              className="profile-image"
-            />
-            <div className="profile-name">{userInfo.userNickname}</div>
-            <img
-              src="path/to/rabbit-image.jpg"
-              alt="토끼"
-              className="profile-icon"
-            />
-            <div className="profile-score">{userInfo.userGrade}</div>
-          </div>
-          <div className="info-section">
-            <div className="info-item">
-              <span className="info-label">이름</span>
-              <span className="info-value">{userInfo.userRealname}</span>
-            </div>
-            <div className="info-item">
-              <span className="info-label">이메일</span>
-              <span className="info-value">{userInfo.userEmail}</span>
-            </div>
-            <div className="info-item">
-              <span className="info-label">생년월일</span>
-              <span className="info-value">{userInfo.userBirthdate}</span>
-            </div>
-            <div className="info-item">
-              <span className="info-label">포인트</span>
-              <span className="info-value">{userInfo.userPoint} 포인트</span>
-            </div>
-            <div className="info-item">
-              <span className="info-label">루비</span>
-              <span className="info-value">{userInfo.userRuby} 루비</span>
-            </div>
-            <div className="info-item">
-              <span className="info-label">아이템</span>
-              <span className="info-value">{userInfo.userItem}</span>
-            </div>
-            <div className="button-section">
-              <button className="nes-btn is-primary" onClick={openEditModal}>
-                정보 수정
-              </button>
-              <button className="nes-btn is-error" onClick={openDeleteModal}>
-                회원 탈퇴
-              </button>
-            </div>
-          </div>
-        </div>
-        <Modal
-          isOpen={isEditModalOpen}
-          onRequestClose={closeEditModal}
-          className="modal"
-        >
-          <h2>정보 수정</h2>
-          <div className="modal-content">
-            <div className="modal-item">
-              <label>닉네임</label>
-              <input
-                type="text"
-                value={updatedInfo.userNickname}
-                onChange={(e) =>
-                  setUpdatedInfo({
-                    ...updatedInfo,
-                    userNickname: e.target.value,
-                  })
+    const handleDelete = async () => {
+        try {
+            await axios.delete(
+                '/api/user/delete',
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                    },
                 }
-              />
-            </div>
-            <div className="modal-item">
-              <label>생년월일</label>
-              <input
-                type="text"
-                value={updatedInfo.userBirthdate}
-                onChange={(e) =>
-                  setUpdatedInfo({
-                    ...updatedInfo,
-                    userBirthdate: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <button className="nes-btn is-primary" onClick={handleUpdate}>
-              저장
-            </button>
-            <button className="nes-btn" onClick={closeEditModal}>
-              닫기
-            </button>
-          </div>
-        </Modal>
-        <Modal
-          isOpen={isDeleteModalOpen}
-          onRequestClose={closeDeleteModal}
-          className="modal"
-        >
-          <h2>회원 탈퇴</h2>
-          <div className="modal-content">
-            <p>정말로 탈퇴하시겠습니까?</p>
-            <button className="nes-btn is-error" onClick={handleDelete}>
-              탈퇴
-            </button>
-            <button className="nes-btn" onClick={closeDeleteModal}>
-              닫기
-            </button>
-          </div>
-        </Modal>
-      </div>
-      <Footer />
-    </>
-  )
-}
+            )
+            alert('회원 탈퇴가 완료되었습니다.');
+            localStorage.removeItem('accessToken');
+            navigate('/');
+        } catch (error) {
+            console.error('Error deleting user:', error)
+            alert('회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.')
+        }
+    }
 
+
+    /*    const changePassword = async () => {
+            try {
+                await
+            }
+        }*/
+
+    return (
+        <>
+            <Header />
+            <div className="mypage">
+                <header className="mypage-header">
+                    <h1>마이페이지</h1>
+                </header>
+                <div className="mypage-content">
+                    <div className="profile-section">
+                        <img src="path/to/profile-image.jpg" alt="프로필" className="profile-image" />
+                        <div className="profile-name">{userInfo.userNickname}</div>
+                        <img src="path/to/rabbit-image.jpg" alt="토끼" className="profile-icon" />
+                        <div className="profile-score">{userInfo.userGrade}</div>
+                    </div>
+                    <div className="info-section">
+                        <div className="info-item">
+                            <span className="info-label">이름</span>
+                            <span className="info-value">{userInfo.userRealname}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">이메일</span>
+                            <span className="info-value">{userInfo.userEmail}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">생년월일</span>
+                            <span className="info-value">{userInfo.userBirthdate}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">포인트</span>
+                            <span className="info-value">{userInfo.userPoint} 포인트</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">루비</span>
+                            <span className="info-value">{userInfo.userRuby} 루비</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">아이템</span>
+                            <span className="info-value">{userInfo.userItem}</span>
+                        </div>
+                        <div className="button-section">
+                            <button className="nes-btn is-primary" onClick={openEditModal}>정보 수정</button>
+{/*
+                            <button className="nes-btn is-warning" onClick={changePassword}>비밀번호 변경</button>
+*/}
+                            <button className="nes-btn is-error" onClick={openDeleteModal}>회원 탈퇴</button>
+                        </div>
+                    </div>
+                </div>
+                <Modal isOpen={isEditModalOpen} onRequestClose={closeEditModal} className="modal">
+                    <h2>정보 수정</h2>
+                    <div className="modal-content">
+                        <div className="modal-item">
+                            <label>닉네임</label>
+                            <input
+                                type="text"
+                                value={updatedInfo.userNickname}
+                                onChange={(e) => setUpdatedInfo({ ...updatedInfo, userNickname: e.target.value })}
+                            />
+                        </div>
+                        <div className="modal-item">
+                            <label>생년월일</label>
+                            <input
+                                type="text"
+                                value={updatedInfo.userBirthdate}
+                                onChange={(e) => setUpdatedInfo({ ...updatedInfo, userBirthdate: e.target.value })}
+                            />
+                        </div>
+                        <button className="nes-btn is-primary" onClick={handleUpdate}>저장</button>
+                        <button className="nes-btn" onClick={closeEditModal}>닫기</button>
+                    </div>
+                </Modal>
+                <Modal isOpen={isDeleteModalOpen} onRequestClose={closeDeleteModal} className="modal">
+                    <h2>회원 탈퇴</h2>
+                    <div className="modal-content">
+                        <p>정말로 탈퇴하시겠습니까?</p>
+                        <button className="nes-btn is-error" onClick={handleDelete}>탈퇴</button>
+                        <button className="nes-btn" onClick={closeDeleteModal}>닫기</button>
+                    </div>
+                </Modal>
+            </div>
+            <Footer />
+        </>
+    );
+};
 export default Mypage
