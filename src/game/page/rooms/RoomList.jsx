@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "../../../utils/axios.js";
 import styled from "styled-components";
 import CreateRoom from "./CreateRoom";
@@ -7,7 +7,7 @@ import Footer from "../../../components/Footer";
 
 const RoomList = () => {
   // 유저 정보 (임시)
-  const user = [{ userNum: 47, userGrade: "silver" }];
+  const user = [{ userNum: 47, userGrade: "Gold" }];
 
   // userGrade에 따라 선택할 수 있는 채널이 달라짐
   const channelList = ["bronze", "silver", "Gold"];
@@ -26,22 +26,22 @@ const RoomList = () => {
 
   // 게임방 리스트 불러오기
   const [roomLists, setRoomLists] = useState([]);
-  const getGameRooms = () => {
+  const [selectChannel, setSelectChannel] = useState();
+  const getGameRooms = (e) => {
+    // 선택한 채널을 스테이트 변수에 세팅
+    setSelectChannel(e);
+    // 모오든 방 정보 받아오자~
     axios
       .get(`/api/user/game/selectAllRoom`)
       .then((res) => {
-        console.log(res.data);
+        console.log("방 리스트 받아온거 확인! ", res.data);
         setRoomLists([res.data]);
-        console.log("roomLists : ", roomLists);
+        console.log("roomLists : ", roomLists[0]);
       })
       .catch((error) => {
         console.log(error);
       });
   };
-
-  useEffect(() => {
-    getGameRooms();
-  }, []);
 
   return (
     <>
@@ -51,7 +51,10 @@ const RoomList = () => {
           <ChannelList className="nes-container is-rounded">
             <div className="nes-container with-title is-centered">
               <p className="title">채널 선택</p>
-              <ChanelButton className="nes-btn is-primary">
+              <ChanelButton
+                className="nes-btn is-primary"
+                onClick={() => getGameRooms("free")}
+              >
                 자유 채널
               </ChanelButton>
               {channelList.map((item, index) => {
@@ -62,7 +65,11 @@ const RoomList = () => {
                     : (active = "nes-btn is-disabled");
                 }
                 return (
-                  <ChanelButton className={active} key={index}>
+                  <ChanelButton
+                    className={active}
+                    key={index}
+                    onClick={() => getGameRooms(channelList[index])}
+                  >
                     {channelKR[index]}
                   </ChanelButton>
                 );
@@ -88,9 +95,27 @@ const RoomList = () => {
             <div className="nes-container is-rounded bg-white">
               <ul className="nes-list is-circle">
                 * 게임방
-                <GameList>[자유] (1/4) 즐겜하실분~</GameList>
-                <GameList>[자유] (3/4) 묻고 더블로 가</GameList>
-                <GameList>[골드] (2/4) 헬루!!</GameList>
+                {/* 유저가 클릭한 채널의 방만 보이도록 필터링 후 출력하기 */}
+                {roomLists.length > 0 && roomLists[0] ? (
+                  roomLists[0]
+                    .filter((el) => {
+                      console.log(selectChannel);
+                      console.log(
+                        "방 정보 == 선택 채널 일치 여부 : ",
+                        el.tier === selectChannel
+                      );
+                      return el.tier === selectChannel;
+                    })
+                    .map((item, index) => (
+                      <GameList key={index}>
+                        [{item.tier}] ({item.players}/{item.players + item.bots}
+                        )&nbsp;
+                        {item.roomName}
+                      </GameList>
+                    ))
+                ) : (
+                  <BeforeList>채널을 선택해주세요 !</BeforeList>
+                )}
               </ul>
             </div>
           </div>
@@ -122,6 +147,17 @@ const GameList = styled.li`
     cursor: pointer;
     background-color: #cccccc;
   }
+`;
+
+const BeforeList = styled.div`
+  width: 100%;
+  height: 25vh;
+  background-color: #cccccc;
+  border-radius: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export default RoomList;

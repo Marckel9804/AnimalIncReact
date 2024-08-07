@@ -10,7 +10,7 @@ const CreateRoom = (props) => {
   const user = props.user[0];
   console.log("유저 정보 확인: ", props.user[0]);
   // roomId 생성
-  const nowTime = moment().format("YYMMDDHHMM");
+  const nowTime = moment().format("YYMMDDHHmm");
   const roomId = `${nowTime}_R_${user.userNum}`;
   console.log("방 번호 확인: ", roomId);
 
@@ -59,7 +59,7 @@ const CreateRoom = (props) => {
       })
       .then(() => {
         alert("📢➰ 게임 방이 만들어졌어요.");
-        location.reload();
+        navigate(`/roomwait/${roomId}`);
       })
       .catch((error) => {
         alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
@@ -105,7 +105,7 @@ const CreateRoom = (props) => {
               type="radio"
               className="nes-radio"
               name="channel"
-              value="gold"
+              value="Gold"
               onClick={(e) => {
                 roomRef.current[1] = e.target.value;
               }}
