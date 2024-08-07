@@ -59,7 +59,7 @@ const CreateRoom = (props) => {
       })
       .then(() => {
         alert("📢➰ 게임 방이 만들어졌어요.");
-        location.reload();
+        navigate(`/roomwait/${roomId}`, { state: { roomId: roomId, roomName: roomRef.current[0], maxPlayers: roomRef.current[2] } });
       })
       .catch((error) => {
         alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
