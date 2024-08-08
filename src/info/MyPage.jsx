@@ -13,6 +13,10 @@ const Mypage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+  const [isProfilePictureModalOpen, setIsProfilePictureModalOpen] = useState(false);
+  const [availablePictures, setAvailablePictures] = useState([]);
+  const [selectedPicture, setSelectedPicture] = useState('');
+  const [uploadFile, setUploadFile] = useState(null);
   const [updatedInfo, setUpdatedInfo] = useState({
     userNickname: '',
     userRealname: '',
@@ -63,11 +67,30 @@ const Mypage = () => {
     }
 
     const openEditModal = () => setIsEditModalOpen(true);
-    const closeEditModal = () => setIsEditModalOpen(false);
+    const closeEditModal = () => {
+        setUpdatedInfo({
+            userNickname: userInfo.userNickname,
+            userRealname: userInfo.userRealname,
+            userBirthdate: userInfo.userBirthdate,
+        });
+        setIsEditModalOpen(false);
+    };
+
     const openDeleteModal = () => setIsDeleteModalOpen(true);
     const closeDeleteModal = () => setIsDeleteModalOpen(false);
+
     const openChangePasswordModal = () => setIsChangePasswordModalOpen(true);
-    const closeChangePasswordModal = () => setIsChangePasswordModalOpen(false);
+    const closeChangePasswordModal = () => {
+        setPasswordInfo({
+            currentPassword: '',
+            newPassword: '',
+            confirmPassword: '',
+        });
+        setIsChangePasswordModalOpen(false);
+    };
+
+    const openProfilePictureModal = () => setIsProfilePictureModalOpen(true);
+    const closeProfilePictureModal = () => setIsProfilePictureModalOpen(false);
 
     const handleUpdate = async () => {
         try {
@@ -112,7 +135,7 @@ const Mypage = () => {
 
     const handleChangePassword = async () => {
         if (passwordInfo.newPassword !== passwordInfo.confirmPassword) {
-            alert('새 비밂번호가 일치하지 않습니다.');
+            alert('비밀번호 확인과 일치하지 않습니다. ');
             return;
         }
 
@@ -135,22 +158,99 @@ const Mypage = () => {
         }
     }
 
+    const getTierIcon = (userGrade) => {
+        switch (userGrade) {
+            case 'Bronze':
+                return 'src/image/Bronze.png';
+            case 'Silver':
+                return 'src/image/Silver.png';
+            case 'Gold':
+                return 'src/image/Gold.png';
+            default:
+                return 'src/image/Default.png';
+        }
+    };
+
+    const handleProfilePictureSelect = async (pic) => {
+        setSelectedPicture(pic);
+        closeProfilePictureModal();
+
+        const token = localStorage.getItem('accessToken');
+        await axios.post(
+            '/api/user/update-profile-picture',
+            {userPicture: pic},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+        const response = await axios.get('/api/user/get-profile', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        setUserInfo(response.data);
+    }
+
+    const handleFileChange = (event) => {
+        setUploadFile(event.target.files[0]);
+    };
+
+    const handleUpload = async () => {
+        if (!uploadFile) return;
+
+        const formData = new FormData();
+        formData.append('file', uploadFile);
+        formData.append('folderName', 'profile-pictures');
+
+        const token = localStorage.getItem('accessToken');
+        const response = await axios.post('/api/upload/img', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        setSelectedPicture(response.data.url);
+        closeProfilePictureModal();
+
+        await axios.post(
+            '/api/user/update-profile-picture',
+            {userPicture: response.data.url},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        const userInfoResponse = await axios.get('/api/user/get-profile', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+        setUserInfo(userInfoResponse.data);
+    }
+
+    if (!userInfo) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <>
             <Header />
             <div className="mypage">
                 <div className="mypage-content">
                     <div className="profile-section">
-                        <div className="profile-image-wrapper">
-                            <img src="src/image/Profile.jpg" alt="프로필" className="profile-image"/>
-                        </div>
                         <div className="profile-name">{userInfo.userNickname}</div>
+                        <div className="profile-image-wrapper nes-pointer" onClick={openProfilePictureModal}>
+                            <img src={selectedPicture || userInfo.userPicture} alt="프로필" className="profile-image"/>
+                        </div>
                         <div className="profile-icon-wrapper">
-                            <img src="src/image/Silver.png" alt="티어 아이콘" className="profile-icon"/>
+                        <img src={getTierIcon(userInfo.userGrade)} alt="티어 아이콘" className="profile-icon"/>
                         </div>
                     </div>
                     <div className="info-section">
-                        <div className="info-item">
+                    <div className="info-item">
                             <span className="info-label">이름</span>
                             <span className="info-value">{userInfo.userRealname}</span>
                         </div>
@@ -172,13 +272,13 @@ const Mypage = () => {
                         </div>
                         <div className="info-item">
                             <span className="info-label">아이템</span>
-                            <span className="info-value">{userInfo.userItem}</span>
+                            <span className="info-value">{userInfo.userItem}개</span>
                         </div>
                         <div className="button-section">
                             <button className="nes-btn is-primary" id="mypage-btn" onClick={openEditModal}>정보 수정
                             </button>
                             {!userInfo.slogin && (
-                                <button className="nes-btn is-warning" onClick={openChangePasswordModal}>비밀번호
+                                <button className="nes-btn is-warning" id="mypage-btn" onClick={openChangePasswordModal}>비밀번호
                                     변경</button>
                             )}
                             <button className="nes-btn is-error" id="mypage-btn" onClick={openDeleteModal}>회원 탈퇴
@@ -205,16 +305,20 @@ const Mypage = () => {
                                 onChange={(e) => setUpdatedInfo({ ...updatedInfo, userBirthdate: e.target.value })}
                             />
                         </div>
-                        <button className="nes-btn is-primary" onClick={handleUpdate}>저장</button>
-                        <button className="nes-btn" onClick={closeEditModal}>닫기</button>
+                        <div className="modal-buttons">
+                            <button className="nes-btn is-primary" id="mypage-modal-btn" onClick={handleUpdate}>저장</button>
+                            <button className="nes-btn" id="mypage-modal-btn" onClick={closeEditModal}>닫기</button>
+                        </div>
                     </div>
                 </Modal>
                 <Modal isOpen={isDeleteModalOpen} onRequestClose={closeDeleteModal} className="modal">
                     <h2 className="modal-title">회원 탈퇴</h2>
                     <div className="modal-content">
-                        <p>정말로 탈퇴하시겠습니까?</p>
-                        <button className="nes-btn is-error" onClick={handleDelete}>탈퇴</button>
-                        <button className="nes-btn" onClick={closeDeleteModal}>닫기</button>
+                        <p>정말 탈퇴하시겠습니까?</p>
+                        <div className="modal-buttons">
+                            <button className="nes-btn is-error" id="mypage-modal-btn" onClick={handleDelete}>탈퇴</button>
+                            <button className="nes-btn" id="mypage-modal-btn" onClick={closeDeleteModal}>닫기</button>
+                        </div>
                     </div>
                 </Modal>
                 <Modal isOpen={isChangePasswordModalOpen} onRequestClose={closeChangePasswordModal} className="modal">
@@ -244,8 +348,34 @@ const Mypage = () => {
                                 onChange={(e) => setPasswordInfo({...passwordInfo, confirmPassword: e.target.value })}
                             />
                         </div>
-                        <button className = "nes-btn is-primary" onClick={handleChangePassword}>변경하기</button>
-                        <button className="nes-btn" onClick={closeChangePasswordModal}>닫기</button>
+                        <div className="modal-buttons">
+                            <button className="nes-btn is-primary" id="mypage-modal-btn" onClick={handleChangePassword}>변경하기</button>
+                            <button className="nes-btn" id="mypage-modal-btn" onClick={closeChangePasswordModal}>닫기</button>
+                        </div>
+                    </div>
+                </Modal>
+                <Modal isOpen={isProfilePictureModalOpen} onRequestClose={closeProfilePictureModal} className="modal">
+                    <h2 className="modal-title">프로필 사진 선택</h2>
+                    <div className="modal-content">
+                        <div className="modal-item">
+                            <input type="file" onChange={handleFileChange} />
+                        </div>
+                        <div className="modal-buttons">
+                            <button className="nes-btn is-primary" id="mypage-modal-btn" onClick={handleUpload}>업로드
+                            </button>
+                            <button className="nes-btn is-error" id="mypage-modal-btn"
+                                    onClick={closeProfilePictureModal}>취소
+                            </button>
+                        </div>
+                        {availablePictures.map((pic, index) => (
+                            <img
+                                key={index}
+                                src={pic}
+                                alt={`프로필 ${index}`}
+                                className="profile-pic-option"
+                                onClick={() => handleProfilePictureSelect(pic)}
+                            />
+                        ))}
                     </div>
                 </Modal>
             </div>

@@ -85,15 +85,9 @@ const Rank = () => {
         if (currentPage < pageNumbers.length) setCurrentPage(currentPage + 1);
     }
 
-    const handlePrevTenPages = () => {
-        if (currentPage > 5) setCurrentPage(currentPage - 5);
-        else setCurrentPage(1);
-    }
-
-    const handleNextTenPages = () => {
-        if (currentPage + 5 <= pageNumbers.length) setCurrentPage(currentPage + 5);
-        else setCurrentPage(pageNumbers.length);
-    }
+    // 빈 행 채우기
+    const emptyRows = itemsPerPage - currentItems.length;
+    const emptyData = { userNickname: '-', userGrade: '-', userPoint: '-' };
 
     return (
         <>
@@ -101,9 +95,15 @@ const Rank = () => {
             <div className="ranking-page">
                 <div className="ranking-header">
                     <div className="tab-section">
-                        <button className={`tab-button ${selectedTab === 'Gold' ? 'active' : ''}`} onClick={() => handleTabClick('Gold')}>Gold</button>
-                        <button className={`tab-button ${selectedTab === 'Silver' ? 'active' : ''}`} onClick={() => handleTabClick('Silver')}>Silver</button>
-                        <button className={`tab-button ${selectedTab === 'Bronze' ? 'active' : ''}`} onClick={() => handleTabClick('Bronze')}>Bronze</button>
+                        <button className={`rank-tab-button nes-pointer ${selectedTab === 'Gold' ? 'active' : ''}`}
+                                onClick={() => handleTabClick('Gold')}>Gold
+                        </button>
+                        <button className={`rank-tab-button nes-pointer ${selectedTab === 'Silver' ? 'active' : ''}`}
+                                onClick={() => handleTabClick('Silver')}>Silver
+                        </button>
+                        <button className={`rank-tab-button nes-pointer ${selectedTab === 'Bronze' ? 'active' : ''}`}
+                                onClick={() => handleTabClick('Bronze')}>Bronze
+                        </button>
                     </div>
                     <div className="search-section">
                         <input
@@ -111,19 +111,19 @@ const Rank = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onKeyPress={handleKeyPress} // 엔터키 이벤트 추가
-                            placeholder="검색"
-                            className="search-input"
+                            placeholder="닉네임으로 검색"
+                            className="rank-search-input"
                         />
-                        <button onClick={handleSearch} className="nes-btn is-primary">검색</button>
+                        <button onClick={handleSearch} className="nes-btn" id="rank-search-btn">검색</button>
                     </div>
                 </div>
                 <table className="ranking-table">
                     <thead>
                     <tr>
-                        <th>#</th>
+                        <th>순위</th>
                         <th>유저</th>
                         <th>티어</th>
-                        <th>point</th>
+                        <th>포인트</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -135,22 +135,34 @@ const Rank = () => {
                             <td>{user.userPoint}</td>
                         </tr>
                     ))}
+                    {[...Array(emptyRows)].map((_, index) => (
+                        <tr key={`empty-${index}`}>
+                            <td>{indexOfFirstItem + currentItems.length + index + 1}</td>
+                            <td>{emptyData.userNickname}</td>
+                            <td>{emptyData.userGrade}</td>
+                            <td>{emptyData.userPoint}</td>
+                        </tr>
+                    ))}
                     </tbody>
                 </table>
-                <div className="pagination">
-                    <button onClick={handlePrevTenPages} disabled={currentPage <= 5}>5 이전</button>
-                    <button onClick={handlePrevPage} disabled={currentPage === 1}>이전</button>
+                <div className="rank-pagination">
+                    <button onClick={() => paginate(1)} disabled={currentPage === 1} className="nes-pointer">{'<<'}</button>
+                    <button onClick={handlePrevPage} disabled={currentPage === 1} className="nes-pointer">{'<'}</button>
                     {pageNumbers.map(number => (
-                        <button key={number} onClick={() => paginate(number)} className={currentPage === number ? 'active' : ''}>
+                        <button key={number} onClick={() => paginate(number)}
+                                className={`nes-pointer ${currentPage === number ? 'active' : ''}`}
+                                id="rank-page-num"
+                        >
                             {number}
                         </button>
                     ))}
-                    <button onClick={handleNextPage} disabled={currentPage >= pageNumbers.length}>다음</button>
-                    <button onClick={handleNextTenPages} disabled={currentPage + 5 > pageNumbers.length}>5 다음</button>
+                    <button onClick={handleNextPage} disabled={currentPage >= pageNumbers.length} className="nes-pointer">{'>'}</button>
+                    <button onClick={() => paginate(pageNumbers.length)}
+                            disabled={currentPage >= pageNumbers.length} className="nes-pointer">{'>>'}</button>
                 </div>
             </div>
             <div className="rank-back"/>
-            <Footer />
+            <Footer/>
         </>
     );
 };

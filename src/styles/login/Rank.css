@@ -3,34 +3,47 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    background-color: #f5f5f5;
+    padding: 10px;
+    background-color: #fff;
+    width: 80%; /* 전체 너비를 차지하도록 설정 */
+    max-width: 800px; /* 최대 너비 설정 */
+    box-sizing: border-box; /* 패딩과 테두리를 포함한 전체 너비 계산 */
+    margin: 30px auto;
+    border-radius: 10px;
+}
+
+.ranking-header, .ranking-table {
+    width: 100%; /* Header와 Footer의 너비와 일치 */
+    margin-bottom: 20px;
 }
 
 .ranking-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 80%;
-    max-width: 1200px;
-    margin-bottom: 20px;
 }
 
 .tab-section {
     display: flex;
 }
 
-.tab-button {
-    background-color: #d3d3d3;
+.rank-tab-button {
+    background-color: #e6eaf3;
     border: none;
     padding: 10px 20px;
     cursor: pointer;
     margin-right: 10px;
     font-size: 16px;
+    outline: none; /* 포커스 테두리 제거 */
 }
 
-.tab-button:hover {
-    background-color: #a9a9a9;
+.rank-tab-button:hover {
+    background-color: #506fc3;
+    color: white;
+}
+
+.rank-tab-button:focus {
+    outline: none; /* 포커스 테두리 제거 */
 }
 
 .search-section {
@@ -38,12 +51,18 @@
     align-items: center;
 }
 
-.search-input {
+.rank-search-input {
+    height: 44px;
     padding: 10px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 5px;
     margin-right: 10px;
+    outline: none; /* 포커스 테두리 제거 */
+}
+
+.rank-search-input:focus {
+    outline: none; /* 포커스 테두리 제거 */
 }
 
 .search-button {
@@ -54,58 +73,78 @@
     color: white;
     cursor: pointer;
     border-radius: 5px;
+    outline: none; /* 포커스 테두리 제거 */
 }
 
 .search-button:hover {
     background-color: #0056b3;
 }
 
+.search-button:focus {
+    outline: none; /* 포커스 테두리 제거 */
+}
+
 .ranking-table {
-    width: 80%;
-    max-width: 1200px;
+    width: 100%;
     border-collapse: collapse;
 }
 
 .ranking-table th,
 .ranking-table td {
     padding: 10px;
-    text-align: left;
+    text-align: center;
     border-bottom: 1px solid #ddd;
 }
 
 .ranking-table th {
-    background-color: #f2f2f2;
+    background-color: #e6eaf3;
     font-weight: bold;
 }
 
-.tab-button.active {
-    background-color: #a9a9a9;
+.rank-tab-button.active {
+    background-color: #506fc3;
+    border: 1px solid #506fc3;
     color: white;
 }
 
-.pagination {
+.rank-pagination {
     display: flex;
     justify-content: center;
+    align-items: center;
     margin-top: 20px;
+    margin-bottom: 20px;
+    height: 45px;
 }
 
-.pagination button {
-    background-color: #f5f5f5;
+.rank-pagination button {
+    background-color: #e6eaf3;
     border: none;
     padding: 10px 20px;
     margin: 0 5px;
     cursor: pointer;
     font-size: 16px;
+    outline: none; /* 포커스 테두리 제거 */
 }
 
-.pagination button.active {
-    background-color: #a9a9a9;
-    color: white;
+.rank-pagination button:focus {
+    outline: none; /* 포커스 테두리 제거 */
 }
 
-.pagination button:disabled {
+.rank-pagination button.active {
+    color: #506fc3;
+    font-size: 1.25em;
+    font-weight: bold;
+}
+
+.rank-pagination button:hover {
+    color: #506fc3;
+    font-size: 1.25em;
+    font-weight: bold;
+}
+
+.rank-pagination button:disabled {
     cursor: not-allowed;
-    background-color: #f2f2f2;
+    background-color: #e6eaf3;
 }
 
 .rank-back {
@@ -119,4 +158,12 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+}
+
+#rank-page-num {
+    background-color: white;
+}
+
+#rank-search-btn {
+    width: 80px;
 }
