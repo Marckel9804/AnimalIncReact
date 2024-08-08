@@ -8,11 +8,14 @@ const CreateRoom = (props) => {
 
   // 유저 정보 받기
   const user = props.user[0];
-  console.log("유저 정보 확인: ", props.user[0]);
+  console.log("유저 정보 확인: ", user.userGrade);
   // roomId 생성
   const nowTime = moment().format("YYMMDDHHmm");
   const roomId = `${nowTime}_R_${user.userNum}`;
   console.log("방 번호 확인: ", roomId);
+  // 방 채널은 본인 티어의 채널만 선택할 수 있다.
+  const channelList = ["Bronze", "Silver", "Gold"];
+  const channelKR = ["브론즈", "실버", "골드"];
 
   // 방 만들기 컴포넌트 띄우면 NES 캐릭터들 랜덤으로 뜨게 만듬
   const randomRef = useRef([
@@ -100,18 +103,30 @@ const CreateRoom = (props) => {
             />
             <span>자유</span>
           </label>
-          <label>
-            <input
-              type="radio"
-              className="nes-radio"
-              name="channel"
-              value="Gold"
-              onClick={(e) => {
-                roomRef.current[1] = e.target.value;
-              }}
-            />
-            <span>골드</span>
-          </label>
+          {channelList.map((item, index) => {
+            console.log(
+              "유저 정보 == 방 정보 확인 : ",
+              item === user.userGrade
+            );
+            {
+              return user.userGrade === item ? (
+                <>
+                  <label>
+                    <input
+                      type="radio"
+                      className="nes-radio"
+                      name="channel"
+                      value={item}
+                      onClick={(e) => {
+                        roomRef.current[1] = e.target.value;
+                      }}
+                    />
+                    <span>{channelKR[index]}</span>
+                  </label>
+                </>
+              ) : null;
+            }
+          })}
         </div>
         <div className="nes-container with-title is-rounded">
           <p className="title">인원 선택</p>
