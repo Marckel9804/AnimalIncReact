@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './Rank_week.css'
 import 'nes.css/css/nes.min.css' // NES.css 스타일 임포트
+import axiosInstance from '../../utils/axios.js' // 올바른 경로로 수정
 
 // Rank_week 컴포넌트 정의
 const Rank_week = () => {
@@ -12,9 +13,14 @@ const Rank_week = () => {
     // 비동기 함수로 API에서 랭킹 데이터를 가져오는 함수 정의
     const fetchRankingData = async () => {
       try {
-        const response = await fetch('/ranking/weekly') // 랭킹 데이터를 가져오는 API 호출
-        const data = await response.json() // 응답 데이터를 JSON 형식으로 파싱
-        setRankingData(data) // 가져온 데이터를 상태에 설정
+        const response = await axiosInstance.get('/api/user/get-profile') // 랭킹 데이터를 가져오는 API 호출
+        const data = response.data
+        if (Array.isArray(data)) {
+          const sortedData = data.sort((a, b) => b.userPoint - a.userPoint) // userPoint 기준으로 내림차순 정렬
+          setRankingData(sortedData.slice(0, 3)) // 상위 3명만 상태에 설정
+        } else {
+          console.error('Data is not an array:', data)
+        }
       } catch (error) {
         console.error('Error fetching ranking data:', error) // 에러 발생 시 콘솔에 출력
       }
@@ -26,14 +32,13 @@ const Rank_week = () => {
   return (
     <div className="ranking-section-wrapper">
       <div className="ranking-section nes-container with-title is-rounded">
-        {/* 섹션 제목을 버튼으로 변경 */}
+        {/* 섹션 제목을 textarea의 value로 변경 */}
         <textarea
           id="textarea_field"
           className="nes-textarea ranktitle"
+          value="금주의 랭킹"
           readOnly
-        >
-          금주의 랭킹
-        </textarea>
+        />
 
         <ul className="ranking-list">
           {/* rankingData를 순회하여 각 항목을 렌더링 */}
@@ -61,7 +66,7 @@ const Rank_week = () => {
                     ? 'is-warning'
                     : 'is-error'
                 }`}
-                value={user.user_nickname || '---'}
+                value={user.userNickname || '---'}
                 readOnly
               />
             </li>

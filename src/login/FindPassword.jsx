@@ -1,20 +1,22 @@
 import axios from "../utils/axios.js";
-import {useState} from "react";
+import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import Header from "../components/Header.jsx";
+import Footer from "../components/Footer.jsx";
+import "../styles/login/FindPassword.css";
 
 const FindPassword = () => {
-    const [emailUser, setEmailUser] = useState('');
-    const [emailDomain, setEmailDomain] = useState('');
+    const [email, setEmail] = useState('');
     const [emailtoGetPassword, setEmailtoGetPassword] = useState(false);
 
     const navigate = useNavigate();
 
     const sendPassword = async () => {
-        if (!emailUser || !emailDomain) {
+        if (!email) {
             alert('이메일을 입력해주세요');
             return;
         }
-        const email = `${emailUser}@${emailDomain}`;
+
         try {
             const response = await axios.post('/api/user/send-password', { email });
             setEmailtoGetPassword(true);
@@ -32,11 +34,33 @@ const FindPassword = () => {
     };
 
     return (
-        <div className="">
-            <span>가입한 이메일을 입력하세요</span>
-            <input type="text" value={emailUser} /> @ <input type="text" value={emailDomain} />
-            <button type="button" className="nes-btn" onClick={sendPassword} />
-        </div>
+        <>
+            <Header/>
+            <div className="find-password-page">
+                <div className="find-password-form with-title is-rounded">
+                    <div className="Box-p">
+                        <div className="logoTitle-p">
+                            <h1 className="title-p">비밀번호 찾기</h1>
+                            <div className="email-input">
+                                <input type="email"
+                                       className="input-email"
+                                       value={email}
+                                       onChange={(e) => setEmail(e.target.value)}
+                                       placeholder="이메일 입력"/>
+                                <button type="button"
+                                        id="send-btn"
+                                        className="nes-btn"
+                                        onClick={sendPassword}>
+                                     비밀번호 찾기
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="backImg"/>
+            <Footer/>
+        </>
     )
 }
 

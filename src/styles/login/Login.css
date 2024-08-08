@@ -15,7 +15,7 @@
 }
 
 .login-form {
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.8);
   padding: 40px;
   border-radius: 10px;
   width: 500px; /* 폼의 전체 너비를 더 크게 설정 */
@@ -49,22 +49,15 @@
 }
 
 .login-input {
-  border: 1px solid black;
   width: 100%; /* 입력 필드 너비를 폼 너비에 맞춤 */
   height: 50px;
   padding: 18px 12px;
   border: 1px solid #e5e8eb;
-  background-color: #F5F5DC;
+  background-color: #fff;
   font-size: 20px;
   font-weight: 700;
   outline: 0;
   box-sizing: border-box;
-}
-
-.nes-btn {
-  /*display: flex;*/
-  /*align-items: center;*/
-  /*justify-content: center;*/
 }
 
 .find {
