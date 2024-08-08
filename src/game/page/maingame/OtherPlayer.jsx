@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function OtherPlayer({ show, setShow }) {
+function OtherPlayer({ show, setShow, otherStatus, formatNumber }) {
   return (
     <div className={"otherpinfo-container"}>
       <div className={` main-window ${show ? "flex" : "hidden"} `}>
@@ -27,10 +27,20 @@ function OtherPlayer({ show, setShow }) {
         <span className="ml-4 underline">V</span>iew
         <span className="ml-4 underline">H</span>elp */}
         </div>
-        <div className="other-player-info flex justify-between p-4 flex-grow">
-          <div className=" ">p2</div>
-          <div className=" ">p3</div>
-          <div>p4</div>
+        <div className="other-player-info flex-col justify-between p-4 flex-grow">
+          {otherStatus.map((data) => (
+            <div className=" border-2">
+              <p style={{ fontSize: "19px", fontWeight: "bold" }}>
+                {data.nickName}
+              </p>
+              <p>총 자산 : 000 ₩ </p>
+              <span style={{ color: "red" }}>주식: 000 ₩</span>
+              <br />
+              <span style={{ color: "blue" }}>
+                현금: {formatNumber(data.cash)} ₩
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

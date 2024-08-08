@@ -226,4 +226,5 @@
   width: 80%;
   height: auto;
   display: flex;
+  gap: 20px;
 }

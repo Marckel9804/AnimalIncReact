@@ -110,7 +110,7 @@ const App = () => {
           {/* <Route exact path="/" element={<RoomWait />} /> */}
           <Route exact path="/roomwait/:room_id" element={<RoomWait />} />
           <Route
-            path="/game/page/rooms/SpaceMinigame"
+            path="/SpaceMinigame"
             element={<SpaceMinigame />}
           />
           {/* 태경 경로 끝 */}

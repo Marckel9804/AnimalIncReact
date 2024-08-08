@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 
-function MyInfo({ show, setShow, getUserInfo }) {
+function MyInfo({ show, setShow, myStatus, formatNumber }) {
   const [chartStatus, setChartStatus] = useState(true);
+
   const toggleChart = () => {
     if (chartStatus) {
       setChartStatus(false);
@@ -9,6 +10,7 @@ function MyInfo({ show, setShow, getUserInfo }) {
       setChartStatus(true);
     }
   };
+
   return (
     <div className={"myinfo-container"}>
       <div className={`main-window ${show ? "flex" : "hidden"}`}>
@@ -30,9 +32,7 @@ function MyInfo({ show, setShow, getUserInfo }) {
           </div>
         </div>
         <div className="window-head2">
-          <span className=" underline" onClick={getUserInfo}>
-            F
-          </span>
+          <span className=" underline">F</span>
           ile
           <span className="ml-4 underline">E</span>dit
           <span className="ml-4 underline">V</span>iew
@@ -40,9 +40,12 @@ function MyInfo({ show, setShow, getUserInfo }) {
         </div>
         <div className="main-window-inside flex flex-col">
           <div>
-            <p style={{ fontSize: "20px", fontWeight: "bold" }}>총 자산 :</p>
-            000₩ (<span style={{ color: "red" }}>주식: 000₩</span> +{" "}
-            <span style={{ color: "blue" }}>현금: 000₩</span>)
+            <p style={{ fontSize: "20px" }}>총 자산 : 000 ₩ </p>
+            <span style={{ color: "red" }}>주식: 000 ₩</span>
+            <br />
+            <span style={{ color: "blue" }}>
+              현금: {formatNumber(myStatus.cash)} ₩
+            </span>
           </div>
           <div className="nes-container with-title mt-4 mb-4 flex-grow select-none">
             <p className="title" style={{ lineHeight: "0.5" }}>
