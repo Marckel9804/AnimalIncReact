@@ -4,6 +4,8 @@ import './Header.css'
 
 import axios from '../utils/axios.js'
 
+
+
 const getUserInfo = async () => {
   try {
     const response = await axios.get('/api/get-profile') // 백엔드 API 경로
@@ -25,9 +27,6 @@ const logout = () => {
   window.location.href = '/'
 }
 
-const goToBoard = () => {
-  console.log('게시판으로 이동')
-}
 
 const goToMypage = (userNickname) => {
 
@@ -47,6 +46,11 @@ const Header = () => {
   })
 
   const navigate = useNavigate()
+
+  const goToBoard = () => {
+    console.log('게시판으로 이동')
+    navigate('/board')
+  }
 
   useEffect(() => {
     const fetchUserInfo = async () => {

@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import axios from "../../utils/axios.js";
 import {useNavigate} from "react-router-dom";
+import FileUploadTest from "../FileUploadTest.jsx";
 
 let initData= {
   type:'',
@@ -47,7 +48,7 @@ const BoardWriteLayout = (props) => {
 
     await setFormData(formData);
     await console.log('전송데이터', formData)
-    await axios.post('/api/board/test/writedto',formData)
+    await axios.post('/api/board/test/writedto',formData,{})
       .then((res)=> {
         // console.log('보낸 DTO',res.data)
         navi(`/board/detail/${res.data.bcId}`)
@@ -117,6 +118,8 @@ const BoardWriteLayout = (props) => {
                 onClick={onCancel}>
           취소
         </button>
+
+        <FileUploadTest/>
 
       </div>
     </div>
