@@ -6,41 +6,45 @@ import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
 
 const RoomList = () => {
-  // 유저 정보 (임시)
-  const user = [{ userNum: 47, userGrade: "silver" }];
-
-  // userGrade에 따라 선택할 수 있는 채널이 달라짐
-  const channelList = ["bronze", "silver", "Gold"];
-  const channelKR = ["브론즈 채널", "실버 채널", "골드 채널"];
+  const [user, setUser] = useState(null); // 유저 정보 상태 관리
+  const [modal, setModal] = useState(false); // 방 만들기 모달 상태 관리
+  const [roomLists, setRoomLists] = useState([]); // 게임방 리스트 상태 관리
 
   // 방 만들기 모달 켜고 끄는 메서드
-  const [modal, setModal] = useState(false);
-  function createRoom() {
-    if (modal === false) {
-      setModal(true);
+  const createRoom = () => {
+    if (user) {
+      setModal(!modal);
+    } else {
+      console.log("User info is not yet loaded.");
     }
-    if (modal === true) {
-      setModal(false);
-    }
-  }
+  };
 
   // 게임방 리스트 불러오기
-  const [roomLists, setRoomLists] = useState([]);
   const getGameRooms = () => {
-    axios
-      .get(`/api/user/game/selectAllRoom`)
+    axios.get(`/api/user/game/selectAllRoom`)
       .then((res) => {
-        console.log(res.data);
-        setRoomLists([res.data]);
-        console.log("roomLists : ", roomLists);
+        setRoomLists(res.data);
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
+  // 유저 정보를 가져오는 함수
+  const fetchUserInfo = () => {
+    axios.get("/api/user/get-profile")
+      .then((res) => {
+        console.log("Fetched user info: ", res.data);
+        setUser(res.data); // 유저 정보를 상태에 저장
+      })
+      .catch((error) => {
+        console.log("Failed to fetch user info:", error);
+      });
+  };
+
   useEffect(() => {
     getGameRooms();
+    fetchUserInfo(); // 유저 정보 가져오기
   }, []);
 
   return (
@@ -54,21 +58,21 @@ const RoomList = () => {
               <ChanelButton className="nes-btn is-primary">
                 자유 채널
               </ChanelButton>
-              {channelList.map((item, index) => {
+              {["bronze", "silver", "Gold"].map((item, index) => {
                 let active = "";
-                {
-                  user[0].userGrade === item
-                    ? (active = "nes-btn is-primary")
-                    : (active = "nes-btn is-disabled");
+                if (user && user.userGrade === item) {
+                  active = "nes-btn is-primary";
+                } else {
+                  active = "nes-btn is-disabled";
                 }
                 return (
                   <ChanelButton className={active} key={index}>
-                    {channelKR[index]}
+                    {["브론즈 채널", "실버 채널", "골드 채널"][index]}
                   </ChanelButton>
                 );
               })}
             </div>
-            <ChanelButton className="nes-btn" onClick={() => createRoom()}>
+            <ChanelButton className="nes-btn" onClick={createRoom}>
               방 만들기
             </ChanelButton>
             <section className="icon-list text-center m-5">
@@ -94,7 +98,7 @@ const RoomList = () => {
               </ul>
             </div>
           </div>
-          {modal ? <CreateRoom func={createRoom} user={user} /> : null}
+          {modal && user ? <CreateRoom func={createRoom} user={user} /> : null}
         </div>
       </RoomBody>
       <Footer />
