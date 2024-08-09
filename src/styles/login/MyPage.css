@@ -165,3 +165,33 @@
     width: 45%;
     height: 40px;
 }
+
+.info-value-item {
+    color: #006bb3;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.item-image {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.item-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-name {
+    font-weight: bold;
+}
+
+.item-description {
+    font-size: 0.9em;
+    color: #666;
+}

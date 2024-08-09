@@ -14,6 +14,7 @@ const Mypage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
   const [isProfilePictureModalOpen, setIsProfilePictureModalOpen] = useState(false);
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [availablePictures, setAvailablePictures] = useState([]);
   const [selectedPicture, setSelectedPicture] = useState('');
   const [uploadFile, setUploadFile] = useState(null);
@@ -91,6 +92,9 @@ const Mypage = () => {
 
     const openProfilePictureModal = () => setIsProfilePictureModalOpen(true);
     const closeProfilePictureModal = () => setIsProfilePictureModalOpen(false);
+
+    const openItemModal = () => setIsItemModalOpen(true);
+    const closeItemModal = () => setIsItemModalOpen(false);
 
     const handleUpdate = async () => {
         try {
@@ -272,7 +276,9 @@ const Mypage = () => {
                         </div>
                         <div className="info-item">
                             <span className="info-label">아이템</span>
-                            <span className="info-value">{userInfo.userItem}개</span>
+                            <span className="info-value-item nes-pointer" onClick={openItemModal}>
+                                {userInfo.userItems.length} 개
+                            </span>
                         </div>
                         <div className="button-section">
                             <button className="nes-btn is-primary" id="mypage-btn" onClick={openEditModal}>정보 수정
@@ -376,6 +382,25 @@ const Mypage = () => {
                                 onClick={() => handleProfilePictureSelect(pic)}
                             />
                         ))}
+                    </div>
+                </Modal>
+                <Modal isOpen={isItemModalOpen} onRequestClose={closeItemModal} className="modal">
+                    <h2 className="modal-title">보유 아이템 목록</h2>
+                    <div className="modal-content">
+                        {userInfo.userItems.length > 0 ? (
+                            userInfo.userItems.map((item, index) => (
+                                <div key={index} className="item">
+                                    <img src={item.itemImage} className="item-image"/>
+                                    <div className="item-info">
+                                        <div className="item-name">{item.itemName}</div>
+                                        <div className="item-description">{item.itemDescription}</div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p>보유한 아이템이 없습니다.</p>
+                        )}
+                        <button className="nes-btn is-error" id="mypage-modal-btn" onClick={closeItemModal}>닫기</button>
                     </div>
                 </Modal>
             </div>
