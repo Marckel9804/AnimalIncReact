@@ -15,8 +15,8 @@ const Ladder = ({ roomId }) => {
   const [clientId, setClientId] = useState(null);
   const [ws, setWs] = useState(null);
 
-  const canvasWidth = 800;
-  const canvasHeight = 400;
+  const canvasWidth = 896 * 2;
+  const canvasHeight = 300;
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:4000");
@@ -204,7 +204,6 @@ const Ladder = ({ roomId }) => {
 
   return (
     <LadderContainer>
-      <h1>Ladder Game - Room {roomId}</h1>
       <LadderGame>
         <LadderHead>
           Ladder Game <BoxIcon>x</BoxIcon>
