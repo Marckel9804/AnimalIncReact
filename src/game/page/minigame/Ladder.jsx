@@ -4,69 +4,124 @@ import bomb from "../../../image/ladder-bomb.jpeg";
 import win from "../../../image/ladder-win.jpeg";
 import "./loading.css";
 
-const Ladder = () => {
-  // 임시 사용자 id
-  const userId = "P1";
+const Ladder = ({ roomId }) => {
   const canvasRef = useRef(null);
-  const [participants] = useState(["P1", "P2", "P3", "P4"]);
-  const [rewards, setRewards] = useState([win, bomb, bomb, bomb]);
-  const [gameState, setGameState] = useState("start");
+  const [players, setPlayers] = useState([]);
+  const [rewards] = useState([win, bomb, bomb, bomb]);
+  const [gameState, setGameState] = useState("waiting");
   const [results, setResults] = useState([]);
   const [ladder, setLadder] = useState([]);
   const [modal, setModal] = useState(false);
+  const [clientId, setClientId] = useState(null);
+  const [ws, setWs] = useState(null);
 
-  const canvasWidth = 896 * 2; // 가로 길이를 2배로 늘림
-  const canvasHeight = 300; // 기존 높이 유지
+  const canvasWidth = 800;
+  const canvasHeight = 400;
 
-  // 1단계 : 사다리 그리기
-  const drawLadder = (ctx, width, height) => {
-    const numParticipants = participants.length;
-    ctx.clearRect(0, 0, width, height);
+  useEffect(() => {
+    const socket = new WebSocket("ws://localhost:4000");
+    setWs(socket);
+
+    socket.onopen = () => {
+      console.log("Connected to the server");
+      ws.send(JSON.stringify({ type: "join", roomId }));
+    };
+
+    socket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      switch (message.type) {
+        case "players":
+          setPlayers(message.players);
+          break;
+        case "startGame":
+          setLadder(message.ladder);
+          setGameState("running");
+          setModal(false);
+          break;
+        case "gameEnded":
+          setResults(message.results);
+          setGameState("end");
+          break;
+      }
+    };
+
+    socket.onclose = () => {
+      console.log("Disconnected from the server");
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, [roomId]);
+
+  useEffect(() => {
+    if (players.length > 0 && !clientId) {
+      setClientId(players[players.length - 1].clientId);
+    }
+  }, [players, clientId]);
+
+  useEffect(() => {
+    if (ladder.length > 0 && gameState === "running") {
+      drawLadderFromStructure(ladder);
+      startGame(ladder);
+    }
+  }, [ladder, gameState]);
+
+  const toggleReady = () => {
+    if (ws && clientId) {
+      const player = players.find((p) => p.clientId === clientId);
+      if (player) {
+        ws.send(
+          JSON.stringify({ type: "ready", clientId, ready: !player.ready })
+        );
+      }
+    }
+  };
+
+  const drawLadderFromStructure = (ladder) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    const numParticipants = players.length;
     ctx.strokeStyle = "#000";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 5;
 
-    const verticalGap = width / (numParticipants + 1);
-    const horizontalGap = height / 15;
+    const verticalGap = canvasWidth / (numParticipants + 1);
+    const horizontalGap = canvasHeight / (ladder.length + 1);
 
-    let maxHorizontalLines = Math.floor(Math.random() * 10) * 2 + 2; // 2, 4, ..., 20
-
-    const newLadder = Array.from({ length: maxHorizontalLines }, () =>
-      Array(numParticipants - 1).fill(false)
-    );
-
-    // 수직선 그리기
+    // Draw vertical lines
     for (let i = 1; i <= numParticipants; i++) {
       const x = i * verticalGap;
       ctx.beginPath();
       ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
+      ctx.lineTo(x, canvasHeight);
       ctx.stroke();
     }
 
-    // 수평선 그리기
-    for (let row = 0; row < maxHorizontalLines; row++) {
-      const y = (row + 1) * horizontalGap;
-      const col = Math.floor(Math.random() * (numParticipants - 1));
-
-      newLadder[row][col] = true;
-      const x1 = (col + 1) * verticalGap;
-      const x2 = (col + 2) * verticalGap;
-      ctx.beginPath();
-      ctx.moveTo(x1, y);
-      ctx.lineTo(x2, y);
-      ctx.stroke();
-    }
-
-    return newLadder;
+    // Draw horizontal lines
+    ladder.forEach((row, rowIndex) => {
+      const y = (rowIndex + 1) * horizontalGap;
+      row.forEach((hasLine, colIndex) => {
+        if (hasLine) {
+          const x1 = (colIndex + 1) * verticalGap;
+          const x2 = (colIndex + 2) * verticalGap;
+          ctx.beginPath();
+          ctx.moveTo(x1, y);
+          ctx.lineTo(x2, y);
+          ctx.stroke();
+        }
+      });
+    });
   };
 
-  // 2단계 : 사다리타기 애니메이션 실행 !
   const animatePath = (ctx, startCol, ladder, width, height, color) => {
     return new Promise((resolve) => {
       let col = startCol;
       let row = 0;
-      const verticalGap = width / (participants.length + 1);
-      const horizontalGap = height / 15;
+      const verticalGap = width / (players.length + 1);
+      const horizontalGap = height / (ladder.length + 1);
 
       const animate = () => {
         ctx.beginPath();
@@ -120,21 +175,14 @@ const Ladder = () => {
     });
   };
 
-  // 사다리 타기 게임을 시작하는 함수~~
-  const startGame = async () => {
-    setModal(false);
-    setGameState("running");
+  const startGame = async (ladder) => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
 
-    // 기존 사다리 구조를 사용
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-    drawLadderFromStructure(ctx, ladder, canvasWidth, canvasHeight);
-
     const colors = ["red", "blue", "green", "yellow"];
-    const newResults = [];
 
-    for (let i = 0; i < participants.length; i++) {
+    for (let i = 0; i < players.length; i++) {
       const result = await animatePath(
         ctx,
         i,
@@ -143,113 +191,84 @@ const Ladder = () => {
         canvasHeight,
         colors[i]
       );
-      newResults.push(result);
+      ws.send(
+        JSON.stringify({
+          type: "finishPath",
+          clientId: players[i].clientId,
+          result,
+        })
+      );
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
-
-    setResults(newResults);
-    setGameState("end");
   };
-
-  // 사다리 구조를 기반으로 사다리 다시 그리기
-  const drawLadderFromStructure = (ctx, ladder, width, height) => {
-    const numParticipants = participants.length;
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 10;
-
-    const verticalGap = width / (numParticipants + 1);
-    const horizontalGap = height / 15;
-
-    // 수직선 그리기
-    for (let i = 1; i <= numParticipants; i++) {
-      const x = i * verticalGap;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
-    }
-
-    // 수평선 그리기
-    ladder.forEach((row, rowIndex) => {
-      row.forEach((hasLine, colIndex) => {
-        if (hasLine) {
-          const y = (rowIndex + 1) * horizontalGap;
-          const x1 = (colIndex + 1) * verticalGap;
-          const x2 = (colIndex + 2) * verticalGap;
-          ctx.beginPath();
-          ctx.moveTo(x1, y);
-          ctx.lineTo(x2, y);
-          ctx.stroke();
-        }
-      });
-    });
-  };
-
-  const openModal = () => {
-    return (
-      <LadderWindow>
-        <LadderHead>
-          세상에서 제일 지루한 중학교는? 로딩중 ...<BoxIcon>x</BoxIcon>
-        </LadderHead>
-        <Loading>
-          <div className="ladder-loader-hhy"></div>
-          {gameState === "start" && (
-            <button className="nes-btn is-warning" onClick={startGame}>
-              Start Game
-            </button>
-          )}
-        </Loading>
-      </LadderWindow>
-    );
-  };
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    const newLadder = drawLadder(ctx, canvasWidth, canvasHeight);
-
-    // 로딩중 화면 띄우기 => 0.1초 뒤 닫히고 사다리 만들어짐
-    setModal(true);
-    setTimeout(() => {});
-
-    setLadder(newLadder);
-  }, []);
 
   return (
     <LadderContainer>
+      <h1>Ladder Game - Room {roomId}</h1>
       <LadderGame>
         <LadderHead>
           Ladder Game <BoxIcon>x</BoxIcon>
         </LadderHead>
         <GameContent>
           <PlayerList>
-            {participants.map((item, index) => (
-              <Player key={index}>
-                {item}
-                <Character>^m^</Character>
+            {players.map((player) => (
+              <Player key={player.clientId}>
+                {player.nickname}
+                <Character>{player.ready ? "Ready" : "Not Ready"}</Character>
               </Player>
             ))}
           </PlayerList>
-          <canvas
-            ref={canvasRef}
-            width={canvasWidth}
-            height={canvasHeight}
-            style={{ margin: "20px 0", display: "block", width: "100%" }}
-          />
+          {gameState !== "waiting" && (
+            <canvas
+              ref={canvasRef}
+              width={canvasWidth}
+              height={canvasHeight}
+              style={{ margin: "20px 0", display: "block", width: "100%" }}
+            />
+          )}
           <RewardList>
-            {participants.map((item, index) => (
-              <RewardItem key={index}>
-                <Reward src={rewards[index]} alt={`Reward ${index + 1}`} />
+            {players.map((player, index) => (
+              <RewardItem key={player.clientId}>
+                <Reward
+                  src={rewards[index % rewards.length]}
+                  alt={`Reward ${index + 1}`}
+                />
                 {gameState === "end" && (
                   <ParticipantId>
-                    {participants[results.indexOf(index)]}
+                    {
+                      players[
+                        results.find((r) => r.clientId === player.clientId)
+                          ?.result
+                      ]?.nickname
+                    }
                   </ParticipantId>
                 )}
               </RewardItem>
             ))}
           </RewardList>
         </GameContent>
-        {modal ? openModal() : null}
+        {gameState === "waiting" && (
+          <button className="nes-btn is-warning" onClick={toggleReady}>
+            {players.find((p) => p.clientId === clientId)?.ready
+              ? "Cancel Ready"
+              : "Ready"}
+          </button>
+        )}
+        {modal && (
+          <LadderWindow>
+            <LadderHead>
+              세상에서 제일 지루한 중학교는? 로딩중 ...<BoxIcon>x</BoxIcon>
+            </LadderHead>
+            <Loading>
+              <div className="ladder-loader-hhy"></div>
+              {gameState === "start" && (
+                <button className="nes-btn is-warning" onClick={startGame}>
+                  Start Game
+                </button>
+              )}
+            </Loading>
+          </LadderWindow>
+        )}
       </LadderGame>
     </LadderContainer>
   );
@@ -312,7 +331,7 @@ const PlayerList = styled.div`
   width: 70%;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
 `;
 
 const Player = styled.div`
@@ -331,13 +350,13 @@ const RewardList = styled.div`
   display: flex;
   width: 70%;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
   margin-top: 10px;
 `;
 
 const Reward = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
 `;
 
