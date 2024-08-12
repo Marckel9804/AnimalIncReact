@@ -1,37 +1,68 @@
-import React, { useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useRef, useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './ItemShop.css'
-import itemImage from '../../assets/images/upward.jpg' // 기존 이미지로 교체
+import axios from '../../utils/axios.js'
 import Footer from '../Footer'
 import Header from '../Header'
 
 const ItemShop = () => {
   const navigate = useNavigate()
   const optionsRef = useRef(null)
+  const [translateX, setTranslateX] = useState(0)
   const [showAlert, setShowAlert] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [showError, setShowError] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
+  const [items, setItems] = useState([])
+  const [userRuby, setUserRuby] = useState(0)
+  const [isMounted, setIsMounted] = useState(false)
 
-  // 임시로 10개의 아이템 데이터 생성
-  const items = Array.from({ length: 10 }, (_, index) => ({
-    item_name: `아이템 ${index + 1}`,
-    item_description: `이 아이템 ${index + 1}은 특별한 효과를 가지고 있습니다.`,
-    item_image: itemImage,
-    item_price: `${index + 1} 트로피`,
-    item_category: `카테고리 ${index + 1}`,
-  }))
-
-  // 왼쪽 화살표 클릭 핸들러
-  const handleLeftArrowClick = () => {
-    if (optionsRef.current) {
-      optionsRef.current.scrollBy({ left: -240, behavior: 'smooth' }) // 가로 스크롤 위치를 직접 조작
+  // 초기 루비 수를 가져오는 함수
+  const fetchUserRuby = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      console.log('Using token:', token)
+      const response = await axios.get('/api/item/ruby', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      setUserRuby(response.data)
+    } catch (error) {
+      console.error('Error fetching user ruby:', error)
     }
   }
 
-  // 오른쪽 화살표 클릭 핸들러
+  useEffect(() => {
+    if (isMounted) {
+      const fetchItems = async () => {
+        try {
+          const response = await axios.get('/api/item/list')
+          console.log('Fetched Items:', response.data)
+          setItems(Array.isArray(response.data) ? response.data : [])
+        } catch (error) {
+          console.error('Error fetching items:', error)
+          setItems([])
+        }
+      }
+
+      fetchItems()
+      fetchUserRuby()
+    } else {
+      setIsMounted(true)
+    }
+  }, [isMounted])
+
+  const handleLeftArrowClick = () => {
+    if (optionsRef.current) {
+      setTranslateX((prev) => Math.min(prev + 240, 0))
+    }
+  }
+
   const handleRightArrowClick = () => {
     if (optionsRef.current) {
-      optionsRef.current.scrollBy({ left: 240, behavior: 'smooth' }) // 가로 스크롤 위치를 직접 조작
+      const maxScroll = -((items.length - 1) * 260)
+      setTranslateX((prev) => Math.max(prev - 240, maxScroll))
     }
   }
 
@@ -42,26 +73,49 @@ const ItemShop = () => {
 
   const handleAlertClose = () => {
     setShowAlert(false)
+    setShowError(false)
     setSelectedItem(null)
   }
 
-  const handleAlertConfirm = () => {
-    setShowAlert(false)
-    setShowConfirm(true)
-    setTimeout(() => {
-      setShowConfirm(false)
-      navigate('/shop/item')
-    }, 2000)
+  const handleAlertConfirm = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const response = await axios.post(
+        `/api/item/purchase?itemId=${selectedItem.itemId}`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      setUserRuby(response.data) // 루비 수를 업데이트
+
+      setShowAlert(false)
+      setShowConfirm(true)
+      setTimeout(() => {
+        setShowConfirm(false)
+        navigate('/shop')
+      }, 2000)
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 400) {
+          setShowAlert(false)
+          setShowError(true)
+        } else {
+          console.error('Error purchasing item:', error)
+        }
+      } else {
+        console.error('Error:', error)
+      }
+    }
   }
 
   return (
     <>
-      <Header />
+      <Header userRuby={userRuby} />
       <div className="itemshop-container">
         <div className="itemshop-header">
-          <Link to="/animal/encyclopediaapi" className="itemshop-link">
-            도감
-          </Link>
           <h2 className="itemshop-title">아이템 상점</h2>
           <span className="itemshop-close" onClick={() => navigate('/')}>
             X
@@ -71,41 +125,49 @@ const ItemShop = () => {
           <button className="arrow-button left" onClick={handleLeftArrowClick}>
             &lt;
           </button>
-          <div className="itemshop-options" ref={optionsRef}>
-            {items.map((item, index) => (
-              <div key={index} className="itemshop-option">
-                <div className="item-header">
-                  <span className="itemshop-icon-text">{item.item_name}</span>
-                  <span
-                    className="itemshop-item-description-icon"
-                    title={item.item_description}
+          <div
+            className="itemshop-options"
+            ref={optionsRef}
+            style={{ transform: `translateX(${translateX}px)` }}
+          >
+            {items.length > 0 ? (
+              items.map((item) => (
+                <div key={item.itemId} className="itemshop-option">
+                  <div className="item-header">
+                    <span className="itemshop-icon-text">{item.itemName}</span>
+                    <span
+                      className="itemshop-item-description-icon"
+                      title={item.itemDescription}
+                    >
+                      !
+                    </span>
+                  </div>
+                  <img
+                    src={item.itemImage || 'default-image-url'}
+                    alt={item.itemName}
+                    className="itemshop-item-image"
+                  />
+                  <div className="itemshop-info">
+                    <div className="itemshop-info-item">
+                      <i className="nes-icon is-small is-transparent trophy"></i>
+                      <span>{item.itemPrice} 루비</span>
+                    </div>
+                    <div className="itemshop-info-item">
+                      <i className="nes-icon is-small is-transparent heart"></i>
+                      <span>{item.itemRarity}</span>
+                    </div>
+                  </div>
+                  <button
+                    className="nes-btn itemshop-btn"
+                    onClick={() => handlePurchaseClick(item)}
                   >
-                    !
-                  </span>
+                    구매하기
+                  </button>
                 </div>
-                <img
-                  src={item.item_image}
-                  alt={item.item_name}
-                  className="itemshop-item-image"
-                />
-                <div className="itemshop-info">
-                  <div className="itemshop-info-item">
-                    <i className="nes-icon is-small is-transparent trophy"></i>
-                    <span>{item.item_price}</span>
-                  </div>
-                  <div className="itemshop-info-item">
-                    <i className="nes-icon is-small is-transparent heart"></i>
-                    <span>{item.item_category}</span>
-                  </div>
-                </div>
-                <button
-                  className="nes-btn itemshop-btn"
-                  onClick={() => handlePurchaseClick(item)}
-                >
-                  구매하기
-                </button>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p>아이템을 불러오는 중입니다...</p>
+            )}
           </div>
           <button
             className="arrow-button right"
@@ -115,16 +177,13 @@ const ItemShop = () => {
           </button>
         </div>
       </div>
-      <div id="backImg" />
       <Footer />
-
-      {/* 알림창 컴포넌트 */}
       {showAlert && (
         <div className="itemshop-alert-container">
           <div className="itemshop-alert-box">
             <h3 className="itemshop-alert-title">알림</h3>
             <p className="itemshop-alert-message">
-              {selectedItem.item_name}을(를) {selectedItem.item_price}에
+              {selectedItem.itemName}을(를) {selectedItem.itemPrice} 루비에
               구매하시겠습니까?
             </p>
             <div className="itemshop-alert-buttons">
@@ -144,13 +203,27 @@ const ItemShop = () => {
           </div>
         </div>
       )}
-
-      {/* 결제 완료 알림창 */}
       {showConfirm && (
         <div className="itemshop-alert-container">
           <div className="itemshop-alert-box">
             <h3 className="itemshop-alert-title">결제 완료</h3>
             <p className="itemshop-alert-message">결제가 완료되었습니다.</p>
+          </div>
+        </div>
+      )}
+      {showError && (
+        <div className="itemshop-alert-container">
+          <div className="itemshop-alert-box">
+            <h3 className="itemshop-alert-title">알림</h3>
+            <p className="itemshop-alert-message">루비가 부족합니다.</p>
+            <div className="itemshop-alert-buttons">
+              <button
+                className="nes-btn itemshop-alert-btn"
+                onClick={handleAlertClose}
+              >
+                확인
+              </button>
+            </div>
           </div>
         </div>
       )}

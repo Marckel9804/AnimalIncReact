@@ -11,7 +11,7 @@ const Store = () => {
       <Header />
       <div className="store-container">
         <div className="store-header">
-          <Link to="/animal/encyclopediaapi" className="header-link">
+          <Link to="/animal/encyclopedia" className="header-link">
             도감
           </Link>
           <h2 className="store-title">상점</h2>

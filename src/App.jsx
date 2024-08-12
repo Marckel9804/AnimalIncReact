@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import Main from "./components/main/Main";
 import Store from "./components/store/Store";
+import AnimalEncyclopedia from "./components/store/AnimalEncyclopedia";
 import GachaShop from "./components/store/GachaShop";
 import GachaResult from "./components/store/GachaResult";
 import ItemShop from "./components/store/ItemShop";
@@ -81,6 +82,7 @@ const App = () => {
           <Route path="/privacy" element={<Privacy />} />
           {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
           <Route path="/shop" element={<Store />} />
+          <Route path="/animal/encyclopedia" element={<AnimalEncyclopedia />} />
           <Route path="/shop/animal" element={<GachaShop />} />
           <Route
             path="/shop/animal-store/gacha"
@@ -113,7 +115,7 @@ const App = () => {
           {/* <Route exact path="/" element={<RoomWait />} /> */}
           <Route exact path="/roomwait/:room_id" element={<RoomWait />} />
           <Route
-            path="/SpaceMinigame"
+            path="/game/page/rooms/SpaceMinigame"
             element={<SpaceMinigame />}
           />
           {/* 태경 경로 끝 */}

@@ -1,40 +1,52 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./GachaShop.css";
-import Header from "../Header";
-import Footer from "../Footer";
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from '../../utils/axios.js'
+import './GachaShop.css'
+import Header from '../Header'
+import Footer from '../Footer'
 
 const GachaShop = () => {
-  const navigate = useNavigate();
-  const [showAlert, setShowAlert] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+  const navigate = useNavigate()
+  const [showAlert, setShowAlert] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   const handleGachaClick = () => {
-    setShowAlert(true);
-  };
+    setShowAlert(true)
+  }
 
   const handleAlertClose = () => {
-    setShowAlert(false);
-  };
+    setShowAlert(false)
+  }
 
-  const handleAlertConfirm = () => {
-    setShowAlert(false);
-    setShowConfirm(true);
-    setTimeout(() => {
-      navigate("/shop/animal-store/gacha");
-    }, 2000);
-  };
+  const handleAlertConfirm = async () => {
+    setShowAlert(false)
+    try {
+      const token = localStorage.getItem('token') // Assuming token is stored in localStorage
+      await axios.post('/api/animal/pull', null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }) // 가차 뽑기 요청
+      setShowConfirm(true)
+      setTimeout(() => {
+        navigate('/shop/animal-store/gacha')
+      }, 2000)
+    } catch (error) {
+      console.error('Error pulling gacha:', error)
+      alert('가차 뽑기에 실패했습니다.')
+    }
+  }
 
   return (
     <>
       <Header />
       <div className="gacha-container">
         <div className="gacha-header">
-          <Link to="/animal/encyclopediaapi" className="gacha-link">
+          <Link to="/animal/encyclopedia" className="gacha-link">
             도감
           </Link>
           <h2 className="gacha-title">가차 상점</h2>
-          <span className="gacha-close" onClick={() => navigate("/")}>
+          <span className="gacha-close" onClick={() => navigate('/')}>
             X
           </span>
         </div>
@@ -90,10 +102,9 @@ const GachaShop = () => {
           </div>
         )}
       </div>
-      <div id="backImg" />
       <Footer />
     </>
-  );
-};
+  )
+}
 
-export default GachaShop;
+export default GachaShop

@@ -61,10 +61,15 @@
 }
 
 .header-close {
+  position: absolute;
   cursor: pointer;
   padding: 10px 15px;
   font-size: 24px;
-  color: black;
+  color: white;
+  background: transparent;
+  top: -4px;
+  right: 20px;
+
   /*  이거 위치 이동이 안되서 나중에 하겠음 */
 }
 
