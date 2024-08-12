@@ -41,14 +41,14 @@ const FindPassword = () => {
                     <div className="Box-p">
                         <div className="logoTitle-p">
                             <h1 className="title-p">비밀번호 찾기</h1>
-                            <div className="email-input">
+                            <div className="find-email-input">
                                 <input type="email"
-                                       className="input-email"
+                                       className="find-input-email"
                                        value={email}
                                        onChange={(e) => setEmail(e.target.value)}
                                        placeholder="이메일 입력"/>
                                 <button type="button"
-                                        id="send-btn"
+                                        id="find-send-btn"
                                         className="nes-btn"
                                         onClick={sendPassword}>
                                      비밀번호 찾기

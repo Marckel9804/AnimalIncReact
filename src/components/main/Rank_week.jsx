@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Rank_week.css'
 import 'nes.css/css/nes.min.css' // NES.css 스타일 임포트
-import axiosInstance from '../../utils/axios.js' // 올바른 경로로 수정
+import axiosInstance from '../../utils/axios.js'
 
 // Rank_week 컴포넌트 정의
 const Rank_week = () => {
@@ -32,7 +32,7 @@ const Rank_week = () => {
 
   // 더보기 버튼 클릭 시 /ranking 페이지로 이동
   const handleMoreClick = () => {
-    navigate('/ranking')
+    navigate('/rank')
   }
 
   return (
