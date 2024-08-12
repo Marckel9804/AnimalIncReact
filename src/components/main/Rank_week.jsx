@@ -32,7 +32,7 @@ const Rank_week = () => {
 
   // 더보기 버튼 클릭 시 /ranking 페이지로 이동
   const handleMoreClick = () => {
-    navigate('/ranking')
+    navigate('/rank')
   }
 
   return (
