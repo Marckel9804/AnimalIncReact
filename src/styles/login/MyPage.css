@@ -223,3 +223,12 @@
     margin-top: 50px;
     margin-left: 350px;
 }
+
+.tab-content {
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
