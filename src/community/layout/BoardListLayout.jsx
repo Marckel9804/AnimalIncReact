@@ -3,28 +3,25 @@ import BoardPagenation from "../component/BoardPagenation.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "../../utils/axios.js";
+import BoardSearchBar from "../component/BoardSearchBar.jsx";
+import Header from "../../components/Header.jsx";
 
 const BoardListLayout = (props) => {
 
   const navi = useNavigate()
-  const [list, setList] = useState([])
-
-  const page = props.page
-  const tmp = props.type
   const role = props.role
 
-  const [type, setType] = useState(tmp)
-
-  const onWrite = () => {
-    navi(`/board/write/${type}`)
-  }
+  const [type, setType] = useState(props.type)
+  const [list, setList] = useState([])
+  const [page, setPage] = useState(props.page)
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     axios.get('/api/board', {params: {type: type, page: page}})
       .then((res) => {
-        // console.log(page)
         setList(res.data.content)
-        // console.log(res.data.content)
+        setTotalPages(res.data.totalPages)
+        console.log(res.data)
       })
 
     if (type === 'notice') {
@@ -43,31 +40,52 @@ const BoardListLayout = (props) => {
 
   }, [type]);
 
+  useEffect(() => {
+    axios.get('/api/board', {params: {type: type, page: page}})
+      .then((res) => {
+        setList(res.data.content)
+        setTotalPages(res.data.totalPages)
+      })
+  }, [page]);
+
   return (
-    <div id='BoardListLayout' className='flex flex-col justify-center w-11/12 '>
+    <div id='BoardListLayout'>
 
-      <BoardTable list={list} type={type} setType={setType}/>
-      <br/>
-      <BoardPagenation page={page}/>
-      <div id={'upHeaderbtn'} className='w-full flex justify-center'>
+      <Header/>
 
-        <button id={"write-btn"} type={"button"}
-                className='mt-5 nes-btn is-primary'
-                style={{fontSize: '16px'}}
-                onClick={onWrite}
-        >
-          글 작성하기
-        </button>
-      </ div>
-      <div style={{
-        backgroundColor: 'aqua',
-        zIndex: '-1',
-        position: 'fixed',
-        width: '100vw',
-        height: '100vh',
-        top: '0px',
-        left: '0px'
-      }}></div>
+      <div className='flex justify-center'>
+
+        <div className='flex flex-col justify-center w-11/12 '>
+
+          <BoardTable page={page}
+                      navi={navi}
+                      list={list}
+                      type={type}
+                      setType={setType}/>
+          <br/>
+          <BoardSearchBar type={type}
+                          navi={navi}
+                          setList={setList}/>
+
+          <BoardPagenation page={page}
+                           setPage={setPage}
+                           totalPages={totalPages}
+                           navi={navi}
+                           type={type}/>
+
+
+          <div style={{
+            backgroundColor: 'aqua',
+            zIndex: '-1',
+            position: 'fixed',
+            width: '100vw',
+            height: '100vh',
+            top: '0px',
+            left: '0px'
+          }}></div>
+        </div>
+
+      </div>
     </div>
   )
 }

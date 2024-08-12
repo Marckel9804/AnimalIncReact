@@ -222,7 +222,7 @@ const Ladder = ({ roomId }) => {
               ref={canvasRef}
               width={canvasWidth}
               height={canvasHeight}
-              style={{ margin: "20px 0", display: "block", width: "100%" }}
+              style={{ margin: "20px 0", display: "block", width: "110%" }}
             />
           )}
           <RewardList>
