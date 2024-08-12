@@ -63,6 +63,7 @@ const RoomList = () => {
   }, []);
   // 게임방 클릭하면 해당 게임방으로 이동 (게임방 인원 +1)
   const goWaitingRoom = (item) => {
+    console.log("item >>> ",item)
     // 방에 들어가면 인원수를 증가시키자 !
     axios
       .post(`/api/user/game/updateCount/${item.gameRoomId}`)

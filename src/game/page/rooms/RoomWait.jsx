@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { v4 as uuidv4 } from 'uuid';
 import backgroundImage from "../../../assets/background.jpg";
-import axios from 'axios';
+import axios from "../../../utils/axios.js";
 
 const Container = styled.div`
   background-image: url(${backgroundImage});
@@ -97,7 +97,7 @@ const RoomWait = () => {
   // 1. insertUserStatus 함수 정의
   const insertUserStatus = async (gameRoomId, userNum) => {
     try {
-      const response = await axios.post('http://localhost:8080/game/insertUserStatus', null, {
+      const response = await axios.post('http://localhost:8080/game/insertUserStatus', {
         params: {
           gameRoomId: gameRoomId, // 여기서 roomId 대신 gameRoomId 사용
           userNum: userNum,
@@ -149,11 +149,8 @@ const RoomWait = () => {
   useEffect(() => {
     const fetchLoggedInPlayer = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/user/me", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-          }
-        });
+        const response = await axios.get("http://localhost:8080/api/user/me"
+        );
         const loggedInPlayer = response.data;
         setPlayers([loggedInPlayer]);
       } catch (error) {
