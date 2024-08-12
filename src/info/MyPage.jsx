@@ -249,7 +249,7 @@ const Mypage = () => {
         <>
             <Header/>
             <h1>마이페이지</h1>
-            <Box sx={{ width: '70%', margin: '0 auto' }}>
+            <Box sx={{ width: '70%', margin: '0 auto', fontFamily: 'DungGeunMo' }}>
                 <Tabs value={selectedTab} onChange={handleTabChange} centered>
                     <Tab label="내 정보"/>
                     <Tab label="내 정보 수정"/>
