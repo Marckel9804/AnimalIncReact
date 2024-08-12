@@ -36,7 +36,6 @@ import Privacy from "./components/Privacy";
 import "./App.css";
 import "nes.css/css/nes.min.css";
 import AdminPage from "./admin/page/AdminPage.jsx";
-import UserListPage from "./admin/page/UserListPage.jsx";
 
 const App = () => {
   const containerStyle = {
@@ -119,10 +118,9 @@ const App = () => {
           />
           {/* 태경 경로 끝 */}
 
-        {/* 관리자 시작 */}
+          {/* 관리자 페이지 */}
           <Route path='/admin' element={<AdminPage/>}/>
-          <Route path='/admin/user' element={<UserListPage/>}/>
-        {/* 관리자 끝 */}
+
         </Routes>
       </div>
     </Router>
