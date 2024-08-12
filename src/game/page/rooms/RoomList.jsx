@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "../../../utils/axios.js";
 import styled from "styled-components";
 import CreateRoom from "./CreateRoom";
@@ -7,12 +7,11 @@ import Footer from "../../../components/Footer";
 import { useNavigate } from "react-router-dom";
 
 const RoomList = () => {
-  const [user, setUser] = useState(null); // 유저 정보 상태 관리
   const [modal, setModal] = useState(false); // 방 만들기 모달 상태 관리
   const [roomLists, setRoomLists] = useState([]); // 게임방 리스트 상태 관리
   const navigate = useNavigate();
 
-  // 로그인한 유저 번호 (UserNum) 가져오기
+  // 로그인한 유저 정보 가져오기
   const [userInfo, setUserInfo] = useState();
   console.log("로그인 유저 정보 ? ", userInfo);
   useEffect(() => {
@@ -44,7 +43,7 @@ const RoomList = () => {
 
   // 방 만들기 모달 켜고 끄는 메서드
   const createRoom = () => {
-    if (user) {
+    if (userInfo) {
       setModal(!modal);
     } else {
       console.log("User info is not yet loaded.");
@@ -71,23 +70,11 @@ const RoomList = () => {
       });
   };
 
-  // 유저 정보를 가져오는 함수
-  const fetchUserInfo = () => {
-    axios
-      .get("/api/user/get-profile")
-      .then((res) => {
-        console.log("Fetched user info: ", res.data);
-        setUser(res.data); // 유저 정보를 상태에 저장
-      })
-      .catch((error) => {
-        console.log("Failed to fetch user info:", error);
-      });
-  };
-
   useEffect(() => {
     getGameRooms();
-    fetchUserInfo(); // 유저 정보 가져오기
+    getNoticeList(); // 공지사항 가져오기
   }, []);
+
   // 게임방 클릭하면 해당 게임방으로 이동 (게임방 인원 +1)
   const goWaitingRoom = (item) => {
     console.log("item >>> ", item);
@@ -103,10 +90,6 @@ const RoomList = () => {
 
   // 공지사항 불러오기 (notice 최신글 10개까지만 출력)
   const [notice, setNotice] = useState();
-  useEffect(() => {
-    getNoticeList();
-  }, []);
-
   const getNoticeList = () => {
     axios
       .get(`/api/board`)
