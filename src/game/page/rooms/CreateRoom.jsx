@@ -8,7 +8,6 @@ const CreateRoom = (props) => {
 
   // 유저 정보 받기
   const user = props.user;
-  console.log("유저 정보 확인: ", user);
 
   // roomId 생성
   const nowTime = moment().format("YYMMDDHHmm");
@@ -54,30 +53,27 @@ const CreateRoom = (props) => {
   // 방 생성하기
   const insertRoom = async () => {
     try {
-      await axios.post(`/api/user/game/insertRoom`, {
-        gameRoomId: roomId,
-        roomName: roomRef.current[0],
-        tier: roomRef.current[1],
-        players: roomRef.current[2],
-      })
-      .then(() => {
-        alert("📢➰ 게임 방이 만들어졌어요.");
-        navigate(`/roomwait/${roomId}`, {
-          state: {
-            roomId: roomId,
-            roomName: roomRef.current[0],
-            maxPlayers: roomRef.current[2],
-          },
+      await axios
+        .post(`/api/user/game/insertRoom`, {
+          gameRoomId: roomId,
+          roomName: roomRef.current[0],
+          tier: roomRef.current[1],
+          players: roomRef.current[2],
+        })
+        .then(() => {
+          alert("📢➰ 게임 방이 만들어졌어요.");
+          navigate(`/roomwait/${roomId}`, {
+            state: {
+              roomId: roomId,
+              roomName: roomRef.current[0],
+              maxPlayers: roomRef.current[2],
+            },
+          });
+        })
+        .catch((error) => {
+          alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
+          console.log(error);
         });
-      })
-      .catch((error) => {
-        alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
-        console.log(error);
-      });
-      alert("📢➰ 게임 방이 만들어졌어요.");
-      navigate(`/roomwait/${roomId}`, {
-        state: { roomId, roomName: roomRef.current[0], maxPlayers: roomRef.current[2], userNum: user.userNum }, // userNum도 함께 전달
-      });
     } catch (error) {
       alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
       console.log(error);
