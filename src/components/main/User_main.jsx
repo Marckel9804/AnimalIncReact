@@ -31,6 +31,10 @@ const User_main = () => {
     fetchUserInfo()
   }, [])
 
+  useEffect(() => {
+    console.log('Selected Animal:', selectedAnimal) // 선택된 캐릭터 정보를 출력
+  }, [selectedAnimal])
+
   const goToMypage = () => {
     navigate(`/mypage`)
   }
@@ -52,7 +56,7 @@ const User_main = () => {
           src={
             selectedAnimal.animalImage ||
             userInfo.animal_image ||
-            'default-image-path.jpg'
+            'https://via.placeholder.com/150' // 기본 이미지 URL
           }
           alt="캐릭터 이미지"
           className="character-image"

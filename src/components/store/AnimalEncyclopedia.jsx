@@ -17,10 +17,20 @@ const AnimalEncyclopedia = () => {
   useEffect(() => {
     const fetchAnimals = async () => {
       try {
-        const response = await axios.get('/api/animal/encyclopedia')
+        const token = localStorage.getItem('token')
+        const response = await axios.get('/api/animal/encyclopedia', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         setAnimals(response.data)
-        const ownedResponse = await axios.get('/api/user/owned-animals')
-        setOwnedAnimals(ownedResponse.data)
+
+        const ownedResponse = await axios.get('/api/animal/owned-animals', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        setOwnedAnimals(ownedResponse.data.map((animal) => animal.animalId)) // 소유한 동물 ID만 배열로 저장
       } catch (error) {
         console.error('Error fetching animal data:', error)
       }
@@ -42,10 +52,21 @@ const AnimalEncyclopedia = () => {
 
   const handleConfirm = async () => {
     try {
-      await axios.post('/api/user/select-animal', {
-        animalId: selectedAnimal.animalId,
+      const token = localStorage.getItem('token')
+      await axios.post(
+        '/api/user/select-animal',
+        {
+          animalId: selectedAnimal.animalId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      navigate('/animal/encyclopedia', {
+        state: { selectedAnimal: selectedAnimal },
       })
-      navigate('/main', { state: { selectedAnimal: selectedAnimal } })
       setShowConfirmation(false)
     } catch (error) {
       console.error('Error selecting animal:', error)
