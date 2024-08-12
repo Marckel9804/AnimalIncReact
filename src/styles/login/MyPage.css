@@ -17,7 +17,7 @@
 }
 
 .profile-section {
-    background-color: #4CBDB8;
+    background-color: #4cbdb8;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -170,28 +170,56 @@
     color: #006bb3;
 }
 
-.item {
+.modal-user-item {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
 }
 
-.item-image {
+.modal-item-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25em;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.modal-item-image {
     width: 50px;
     height: 50px;
     margin-right: 10px;
 }
 
-.item-info {
+.modal-item-info {
     display: flex;
     flex-direction: column;
 }
 
-.item-name {
+.modal-item-name {
     font-weight: bold;
 }
 
-.item-description {
+.modal-item-description {
     font-size: 0.9em;
     color: #666;
+}
+
+.mypage-item-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    max-width: 80%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#mypage-item-modal-btn {
+    width: 80px;
+    margin-top: 50px;
+    margin-left: 350px;
 }

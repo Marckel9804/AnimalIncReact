@@ -384,23 +384,23 @@ const Mypage = () => {
                         ))}
                     </div>
                 </Modal>
-                <Modal isOpen={isItemModalOpen} onRequestClose={closeItemModal} className="modal">
-                    <h2 className="modal-title">보유 아이템 목록</h2>
-                    <div className="modal-content">
+                <Modal isOpen={isItemModalOpen} onRequestClose={closeItemModal} className="mypage-item-modal">
+                    <h2 className="modal-item-title">보유 아이템 목록</h2>
+                    <div className="modal-item-content">
                         {userInfo.userItems.length > 0 ? (
                             userInfo.userItems.map((item, index) => (
-                                <div key={index} className="item">
-                                    <img src={item.itemImage} className="item-image"/>
-                                    <div className="item-info">
-                                        <div className="item-name">{item.itemName}</div>
-                                        <div className="item-description">{item.itemDescription}</div>
+                                <div key={index} className="modal-user-item">
+                                    <img src={item.itemImage} className="modal-item-image"/>
+                                    <div className="modal-item-info">
+                                        <div className="modal-item-name">{item.itemName}</div>
+                                        <div className="modal-item-description">{item.itemDescription}</div>
                                     </div>
                                 </div>
                             ))
                         ) : (
                             <p>보유한 아이템이 없습니다.</p>
                         )}
-                        <button className="nes-btn is-error" id="mypage-modal-btn" onClick={closeItemModal}>닫기</button>
+                        <button className="nes-btn is-error" id="mypage-item-modal-btn" onClick={closeItemModal}>닫기</button>
                     </div>
                 </Modal>
             </div>
