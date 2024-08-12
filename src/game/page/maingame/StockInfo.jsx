@@ -12,22 +12,24 @@ import {
 import { Bar, Chart, Line } from "react-chartjs-2";
 import axios from "../../../utils/axios.js";
 
-function StockInfo({
-  show,
-  setShow,
-  stockInfo,
-  ind,
-  setInd,
-  comp,
-  setComp,
-  gameStatus,
-  myStatus,
-  setMyStatus,
-  formatNumber,
-  setShowNews,
-  openAlert,
-  updateTurn,
-}) {
+function StockInfo(props) {
+  const {
+    show,
+    setShow,
+    stockInfo,
+    ind,
+    setInd,
+    comp,
+    setComp,
+    gameStatus,
+    myStatus,
+    setMyStatus,
+    formatNumber,
+    setShowNews,
+    openAlert,
+    updateTurn,
+    sendMessage,
+  } = props;
   ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -37,6 +39,8 @@ function StockInfo({
     plugins,
     Tooltip
   );
+
+  ChartJS.defaults.font.family = "'DungGeunMo'";
 
   const indColor = {
     food: "#3CB371", // Green
@@ -126,27 +130,41 @@ function StockInfo({
   //매수 기능
   const buyStock = () => {
     if (totalPrice > myStatus.cash) {
+      openAlert("금액이 부족합니다");
       // alert(`금액이 부족합니다`);
-      openAlert();
-    } else {
+    } else if (order > 0) {
       setMyStatus({
         ...myStatus,
         [ind + comp]: myStatus[ind + comp] + order,
         cash: myStatus.cash - totalPrice,
       });
+      const buyMsg = {
+        type: "buySell",
+        stockId: ind + comp,
+        amount: order,
+        action: "buy",
+      };
+      sendMessage(buyMsg);
     }
   };
   //매도 기능
   const sellStock = () => {
     if (myStatus[ind + comp] < order) {
       // alert("보유한 주식이 부족합니다.");
-      openAlert;
-    } else {
+      openAlert("보유한 주식이 부족합니다.");
+    } else if (order > 0) {
       setMyStatus({
         ...myStatus,
         [ind + comp]: myStatus[ind + comp] - order,
         cash: myStatus.cash + totalPrice,
       });
+      const sellMsg = {
+        type: "buySell",
+        stockId: ind + comp,
+        amount: order,
+        action: "sell",
+      };
+      sendMessage(sellMsg);
     }
   };
 

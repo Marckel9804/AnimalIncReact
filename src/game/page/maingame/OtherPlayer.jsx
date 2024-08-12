@@ -29,18 +29,18 @@ function OtherPlayer({ show, setShow, otherStatus, formatNumber, sumStock }) {
         </div>
         <div className="other-player-info flex-col justify-between p-4 flex-grow">
           {otherStatus.map((data, index) => (
-            <div className=" border-2" key={data.nickName + index}>
+            <div className=" border-2 h-1/3" key={data.nickName + index}>
               <p style={{ fontSize: "19px", fontWeight: "bold" }}>
                 {data.nickName}
               </p>
               <p>총 자산 : {formatNumber(sumStock(data) + data.cash)} ₩ </p>
-              <span style={{ color: "red" }}>
+              {/* <span style={{ color: "red" }}>
                 주식: {formatNumber(sumStock(data))} ₩
               </span>
               <br />
               <span style={{ color: "blue" }}>
                 현금: {formatNumber(data.cash)} ₩
-              </span>
+              </span> */}
             </div>
           ))}
         </div>

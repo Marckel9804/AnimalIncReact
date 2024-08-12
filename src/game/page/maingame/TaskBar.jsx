@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 
 function TaskBar(props) {
   const [time, setTime] = useState(new Date());
-
   useEffect(() => {
     const timerID = setInterval(() => {
       setTime(new Date());
