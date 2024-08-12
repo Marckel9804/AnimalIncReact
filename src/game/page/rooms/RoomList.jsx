@@ -7,28 +7,25 @@ import Footer from "../../../components/Footer";
 import { useNavigate } from "react-router-dom";
 
 const RoomList = () => {
+  const [user, setUser] = useState(null); // 유저 정보 상태 관리
+  const [modal, setModal] = useState(false); // 방 만들기 모달 상태 관리
+  const [roomLists, setRoomLists] = useState([]); // 게임방 리스트 상태 관리
   const navigate = useNavigate();
-
-  // 유저 정보 (임시)
-  const user = [{ userNum: 47, userGrade: "Silver" }];
 
   // userGrade에 따라 선택할 수 있는 채널이 달라짐
   const channelList = ["Bronze", "Silver", "Gold"];
   const channelKR = ["브론즈 채널", "실버 채널", "골드 채널"];
 
   // 방 만들기 모달 켜고 끄는 메서드
-  const [modal, setModal] = useState(false);
-  function createRoom() {
-    if (modal === false) {
-      setModal(true);
+  const createRoom = () => {
+    if (user) {
+      setModal(!modal);
+    } else {
+      console.log("User info is not yet loaded.");
     }
-    if (modal === true) {
-      setModal(false);
-    }
-  }
+  };
 
   // 게임방 리스트 불러오기
-  const [roomLists, setRoomLists] = useState([]); //겜방 정보 저장
   const [selectChannel, setSelectChannel] = useState(); //유저가 고른 채널 정보 저장
   const [rerend, setRerend] = useState(false); //새로고침을 위한 변수
 
@@ -48,8 +45,25 @@ const RoomList = () => {
       });
   };
 
+  // 유저 정보를 가져오는 함수
+  const fetchUserInfo = () => {
+    axios.get("/api/user/get-profile")
+      .then((res) => {
+        console.log("Fetched user info: ", res.data);
+        setUser(res.data); // 유저 정보를 상태에 저장
+      })
+      .catch((error) => {
+        console.log("Failed to fetch user info:", error);
+      });
+  };
+
+  useEffect(() => {
+    getGameRooms();
+    fetchUserInfo(); // 유저 정보 가져오기
+  }, []);
   // 게임방 클릭하면 해당 게임방으로 이동 (게임방 인원 +1)
   const goWaitingRoom = (item) => {
+    console.log("item >>> ",item)
     // 방에 들어가면 인원수를 증가시키자 !
     axios
       .post(`/api/user/game/updateCount/${item.gameRoomId}`)
@@ -94,12 +108,12 @@ const RoomList = () => {
               >
                 자유 채널
               </ChanelButton>
-              {channelList.map((item, index) => {
+              {["bronze", "silver", "Gold"].map((item, index) => {
                 let active = "";
-                {
-                  user[0].userGrade === item
-                    ? (active = "nes-btn is-primary")
-                    : (active = "nes-btn is-disabled");
+                if (user && user.userGrade === item) {
+                  active = "nes-btn is-primary";
+                } else {
+                  active = "nes-btn is-disabled";
                 }
                 return (
                   <ChanelButton
@@ -112,7 +126,7 @@ const RoomList = () => {
                 );
               })}
             </div>
-            <ChanelButton className="nes-btn" onClick={() => createRoom()}>
+            <ChanelButton className="nes-btn" onClick={createRoom}>
               방 만들기
             </ChanelButton>
             <section className="icon-list text-center m-5">
@@ -167,7 +181,7 @@ const RoomList = () => {
               </Uldiv>
             </div>
           </div>
-          {modal ? <CreateRoom func={createRoom} user={user} /> : null}
+          {modal && user ? <CreateRoom func={createRoom} user={user} /> : null}
         </div>
       </RoomBody>
       <Footer />

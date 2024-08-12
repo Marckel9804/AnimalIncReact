@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './Rank_week.css'
 import 'nes.css/css/nes.min.css' // NES.css 스타일 임포트
 import axiosInstance from '../../utils/axios.js'
-import {useNavigate} from "react-router-dom"; // 올바른 경로로 수정
 
 // Rank_week 컴포넌트 정의
 const Rank_week = () => {
-  const navigate = useNavigate();
-  // rankingData 상태를 기본적으로 3개의 빈 객체로 설정
   const [rankingData, setRankingData] = useState([{}, {}, {}])
+  const navigate = useNavigate()
 
   // 컴포넌트가 마운트될 때 한 번 실행되는 useEffect 훅
   useEffect(() => {
@@ -31,8 +30,9 @@ const Rank_week = () => {
     fetchRankingData() // fetchRankingData 함수 호출
   }, []) // 빈 배열을 의존성 배열로 전달하여 컴포넌트가 마운트될 때 한 번만 실행
 
-  const gorankPage = () => {
-    navigate('/rank');
+  // 더보기 버튼 클릭 시 /ranking 페이지로 이동
+  const handleMoreClick = () => {
+    navigate('/ranking')
   }
 
   return (
@@ -79,7 +79,9 @@ const Rank_week = () => {
           ))}
         </ul>
         {/* 더보기 버튼 */}
-        <button className="nes-btn more-button" onClick={gorankPage}>더보기</button>
+        <button className="nes-btn more-button" onClick={handleMoreClick}>
+          더보기
+        </button>
       </div>
     </div>
   )
