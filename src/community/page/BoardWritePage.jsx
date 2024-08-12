@@ -2,6 +2,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import BoardWriteLayout from "../layout/BoardWriteLayout.jsx";
 import {useEffect, useState} from "react";
 import axios from "../../utils/axios.js";
+import '../Board.scss'
 
 const BoardWritePage = () => {
 
