@@ -9,8 +9,31 @@ import { useNavigate } from "react-router-dom";
 const RoomList = () => {
   const navigate = useNavigate();
 
-  // 유저 정보 (임시)
-  const user = [{ userNum: 47, userGrade: "Silver" }];
+  // 로그인한 유저 번호 (UserNum) 가져오기
+  const [userInfo, setUserInfo] = useState();
+  console.log("로그인 유저 정보 ? ", userInfo);
+  useEffect(() => {
+    const getUserInfo = async () => {
+      // 로그인한 유저 정보 받아옴 (여기서는 유저 이메일만 확인 가능)
+      await axios
+        .get(`/api/user/me`)
+        .then((res) => {
+          // 가져온 유저 이메일로 유저 정보를 다시 조회해서 state 에 저장
+          let email = res.data.claims.userEmail;
+          axios
+            .get(`api/user/game/selectUser/${email}`)
+            .then((res) => {
+              setUserInfo(res.data);
+            })
+            .catch((error) => console.log(error));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+
+    getUserInfo();
+  }, []);
 
   // userGrade에 따라 선택할 수 있는 채널이 달라짐
   const channelList = ["Bronze", "Silver", "Gold"];
@@ -60,12 +83,18 @@ const RoomList = () => {
       .catch((error) => console.log(error));
   };
 
-  // 공지사항 불러오기 (인데 아직 공사중👷🏻‍♀️🚧)
+  // 공지사항 불러오기 (notice 최신글 10개까지만 출력)
+  const [notice, setNotice] = useState();
+  useEffect(() => {
+    getNoticeList();
+  }, []);
+
   const getNoticeList = () => {
     axios
       .get(`/api/board`)
       .then((res) => {
-        console.log(res.data);
+        console.log("공지사항 ! ", res.data);
+        setNotice(res.data.content);
       })
       .catch((error) => {
         console.log(error);
@@ -94,23 +123,29 @@ const RoomList = () => {
               >
                 자유 채널
               </ChanelButton>
-              {channelList.map((item, index) => {
-                let active = "";
-                {
-                  user[0].userGrade === item
-                    ? (active = "nes-btn is-primary")
-                    : (active = "nes-btn is-disabled");
-                }
-                return (
-                  <ChanelButton
-                    className={active}
-                    key={index}
-                    onClick={() => getGameRooms(channelList[index])}
-                  >
-                    {channelKR[index]}
-                  </ChanelButton>
-                );
-              })}
+              {userInfo === undefined
+                ? null
+                : channelList.map((item, index) => {
+                    let active = "";
+                    {
+                      userInfo.userGrade === item
+                        ? (active = "nes-btn is-primary")
+                        : (active = "nes-btn is-disabled");
+                    }
+                    let param = "";
+                    if (active === "nes-btn is-primary") {
+                      param = channelList[index];
+                    }
+                    return (
+                      <ChanelButton
+                        className={active}
+                        key={index}
+                        onClick={() => getGameRooms(param)}
+                      >
+                        {channelKR[index]}
+                      </ChanelButton>
+                    );
+                  })}
             </div>
             <ChanelButton className="nes-btn" onClick={() => createRoom()}>
               방 만들기
@@ -124,9 +159,18 @@ const RoomList = () => {
             <div className="nes-container is-rounded bg-white">
               <div className="p-2"> * 공지사항</div>
               <Uldiv className="nes-list is-disc">
-                <GameList>[공지] 랭크게임 일정 (09/01 ~ 09/30) </GameList>
-                <GameList>[공지] 07.25 패치노트 유료 아이템 추가</GameList>
-                <GameList>[공지] 7월 PC방 혜택</GameList>
+                {notice === undefined
+                  ? null
+                  : notice.map((item, index) => {
+                      return (
+                        <GameList
+                          key={index}
+                          onClick={() => navigate(`/board/detail/${item.bcId}`)}
+                        >
+                          [{item.bcCode}] {item.title}
+                        </GameList>
+                      );
+                    })}
               </Uldiv>
             </div>
             <div className="nes-container is-rounded bg-white">
@@ -167,7 +211,7 @@ const RoomList = () => {
               </Uldiv>
             </div>
           </div>
-          {modal ? <CreateRoom func={createRoom} user={user} /> : null}
+          {modal ? <CreateRoom func={createRoom} user={userInfo} /> : null}
         </div>
       </RoomBody>
       <Footer />

@@ -7,7 +7,7 @@ const CreateRoom = (props) => {
   const navigate = useNavigate();
 
   // 유저 정보 받기
-  const user = props.user[0];
+  const user = props.user;
   console.log("유저 정보 확인: ", user.userGrade);
   // roomId 생성
   const nowTime = moment().format("YYMMDDHHmm");
