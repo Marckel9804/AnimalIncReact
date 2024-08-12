@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import axios from "../../../utils/axios.js";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
@@ -7,12 +7,16 @@ const CreateRoom = (props) => {
   const navigate = useNavigate();
 
   // 유저 정보 받기
-  const user = props.user[0];
-  console.log("유저 정보 확인: ", props.user[0]);
+  const user = props.user;
+  console.log("유저 정보 확인: ", user);
+
   // roomId 생성
-  const nowTime = moment().format("YYMMDDHHMM");
+  const nowTime = moment().format("YYMMDDHHmm");
   const roomId = `${nowTime}_R_${user.userNum}`;
   console.log("방 번호 확인: ", roomId);
+  // 방 채널은 본인 티어의 채널만 선택할 수 있다.
+  const channelList = ["Bronze", "Silver", "Gold"];
+  const channelKR = ["브론즈", "실버", "골드"];
 
   // 방 만들기 컴포넌트 띄우면 NES 캐릭터들 랜덤으로 뜨게 만듬
   const randomRef = useRef([
@@ -31,17 +35,16 @@ const CreateRoom = (props) => {
   console.log("방 정보: ", roomRef);
 
   const getRoomInfo = () => {
-    console.log(roomRef);
-    if (roomRef.current[0] === undefined) {
+    if (!roomRef.current[0]) {
       alert("방 제목을 입력해주세요");
       document.getElementById("name_field").focus();
       return false;
     }
-    if (roomRef.current[1] === undefined) {
+    if (!roomRef.current[1]) {
       alert("채널을 선택해주세요");
       return false;
     }
-    if (roomRef.current[2] === undefined) {
+    if (!roomRef.current[2]) {
       alert("인원 수를 선택해주세요");
       return false;
     }
@@ -50,8 +53,8 @@ const CreateRoom = (props) => {
 
   // 방 생성하기
   const insertRoom = async () => {
-    await axios
-      .post(`/api/user/game/insertRoom`, {
+    try {
+      await axios.post(`/api/user/game/insertRoom`, {
         gameRoomId: roomId,
         roomName: roomRef.current[0],
         tier: roomRef.current[1],
@@ -59,12 +62,26 @@ const CreateRoom = (props) => {
       })
       .then(() => {
         alert("📢➰ 게임 방이 만들어졌어요.");
-        location.reload();
+        navigate(`/roomwait/${roomId}`, {
+          state: {
+            roomId: roomId,
+            roomName: roomRef.current[0],
+            maxPlayers: roomRef.current[2],
+          },
+        });
       })
       .catch((error) => {
         alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
         console.log(error);
       });
+      alert("📢➰ 게임 방이 만들어졌어요.");
+      navigate(`/roomwait/${roomId}`, {
+        state: { roomId, roomName: roomRef.current[0], maxPlayers: roomRef.current[2], userNum: user.userNum }, // userNum도 함께 전달
+      });
+    } catch (error) {
+      alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
+      console.log(error);
+    }
   };
 
   return (
@@ -81,9 +98,7 @@ const CreateRoom = (props) => {
             id="name_field"
             className="nes-input"
             placeholder="방 제목을 입력하세요."
-            onChange={(e) => {
-              roomRef.current[0] = e.target.value;
-            }}
+            onChange={(e) => (roomRef.current[0] = e.target.value)}
           />
         </div>
         <div className="nes-container with-title is-rounded">
@@ -94,24 +109,34 @@ const CreateRoom = (props) => {
               className="nes-radio"
               name="channel"
               value="free"
-              onClick={(e) => {
-                roomRef.current[1] = e.target.value;
-              }}
+              onClick={(e) => (roomRef.current[1] = e.target.value)}
             />
             <span>자유</span>
           </label>
-          <label>
-            <input
-              type="radio"
-              className="nes-radio"
-              name="channel"
-              value="gold"
-              onClick={(e) => {
-                roomRef.current[1] = e.target.value;
-              }}
-            />
-            <span>골드</span>
-          </label>
+          {channelList.map((item, index) => {
+            console.log(
+              "유저 정보 == 방 정보 확인 : ",
+              item === user.userGrade
+            );
+            {
+              return user.userGrade === item ? (
+                <>
+                  <label>
+                    <input
+                      type="radio"
+                      className="nes-radio"
+                      name="channel"
+                      value={item}
+                      onClick={(e) => {
+                        roomRef.current[1] = e.target.value;
+                      }}
+                    />
+                    <span>{channelKR[index]}</span>
+                  </label>
+                </>
+              ) : null;
+            }
+          })}
         </div>
         <div className="nes-container with-title is-rounded">
           <p className="title">인원 선택</p>
@@ -120,9 +145,7 @@ const CreateRoom = (props) => {
               type="radio"
               className="nes-radio"
               name="player"
-              onClick={() => {
-                roomRef.current[2] = 1;
-              }}
+              onClick={() => (roomRef.current[2] = 1)}
             />
             <span>1인</span>
           </label>
@@ -131,9 +154,7 @@ const CreateRoom = (props) => {
               type="radio"
               className="nes-radio"
               name="player"
-              onClick={() => {
-                roomRef.current[2] = 2;
-              }}
+              onClick={() => (roomRef.current[2] = 2)}
             />
             <span>2인</span>
           </label>
@@ -142,9 +163,7 @@ const CreateRoom = (props) => {
               type="radio"
               className="nes-radio"
               name="player"
-              onClick={() => {
-                roomRef.current[2] = 3;
-              }}
+              onClick={() => (roomRef.current[2] = 3)}
             />
             <span>3인</span>
           </label>
@@ -153,9 +172,7 @@ const CreateRoom = (props) => {
               type="radio"
               className="nes-radio"
               name="player"
-              onClick={() => {
-                roomRef.current[2] = 4;
-              }}
+              onClick={() => (roomRef.current[2] = 4)}
             />
             <span>4인</span>
           </label>
@@ -165,9 +182,7 @@ const CreateRoom = (props) => {
         <button
           type="button"
           className="nes-btn is-warning"
-          onClick={() => {
-            getRoomInfo();
-          }}
+          onClick={getRoomInfo}
         >
           확인
         </button>

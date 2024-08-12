@@ -29,34 +29,25 @@
   height: 25vh;
   width: 45%;
   z-index: 1;
-  margin-left: 3px;
+  margin-left: 65px;
 }
 .win-chat-container {
   position: relative;
   margin-top: 1vh;
   height: 45vh;
   width: 100%;
+  left: 15px;
+  z-index: 1;
   margin-left: 10px;
 }
-.p2-container {
+.win-news-container {
   position: absolute;
-  margin-top: 0.5vh;
-  height: 22vh;
-  width: 90%;
-  margin-left: 80px;
-}
-.p3-container {
-  position: absolute;
-  margin-top: 18vh;
-  height: 22vh;
-  width: 90%;
-  margin-left: 40px;
-}
-.p4-container {
-  position: absolute;
-  margin-top: 36vh;
-  height: 22vh;
-  width: 90%;
+  width: 35vw;
+  height: 45vh;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
 }
 
 .taskbar-container {
@@ -119,6 +110,7 @@
   border-bottom: 2px #f0ffff solid;
   padding: 4px;
   margin-top: 8px;
+  min-height: 0;
 }
 
 .window-head {
@@ -182,6 +174,22 @@
   left: 0;
   width: 300px;
   height: 500px;
+  z-index: 5;
+}
+
+.start-bar-pop-container {
+  background-color: #c0c0c0;
+  border-top: 2px #f0ffff solid;
+  border-left: 2px #f0ffff solid;
+  border-right: 2px #252525 solid;
+  border-bottom: 2px #252525 solid;
+  padding: 2px;
+  position: absolute;
+  bottom: 40px;
+  left: 290px;
+  width: 255px;
+  height: 500px;
+  z-index: 1;
 }
 .start-bar-side {
   width: 45px;
@@ -200,7 +208,8 @@
   width: 240px;
   height: 99%;
 }
-.start-bar-compoB {
+.start-bar-compoB,
+.start-bar-pop-compoB {
   width: 240px;
   height: 12.5%;
   display: flex;
@@ -208,8 +217,10 @@
   padding-left: 8px;
   margin-left: 4px;
   gap: 8px;
+  color: black;
 }
-.start-bar-compoB:hover {
+.start-bar-compoB:hover,
+.start-bar-pop-compoB:hover {
   background-color: #01007d;
   color: white;
 }
@@ -224,6 +235,116 @@
 
 .win-chart-container {
   width: 80%;
-  height: auto;
+  height: 70%;
   display: flex;
+  gap: 20px;
+}
+
+.win-stock-order {
+  outline: none;
+}
+
+.win-stock-order::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.win-my-table {
+  border-collapse: collapse;
+  max-width: 100%;
+  width: 100%;
+}
+.win-my-table td {
+  border: 3px dashed black;
+  padding: 10px;
+}
+.win-my-table-container {
+  overflow-y: scroll;
+  min-height: 0;
+  max-height: 100%;
+}
+
+.win-my-table-container::-webkit-scrollbar {
+  display: none;
+}
+
+.win-my-tooltip {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1;
+  color: yellow;
+  width: 130px;
+  height: 30px;
+  margin-left: 5px;
+  border-radius: 4px;
+  padding-left: 8px;
+}
+.win-my-tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 80%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid rgba(0, 0, 0, 0.7);
+}
+
+.win-item-icon {
+  width: 90px;
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.win-item-icons {
+  padding-top: 15px;
+  padding-left: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.win-item-text {
+  width: 100%;
+  text-align: center;
+  background-color: #000080;
+  color: white;
+  border: dotted 0.5px white;
+}
+
+.win-chat-input {
+  border-top: 1px #252525 solid;
+  border-left: 1px #252525 solid;
+  border-right: 1px #f0ffff solid;
+  border-bottom: 1px #f0ffff solid;
+  flex-grow: 1;
+  padding-left: 4px;
+}
+.win-chat-input:focus {
+  outline: none;
+}
+.win-chat-btn {
+  height: 32px;
+  border-top: 2px #f0ffff solid;
+  border-left: 2px #f0ffff solid;
+  border-right: 2px #252525 solid;
+  border-bottom: 2px #252525 solid;
+  align-items: center;
+  padding-right: 4px;
+  padding-left: 4px;
+  display: flex;
+}
+.win-chat-btn:active {
+  border-top: 2px #252525 solid;
+  border-left: 2px #252525 solid;
+  border-right: 2px #f0ffff solid;
+  border-bottom: 2px #f0ffff solid;
+}
+.win-chat-btn:focus {
+  outline: none;
 }
