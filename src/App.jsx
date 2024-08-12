@@ -35,6 +35,8 @@ import Terms from './components/Terms'
 import Privacy from './components/Privacy'
 import './App.css'
 import 'nes.css/css/nes.min.css'
+import AdminPage from "./admin/page/AdminPage.jsx";
+import UserListPage from "./admin/page/UserListPage.jsx";
 
 const App = () => {
   const containerStyle = {
@@ -99,13 +101,15 @@ const App = () => {
           <Route path="/check-profile" element={<CheckProfile />} />
           <Route path="/find-password" element={<FindPassword />} />
           {/* 태웅 경로 끝 */}
+
           {/* 게시판 시작 */}
-          <Route path="/board/list/:page" element={<BoardListPage />} />
-          <Route path="/board" element={<Navigate to="/board/list/0" />} />
+          <Route path="/board/list" element={<BoardListPage />} />
+          <Route path="/board" element={<Navigate to="/board/list?page=0" />} />
           <Route path="/board/write/:type" element={<BoardWritePage />} />
           <Route path="/board/detail/:id" element={<BoardDetailPage />} />
           <Route path="/board/update/:id" element={<BoardUpdatePage />} />
           {/* 게시판 끝 */}
+
           {/* 태경 경로 */}
           {/* <Route exact path="/" element={<RoomWait />} /> */}
           <Route exact path="/roomwait/:room_id" element={<RoomWait />} />
@@ -114,6 +118,11 @@ const App = () => {
             element={<SpaceMinigame />}
           />
           {/* 태경 경로 끝 */}
+
+        {/* 관리자 시작 */}
+          <Route path='/admin' element={<AdminPage/>}/>
+          <Route path='/admin/user' element={<UserListPage/>}/>
+        {/* 관리자 끝 */}
         </Routes>
       </div>
     </Router>

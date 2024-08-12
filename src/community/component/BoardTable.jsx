@@ -6,14 +6,14 @@ import { useNavigate } from "react-router-dom";
 
 
 const BoardTable = (props) => {
-  const navi = useNavigate();
-  const [activeTab, setActiveTab] = useState(props.type);
+
+  const {page,list,navi,type,setType} = props
+  const [activeTab, setActiveTab] = useState(type);
   const [hoveredTab, setHoveredTab] = useState(null);
 
-  const list = props.list;
 
   const onDetail = (index) => {
-    navi(`/board/detail/${index}`);
+    navi(`/board/detail/${index}?page=${page}`);
   };
 
   const handleMouseEnter = (tab) => {
@@ -26,12 +26,12 @@ const BoardTable = (props) => {
 
   const handleClick = (tab) => {
     setActiveTab(tab);
-    props.setType(tab);
+    setType(tab);
+    navi(`/board/list?page=${page}`,{state:{type:type}})
     document.getElementById('notice').style.width='160px';
     document.getElementById('free').style.width='160px';
     document.getElementById('faq').style.width='160px';
     document.getElementById(tab).style.width='180px';
-
   };
 
   const getBackgroundImage = (tab) => {

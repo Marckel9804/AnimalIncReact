@@ -1,0 +1,11 @@
+@import 'nes.css/css/nes.min.css';
+@import "nes.css/scss/nes-core";
+#write-input-file::file-selector-button {
+  @extend .nes-btn;
+  margin-right: 30px;
+}
+
+#write-input-file::file-selector-button:hover {
+  cursor: pointer;
+}
+

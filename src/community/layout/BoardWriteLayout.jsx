@@ -2,62 +2,95 @@ import {useEffect, useState} from "react";
 import axios from "../../utils/axios.js";
 import {useNavigate} from "react-router-dom";
 import FileUploadTest from "../FileUploadTest.jsx";
+import WriteFileItem from "../component/WriteFileItem.jsx";
 
-let initData= {
-  type:'',
-  bcCode:'',
-  title:'',
-  content:'',
-  files:[],
-  writeDate:'',
-  userEmail:'',
+let initData = {
+  type: '',
+  bcCode: '',
+  title: '',
+  content: '',
+  files: [],
+  writeDate: '',
+  userEmail: '',
 }
 
 const BoardWriteLayout = (props) => {
 
   const [formData, setFormData] = useState(initData)
+  const [files, setFiles] = useState([]);
 
   const type = props.type
   const navi = useNavigate()
   const email = props.email
 
-  console.log(email)
-
   useEffect(() => {
-    formData['userEmail']=email;
+    formData['userEmail'] = email;
     setFormData(formData);
   }, [email]);
 
   const onChange = (e) => {
-    formData[e.target.name]=e.target.value
+    formData[e.target.name] = e.target.value
     setFormData(formData)
   }
 
   const onSubmit = async () => {
+    try {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+      const date = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const formattedTime = `${year}-${month}-${date} ${hours}:${minutes}`;
 
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
-    const date = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const formattedTime = `${year}-${month}-${date} ${hours}:${minutes}`;
+      formData['writeDate'] = formattedTime;
+      formData['type'] = type;
 
-    formData['writeDate']=formattedTime
-    formData['type']=type
+      await onUpload(); // onUpload 함수가 끝날 때까지 기다림
+      console.log('전송데이터', formData);
 
-    await setFormData(formData);
-    await console.log('전송데이터', formData)
-    await axios.post('/api/board/test/writedto',formData,{})
-      .then((res)=> {
-        // console.log('보낸 DTO',res.data)
-        navi(`/board/detail/${res.data.bcId}`)
-      })
-      .catch((err)=>{console.log('post formdata error', err)})
-  }
+      const res = await axios.post('/api/board/test/writedto', formData, {});
+      navi(`/board/detail/${res.data.bcId}`);
+    } catch (err) {
+      console.log('post formdata error', err);
+    }
+  };
+
+  const onUpload = async () => {
+    const fileData = new FormData();
+    console.log(files);
+    files.forEach((file) => {
+      fileData.append('files', file);
+    });
+    fileData.append('folderName', 'images');
+    console.log('img upload', fileData);
+
+    try {
+      const res = await axios.post('/api/upload/imglist', fileData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('data', res);
+      const tmp = res.data.map((item) => item.upLoadFilename);
+      formData['files'] = tmp;
+      await setFormData(formData);
+    } catch (err) {
+      console.log('upload error', err);
+    }
+  };
 
   const onCancel = () => {
-    navi('/board/list/0')
+    navi(`/board/list?page=0`,{state:{type:type}})
+  }
+
+  const addFile = (event) => {
+    setFiles([...files, event.target.files[0]]);
+    console.log(files)
+  };
+
+  const deleteFile = async (index) => {
+    setFiles(prevFiles => prevFiles.filter((item, i) => i !== index));
   }
 
   return (
@@ -72,9 +105,10 @@ const BoardWriteLayout = (props) => {
              style={{marginTop: '40px', flexShrink: "0"}}>
 
           <div className='text-xl'
-               style={{width:"128px",flexShrink:0}} >∙태그</div>
+               style={{width: "128px", flexShrink: 0}}>∙태그
+          </div>
 
-          <div className="nes-select is-success" >
+          <div className="nes-select is-success">
             <select name='bcCode'
                     onChange={onChange}>
               <option value="x" hidden>...</option>
@@ -104,23 +138,43 @@ const BoardWriteLayout = (props) => {
                     onChange={onChange}
                     placeholder="글 내용"/>
         </div>
-        <div className="nes-field is-inline my-5 w-full"
-
-        >
+        <div className="nes-field is-inline my-5 w-full">
           <div className='text-xl w-32'>∙첨부파일</div>
-          <input type="file" id="inline_field" className="nes-input is-success"/>
+          <input type="file"
+                 id="write-input-file"
+                 className="nes-input is-success"
+                 onChange={addFile}
+          />
         </div>
 
-        <button className='nes-btn is-primary'
-                onClick={onSubmit}
-        >등록</button>
-        <button className='nes-btn is-error'
-                onClick={onCancel}>
-          취소
-        </button>
+        <div className='grid grid-cols-2 py-4'>
 
-        <FileUploadTest/>
+          {files.map((item, index) => (
+            <WriteFileItem
+              key={index}
+              index={index}  // Ensure you pass the index prop to the component
+              fileName={item.name}
+              file={item}
+              deleteFile={deleteFile}  // Pass the delete function without invoking it
+            />
+          ))}
+        </div>
 
+        <div id='board-write-fbtns'
+             className='flex gap-3 justify-center'>
+
+          <button className='nes-btn is-primary'
+                  style={{width: '100px'}}
+                  onClick={onSubmit}
+          >등록
+          </button>
+          <button className='nes-btn is-error'
+                  style={{width:'100px'}}
+                  onClick={onCancel}>
+            취소
+          </button>
+
+        </div>
       </div>
     </div>
   )

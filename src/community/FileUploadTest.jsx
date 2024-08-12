@@ -34,7 +34,7 @@ const ImageUpload = () => {
       <input id='fimg' type="file" onChange={handleFileChange} />
       <button onClick={onUpload}>Upload</button>
 
-      <img src='http://kr.object.ncloudstorage.com/aniinc/file'/>
+      <img src='http://kr.object.ncloudstorage.com/aniinc/images/{파일명}'/>
     </div>
   );
 };
