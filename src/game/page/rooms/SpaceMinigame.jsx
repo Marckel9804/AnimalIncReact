@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled, { keyframes, css } from "styled-components";
-import 'nes.css/css/nes.min.css';
+import "nes.css/css/nes.min.css";
 
 const SpaceMinigame = ({ onClose }) => {
   const [count, setCount] = useState(0);
@@ -28,13 +28,13 @@ const SpaceMinigame = ({ onClose }) => {
       const text = await event.data.text();
       const data = JSON.parse(text);
 
-      if (data.type === 'init' && data.clientId) {
+      if (data.type === "init" && data.clientId) {
         setClientId(data.clientId);
         setPlayerNum(data.playerNum);
       }
 
-      if (data.type === 'count') {
-        console.log('Received message:', data);
+      if (data.type === "count") {
+        console.log("Received message:", data);
 
         setPlayerCounts((prevCounts) => {
           const newCounts = [...prevCounts];
@@ -55,7 +55,12 @@ const SpaceMinigame = ({ onClose }) => {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.code === "Space" && !isKeyPressed && !gameOver && playerNum !== null) {
+      if (
+        event.code === "Space" &&
+        !isKeyPressed &&
+        !gameOver &&
+        playerNum !== null
+      ) {
         const newCount = count + 1;
         const newProgress = Math.min(progress + 1, 10);
         setCount(newCount);
@@ -64,7 +69,13 @@ const SpaceMinigame = ({ onClose }) => {
         setHit(true);
         setTimeout(() => setHit(false), 200);
 
-        const playerData = { type: 'count', clientId, count: newCount, progress: newProgress, playerNum };
+        const playerData = {
+          type: "count",
+          clientId,
+          count: newCount,
+          progress: newProgress,
+          playerNum,
+        };
 
         if (socketRef.current) {
           socketRef.current.send(JSON.stringify(playerData));
@@ -118,8 +129,12 @@ const SpaceMinigame = ({ onClose }) => {
           <p>현재 카운트: {count}</p>
         </CountDisplay>
         <ProgressContainer>
-          <div id='space-progress'>
-            <progress className="nes-progress is-pattern" value={progress} max="10"></progress>
+          <div id="space-progress">
+            <progress
+              className="nes-progress is-pattern"
+              value={progress}
+              max="10"
+            ></progress>
           </div>
         </ProgressContainer>
         <PlayerList>
@@ -141,7 +156,9 @@ const SpaceMinigame = ({ onClose }) => {
           </Player>
         </PlayerList>
         <ButtonContainer>
-          <StyledButton hit={hit ? 1 : 0} className="minigame-nes-btn">Space Bar</StyledButton>
+          <StyledButton hit={hit ? 1 : 0} className="minigame-nes-btn">
+            Space Bar
+          </StyledButton>
         </ButtonContainer>
 
         {gameMessage && <GameMessage>{gameMessage}</GameMessage>}
@@ -197,7 +214,7 @@ const BoxIcon = styled.div`
 
 const Instructions = styled.p`
   text-align: center;
-  font-size: 2.0em;
+  font-size: 2em;
   margin-top: 70px;
 `;
 
@@ -245,7 +262,7 @@ const StyledButton = styled.button`
   &:active {
     box-shadow: inset 4px 4px #adafbc;
   }
-  ${props =>
+  ${(props) =>
     props.hit &&
     css`
       animation: ${hitAnimation} 0.2s ease;
@@ -267,7 +284,7 @@ const GameMessage = styled.div`
   font-size: 1.5em;
   color: black;
   text-align: center;
-  font-weight: bold; 
+  font-weight: bold;
   animation: ${sparkle} 1s infinite;
 `;
 
