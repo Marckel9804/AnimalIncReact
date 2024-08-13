@@ -69,7 +69,6 @@ const Header = () => {
       await axios.post('/api/user/logout')
       localStorage.removeItem('accessToken')
       navigate('/')
-      window.location.reload();
     } catch (error) {
       console.error('Logout Error:', error)
       alert('로그아웃에 실패했습니다.')
@@ -82,7 +81,7 @@ const Header = () => {
   return (
     <header className="header-header-container">
       <div className="header-header-content">
-        <div className="header-title nes-pointer" onClick={() => navigate('/')}>
+        <div className="header-title" onClick={() => navigate('/')}>
           Animal 주식회사
         </div>
         <div className="header-user-info">
