@@ -12,44 +12,68 @@ const SpaceMinigame = ({ onClose }) => {
   const [hit, setHit] = useState(false)
   const socketRef = useRef(null)
   const [clientId, setClientId] = useState(null)
-  const [playerNum, setPlayerNum] = useState(1) // 초기 값 null
-
-  const [playerCounts, setPlayerCounts] = useState([0, 0, 0, 0])
+  const [playerNum, setPlayerNum] = useState(1) // 플레이어 번호 상태
+  const [playerCounts, setPlayerCounts] = useState([0, 0, 0, 0]) // 모든 플레이어의 카운트를 관리
 
   useEffect(() => {
-    const socket = new WebSocket('ws://localhost:4000')
-    socketRef.current = socket // WebSocket 객체를 참조에 할당
+    const initializeWebSocket = () => {
+      const socket = new WebSocket('ws://localhost:4000')
+      socketRef.current = socket // WebSocket 객체를 참조에 할당
 
-    socket.onopen = () => {
-      console.log('Connected to WebSocket server')
-    }
-
-    socket.onmessage = async (event) => {
-      const text = await event.data.text()
-      const data = JSON.parse(text)
-
-      if (data.type === 'init' && data.clientId) {
-        setClientId(data.clientId)
-        setPlayerNum(data.playerNum)
+      socket.onopen = () => {
+        console.log('Connected to WebSocket server')
       }
 
-      if (data.type === 'count') {
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data)
         console.log('Received message:', data)
 
-        setPlayerCounts((prevCounts) => {
-          const newCounts = [...prevCounts]
-          newCounts[data.playerNum - 1] = data.count
-          return newCounts
-        })
+        if (data.type === 'init' && data.clientId) {
+          setClientId(data.clientId)
+          setPlayerNum(data.playerNum)
+        }
+
+        if (data.type === 'count') {
+          setPlayerCounts((prevCounts) => {
+            const newCounts = [...prevCounts]
+            newCounts[data.playerNum - 1] = data.count
+            return newCounts
+          })
+        }
+
+        if (data.type === 'gameOver') {
+          setGameOver(true)
+          if (data.isWinner) {
+            setGameMessage('1등입니다! 게임이 종료되었습니다.')
+          } else {
+            setGameMessage('게임이 종료되었습니다.')
+          }
+          setTimeout(() => {
+            onClose()
+          }, 3000)
+        }
+      }
+
+      socket.onclose = (event) => {
+        console.log('WebSocket connection closed', event)
+        if (event.code !== 1000) {
+          // 정상적인 종료가 아니면 재연결 시도
+          setTimeout(initializeWebSocket, 1000)
+        }
+      }
+
+      socket.onerror = (error) => {
+        console.error('WebSocket error', error)
+        socket.close() // 에러 발생 시 연결을 닫음
       }
     }
 
-    socket.onclose = () => {
-      console.log('WebSocket connection closed')
-    }
+    initializeWebSocket()
 
     return () => {
-      socket.close()
+      if (socketRef.current) {
+        socketRef.current.close()
+      }
     }
   }, [])
 
@@ -59,7 +83,9 @@ const SpaceMinigame = ({ onClose }) => {
         event.code === 'Space' &&
         !isKeyPressed &&
         !gameOver &&
-        playerNum !== null
+        playerNum !== null &&
+        socketRef.current &&
+        socketRef.current.readyState === WebSocket.OPEN
       ) {
         const newCount = count + 1
         const newProgress = Math.min(progress + 1, 10)
@@ -77,9 +103,7 @@ const SpaceMinigame = ({ onClose }) => {
           playerNum,
         }
 
-        if (socketRef.current) {
-          socketRef.current.send(JSON.stringify(playerData))
-        }
+        socketRef.current.send(JSON.stringify(playerData))
 
         setPlayerCounts((prevCounts) => {
           const newCounts = [...prevCounts]
@@ -108,15 +132,7 @@ const SpaceMinigame = ({ onClose }) => {
     if (count > highScore) {
       setHighScore(count)
     }
-
-    if (count >= 10) {
-      setGameMessage('1등입니다!')
-      setGameOver(true)
-      setTimeout(() => {
-        onClose()
-      }, 1000)
-    }
-  }, [count, highScore, onClose])
+  }, [count, highScore])
 
   return (
     <MinigameContainer>
@@ -167,6 +183,7 @@ const SpaceMinigame = ({ onClose }) => {
   )
 }
 
+// styled-components: 게임 UI 스타일링
 const MinigameContainer = styled.div`
   background-color: #4cbdb8;
   width: 100vw;
