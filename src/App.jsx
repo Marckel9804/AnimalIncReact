@@ -13,7 +13,6 @@ import GachaShop from './components/store/GachaShop'
 import GachaResult from './components/store/GachaResult'
 import ItemShop from './components/store/ItemShop'
 import CheckoutPage from './components/payment/CheckoutPage' // 결제 페이지 컴포넌트 가져오기
-
 import MainGame from './game/page/maingame/MainGame.jsx'
 import Login from './login/Login.jsx'
 import Register from './login/Register.jsx'
@@ -41,19 +40,7 @@ import 'nes.css/css/nes.min.css'
 import AdminPage from './admin/page/AdminPage.jsx'
 
 const App = () => {
-  const containerStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100vh',
-    position: 'relative', // 배경 투명도
-  }
-
-  const contentStyle = {
-    flex: 1,
-  }
-
   const refreshAccessToken = async () => {
-<<<<<<< HEAD
     const token = localStorage.getItem('accessToken')
     if (token) {
       try {
@@ -64,29 +51,10 @@ const App = () => {
         console.log('Error refreshing access token', err)
         localStorage.removeItem('accessToken')
         console.log('Tokens removed due to refresh error.')
-=======
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      try {
-        const response = await axios.post('/api/user/refresh-token');
-        const newAccessToken = response.headers['authorization'].split(' ')[1];
-        localStorage.setItem('accessToken', newAccessToken);
-      } catch (err) {
-        console.log('Error refreshing access token', err);
-        localStorage.removeItem('accessToken');
-        console.log('Tokens removed due to refresh error.');
->>>>>>> dev
       }
     }
   }
 
-<<<<<<< HEAD
-  useEffect(() => {
-    refreshAccessToken()
-  }, [location])
-
-=======
->>>>>>> dev
   return (
     <Router>
       <div className="flex flex-col relative min-h-screen">
@@ -96,26 +64,16 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Main />} />
-          {/* 약관 페이지 추가 */}
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
-          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
           <Route path="/shop" element={<Store />} />
           <Route path="/animal/encyclopedia" element={<AnimalEncyclopedia />} />
           <Route path="/shop/animal" element={<GachaShop />} />
-          <Route
-            path="/shop/animal-store/gacha"
-            element={<GachaResult />}
-          />{' '}
-          {/* GachaResult 경로를 추가합니다 */}
-          <Route path="/shop/item" element={<ItemShop />} />{' '}
-          {/* ItemShop 경로를 추가합니다 */}
+          <Route path="/shop/animal-store/gacha" element={<GachaResult />} />
+          <Route path="/shop/item" element={<ItemShop />} />
           <Route path="/createroom" element={<RoomList />} />
           <Route path="/ladder" element={<Ladder />} />
-          <Route path="/payment" element={<CheckoutPage />} />{' '}
-          {/* 결제 페이지 라우팅 */}
           <Route path="/payment" element={<CheckoutPage />} />
-          {/*태웅 경로 */}
           <Route path="/naver/callback" element={<NaverCallback />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/rank" element={<Rank />} />
@@ -123,23 +81,16 @@ const App = () => {
           <Route path="/kakao-login" element={<KakaoLogin />} />
           <Route path="/check-profile" element={<CheckProfile />} />
           <Route path="/find-password" element={<FindPassword />} />
-          {/* 태웅 경로 끝 */}
-          {/* 게시판 시작 */}
           <Route path="/board/list" element={<BoardListPage />} />
           <Route path="/board" element={<Navigate to="/board/list?page=0" />} />
           <Route path="/board/write/:type" element={<BoardWritePage />} />
           <Route path="/board/detail/:id" element={<BoardDetailPage />} />
           <Route path="/board/update/:id" element={<BoardUpdatePage />} />
-          {/* 게시판 끝 */}
-          {/* 태경 경로 */}
-          {/* <Route exact path="/" element={<RoomWait />} /> */}
           <Route exact path="/roomwait/:room_id" element={<RoomWait />} />
           <Route
             path="/game/page/rooms/SpaceMinigame"
             element={<SpaceMinigame />}
           />
-          {/* 태경 경로 끝 */}
-          {/* 관리자 페이지 */}
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </div>
@@ -147,17 +98,14 @@ const App = () => {
   )
 }
 
-<<<<<<< HEAD
-export default App
-=======
 const TokenRefresher = ({ refreshAccessToken }) => {
-  const location = useLocation();
+  const location = useLocation()
 
   useEffect(() => {
     refreshAccessToken()
-  }, [location]);
+  }, [location])
 
-  return null;
+  return null
 }
-export default App;
->>>>>>> dev
+
+export default App
