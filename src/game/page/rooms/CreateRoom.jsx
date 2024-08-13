@@ -8,17 +8,16 @@ const CreateRoom = (props) => {
 
   // 유저 정보 받기
   const user = props.user;
-  console.log("유저 정보 확인: ", user);
 
   // roomId 생성
   const nowTime = moment().format("YYMMDDHHmm");
   const roomId = `${nowTime}_R_${user.userNum}`;
-  console.log("방 번호 확인: ", roomId);
+
   // 방 채널은 본인 티어의 채널만 선택할 수 있다.
   const channelList = ["Bronze", "Silver", "Gold"];
   const channelKR = ["브론즈", "실버", "골드"];
 
-  // 방 만들기 컴포넌트 띄우면 NES 캐릭터들 랜덤으로 뜨게 만듬
+  // NES 캐릭터 랜덤으로 선택
   const randomRef = useRef([
     "nes-mario",
     "nes-ash",
@@ -30,9 +29,8 @@ const CreateRoom = (props) => {
   ]);
   let randomChar = Math.floor(Math.random() * 7);
 
-  // 유저가 생성하는 방 정보 저장 및 유효성 검사
+  // 방 정보 저장
   const roomRef = useRef([]);
-  console.log("방 정보: ", roomRef);
 
   const getRoomInfo = () => {
     if (!roomRef.current[0]) {
@@ -74,10 +72,6 @@ const CreateRoom = (props) => {
         alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
         console.log(error);
       });
-      alert("📢➰ 게임 방이 만들어졌어요.");
-      navigate(`/roomwait/${roomId}`, {
-        state: { roomId, roomName: roomRef.current[0], maxPlayers: roomRef.current[2], userNum: user.userNum }, // userNum도 함께 전달
-      });
     } catch (error) {
       alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
       console.log(error);
@@ -114,28 +108,22 @@ const CreateRoom = (props) => {
             <span>자유</span>
           </label>
           {channelList.map((item, index) => {
-            console.log(
-              "유저 정보 == 방 정보 확인 : ",
-              item === user.userGrade
-            );
-            {
-              return user.userGrade === item ? (
-                <>
-                  <label>
-                    <input
-                      type="radio"
-                      className="nes-radio"
-                      name="channel"
-                      value={item}
-                      onClick={(e) => {
-                        roomRef.current[1] = e.target.value;
-                      }}
-                    />
-                    <span>{channelKR[index]}</span>
-                  </label>
-                </>
-              ) : null;
-            }
+            return user.userGrade === item ? (
+              <>
+                <label>
+                  <input
+                    type="radio"
+                    className="nes-radio"
+                    name="channel"
+                    value={item}
+                    onClick={(e) => {
+                      roomRef.current[1] = e.target.value;
+                    }}
+                  />
+                  <span>{channelKR[index]}</span>
+                </label>
+              </>
+            ) : null;
           })}
         </div>
         <div className="nes-container with-title is-rounded">

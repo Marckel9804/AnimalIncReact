@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import backgroundImage from "../../../assets/background.jpg";
 import axios from "../../../utils/axios.js";
 
@@ -74,7 +74,7 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #4CBDB8;
+  background-color: #4cbdb8;
   color: white;
   padding: 0.5rem;
   border-radius: 8px;
@@ -85,89 +85,102 @@ const RoomWait = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isReady, setIsReady] = useState(false);
   const [players, setPlayers] = useState([]);
-  const [bots, setBots] = useState(0);
-  const [roomName, setRoomName] = useState(""); 
+  const [roomName, setRoomName] = useState("");
+  const [loggedInPlayerId, setLoggedInPlayerId] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { roomId, roomName: initialRoomName, maxPlayers, userNum } = location.state || {};
+  const { roomId, roomName: initialRoomName, maxPlayers, userNum } =
+    location.state || {};
   const socketRef = useRef(null);
   const clientId = useRef(uuidv4());
-  const timerRef = useRef(null); 
+  const timerRef = useRef(null);
 
   // 1. insertUserStatus 함수 정의
   const insertUserStatus = async (gameRoomId, userNum) => {
+    console.log("gameRoomId",gameRoomId)
+    console.log("userNum",userNum)
     try {
-      const response = await axios.post('http://localhost:8080/game/insertUserStatus', {
-        params: {
-          gameRoomId: gameRoomId, // 여기서 roomId 대신 gameRoomId 사용
-          userNum: userNum,
-        },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      });
-      console.log('User status inserted:', response.data);
+      const response = await axios.post(
+        "/game/insertUserStatus",
+        null,
+        {
+          params: {
+            gameRoomId: gameRoomId,
+            userNum: userNum,
+          },
+        }
+      );
+      console.log("User status inserted:", response.data);
     } catch (error) {
-      console.error('Error inserting user status:', error);
+      console.error("Error inserting user status:", error);
     }
   };
-  
-  
 
   // 2. useEffect 내에서 함수 호출
   useEffect(() => {
     console.log("유저 번호 (userNum): ", userNum);
     console.log("게임 방 ID (gameRoomId): ", roomId);
-  
+
     // 사용자가 방에 입장했을 때, 사용자 상태를 데이터베이스에 삽입
     insertUserStatus(roomId, userNum);
-    
+
     // WebSocket 연결 코드
     const socket = new WebSocket("ws://localhost:4000");
     socketRef.current = socket;
-  
+
     socket.onopen = () => {
       console.log("Connected to WebSocket server");
     };
+
+    socket.onmessage = (event) => {
+      try {
+        const parsedMessage = JSON.parse(event.data);
   
-    socket.onmessage = async (event) => {
-      const text = await event.data.text();
-      const parsedMessage = JSON.parse(text);
-      setChatMessages((prevMessages) => [...prevMessages, parsedMessage]);
+        // 메시지가 비어 있지 않을 때만 상태 업데이트
+        if (parsedMessage.text && parsedMessage.text.trim()) {
+          setChatMessages((prevMessages) => [...prevMessages, parsedMessage]);
+        }
+      } catch (error) {
+        console.error("Error parsing message data:", error);
+      }
     };
-  
+
     socket.onclose = () => {
       console.log("WebSocket connection closed");
     };
-  
+
     return () => {
       socket.close();
     };
-  }, [userNum, roomId]);
-  
+  }, []);
 
   useEffect(() => {
     const fetchLoggedInPlayer = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/user/me"
-        );
+        const response = await axios.get("/api/user/me", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
         const loggedInPlayer = response.data;
         setPlayers([loggedInPlayer]);
+        setLoggedInPlayerId(loggedInPlayer.id); // 로그인된 사용자의 ID 설정
       } catch (error) {
-        console.error('Error fetching current user data:', error);
+        console.error("Error fetching current user data:", error);
       }
     };
 
     const fetchRoomDetails = async () => {
       if (roomId) {
         try {
-          const response = await axios.get(`http://localhost:8080/api/user/game/room/${roomId}`);
+          const response = await axios.get(`/game/roomInfo/${roomId}`);
           const roomDetails = response.data;
+          console.log("roomDetails >>> ", roomDetails);
           if (roomDetails) {
             setRoomName(roomDetails.roomName);
           }
         } catch (error) {
-          console.error('Error fetching room details:', error);
+          console.error("Error fetching room details:", error);
         }
       } else {
         setRoomName(initialRoomName);
@@ -184,11 +197,13 @@ const RoomWait = () => {
 
   const handleSendMessage = () => {
     if (newMessage.trim() && socketRef.current) {
-      const message = { sender: clientId.current, text: newMessage };
+      const message = { sender: loggedInPlayerId, text: newMessage.trim() }; // 메시지에 trim() 적용
       socketRef.current.send(JSON.stringify(message));
-      setNewMessage("");
+      setChatMessages((prevMessages) => [...prevMessages, message]);
+      setNewMessage(""); // 메시지 전송 후 입력 필드 초기화
     }
   };
+  
 
   const handleBackButtonClick = () => {
     navigate("/CreateRoom");
@@ -202,30 +217,17 @@ const RoomWait = () => {
         timerRef.current = null;
       }
     } else {
-      if (players.length + bots < maxPlayers) {
-        alert("모든 플레이어가 준비되지 않았습니다.");
-        return;
-      }
-
       setIsReady(true);
-      console.log("Player is ready. Navigating to game in 5 seconds...");
-      timerRef.current = setTimeout(() => {
-        console.log(`Navigating to /game/${roomId}`);
-        navigate(`/game/${roomId}`);
-      }, 5000);
+      if (players.length === maxPlayers) {
+        console.log("Player is ready. Navigating to game in 5 seconds...");
+        timerRef.current = setTimeout(() => {
+          console.log(`Navigating to /game/${roomId}`);
+          navigate(`/game/${roomId}`);
+        }, 5000);
+      } else {
+        alert("모든 플레이어가 준비되지 않았습니다.");
+      }
     }
-  };
-
-  const handleAddBot = () => {
-    if (players.length + bots < maxPlayers) {
-      setBots(bots + 1);
-    } else {
-      alert("최대 인원수에 도달했습니다.");
-    }
-  };
-
-  const handleRemoveBot = (index) => {
-    setBots(bots - 1);
   };
 
   return (
@@ -241,10 +243,10 @@ const RoomWait = () => {
           </button>
           <button
             type="button"
-            className={`nes-btn ${isReady ? 'is-warning' : 'is-success'}`}
+            className={`nes-btn ${isReady ? "is-warning" : "is-success"}`}
             onClick={handleReadyClick}
           >
-            {isReady ? '취소' : '준비'}
+            {isReady ? "취소" : "준비"}
           </button>
         </HeaderContainer>
         <RoomInfoContainer>
@@ -254,7 +256,10 @@ const RoomWait = () => {
           {players.map((player, index) => (
             <div key={index} className="nes-container is-rounded p-4">
               <Header>
-                <span>{player.userNickname} {index === 0 && isReady && <span>(READY)</span>}</span>
+                <span>
+                  {player.userNickname}{" "}
+                  {index === 0 && isReady && <span>(READY)</span>}
+                </span>
                 <div></div>
               </Header>
               <div className="bg-gray-100 p-4 rounded mt-2 nes-container">
@@ -265,47 +270,14 @@ const RoomWait = () => {
                     className="rounded"
                   />
                   <div className="ml-4">
-                    <p className="nes-text">{player.userGrade} {player.userPoint}P</p>
+                    <p className="nes-text">
+                      {player.userGrade} {player.userPoint}P
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
           ))}
-          {[...Array(bots)].map((_, index) => (
-            <div key={index + players.length} className="nes-container is-rounded p-4">
-              <Header>
-                <span>봇 {index + 1}</span>
-                <SmallButton
-                  type="button"
-                  className="nes-btn is-error"
-                  onClick={() => handleRemoveBot(index)}
-                >
-                  X
-                </SmallButton>
-              </Header>
-              <div className="bg-gray-100 p-4 rounded mt-2 nes-container">
-                <div className="flex items-center">
-                  <img
-                    src={`https://via.placeholder.com/150?text=봇${index + 1}`}
-                    alt={`봇${index + 1}`}
-                    className="rounded"
-                  />
-                  <div className="ml-4">
-                    <p className="nes-text">Bot</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-          {players.length + bots < maxPlayers && (
-            <button
-              type="button"
-              className="nes-btn is-success"
-              onClick={handleAddBot}
-            >
-              +
-            </button>
-          )}
         </div>
         <div className="mt-4">
           <div
@@ -313,18 +285,35 @@ const RoomWait = () => {
             className="nes-container is-rounded p-4 text-white"
           >
             <section className="message-list">
-              {chatMessages.map((message, index) => (
-                <MessageContainer key={index} className={message.sender === clientId.current ? 'right' : 'left'}>
-                  {message.sender !== clientId.current && <i className="nes-bcrikko"></i>}
-                  <MessageBalloon className={`nes-balloon ${message.sender === clientId.current ? 'from-right' : 'from-left'} nes-pointer`}>
-                    <p>{message.text}</p>
-                  </MessageBalloon>
-                  {message.sender === clientId.current && <i className="nes-bcrikko"></i>}
-                </MessageContainer>
-              ))}
+              {chatMessages.length > 0 &&
+                chatMessages.map((message, index) => (
+                  <MessageContainer
+                    key={index}
+                    className={
+                      message.sender === loggedInPlayerId ? "right" : "left"
+                    }
+                  >
+                    {message.sender !== loggedInPlayerId && (
+                      <i className="nes-bcrikko"></i>
+                    )}
+                    <MessageBalloon
+                      className={`nes-balloon ${
+                        message.sender === loggedInPlayerId
+                          ? "from-right"
+                          : "from-left"
+                      } nes-pointer`}
+                    >
+                      <p>{message.text}</p>
+                    </MessageBalloon>
+                    {message.sender === loggedInPlayerId && (
+                      <i className="nes-bcrikko"></i>
+                    )}
+                  </MessageContainer>
+                ))}
             </section>
           </div>
         </div>
+
         <div id="room-wait">
           <div className="mt-4 nes-field is-inline flex">
             <input

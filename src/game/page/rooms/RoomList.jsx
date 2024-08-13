@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "../../../utils/axios.js";
 import styled from "styled-components";
 import CreateRoom from "./CreateRoom";
@@ -10,9 +10,11 @@ const RoomList = () => {
   const [user, setUser] = useState(null); // 유저 정보 상태 관리
   const [modal, setModal] = useState(false); // 방 만들기 모달 상태 관리
   const [roomLists, setRoomLists] = useState([]); // 게임방 리스트 상태 관리
+  const [selectChannel, setSelectChannel] = useState(null); // 유저가 고른 채널 정보 저장
+  const [rerend, setRerend] = useState(false); // 새로고침을 위한 변수
   const navigate = useNavigate();
 
-  // userGrade에 따라 선택할 수 있는 채널이 달라짐
+  // 유저 등급에 따른 채널 정보
   const channelList = ["Bronze", "Silver", "Gold"];
   const channelKR = ["브론즈 채널", "실버 채널", "골드 채널"];
 
@@ -25,74 +27,54 @@ const RoomList = () => {
     }
   };
 
-  // 게임방 리스트 불러오기
-  const [selectChannel, setSelectChannel] = useState(); //유저가 고른 채널 정보 저장
-  const [rerend, setRerend] = useState(false); //새로고침을 위한 변수
-
-  const getGameRooms = (channel) => {
-    // 선택한 채널을 스테이트 변수에 세팅
-    setSelectChannel(channel);
-    // 모오든 방 정보 받아오자~
-    axios
-      .get(`/api/user/game/selectAllRoom`)
-      .then((res) => {
-        console.log("방 리스트 받아온거 확인! ", res.data);
-        setRoomLists([res.data]);
-        console.log("roomLists : ", roomLists[0]);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   // 유저 정보를 가져오는 함수
-  const fetchUserInfo = () => {
-    axios.get("/api/user/get-profile")
-      .then((res) => {
-        console.log("Fetched user info: ", res.data);
-        setUser(res.data); // 유저 정보를 상태에 저장
-      })
-      .catch((error) => {
-        console.log("Failed to fetch user info:", error);
-      });
+  const fetchUserInfo = async () => {
+    try {
+      const res = await axios.get("/api/user/get-profile");
+      console.log("Fetched user info: ", res.data);
+      setUser(res.data);
+    } catch (error) {
+      console.log("Failed to fetch user info:", error);
+    }
   };
 
-  useEffect(() => {
-    getGameRooms();
-    fetchUserInfo(); // 유저 정보 가져오기
-  }, []);
-  // 게임방 클릭하면 해당 게임방으로 이동 (게임방 인원 +1)
-  const goWaitingRoom = (item) => {
-    console.log("item >>> ",item)
-    // 방에 들어가면 인원수를 증가시키자 !
-    axios
-      .post(`/api/user/game/updateCount/${item.gameRoomId}`)
-      .then(() => {
-        console.log("인원수 증가 완료 ~");
-        navigate(`/roomwait/${item.gameRoomId}`);
-      })
-      .catch((error) => console.log(error));
+  // 게임방 리스트 불러오기
+  const getGameRooms = async (channel) => {
+    setSelectChannel(channel);
+    try {
+      const res = await axios.get(`/api/user/game/selectAllRoom`);
+      console.log("방 리스트 받아온거 확인! ", res.data);
+      setRoomLists(res.data); // 상태 업데이트 시 중복된 배열 구조 제거
+    } catch (error) {
+      console.log("Failed to fetch game rooms:", error);
+    }
   };
 
-  // 공지사항 불러오기 (인데 아직 공사중👷🏻‍♀️🚧)
-  const getNoticeList = () => {
-    axios
-      .get(`/api/board`)
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  // 게임방 클릭 시 해당 방으로 이동
+  const goWaitingRoom = async (item) => {
+    console.log("Selected room:", item);
+    try {
+      await axios.post(`/api/user/game/updateCount/${item.gameRoomId}`);
+      console.log("인원수 증가 완료 ~");
+      navigate(`/roomwait/${item.gameRoomId}`);
+    } catch (error) {
+      console.log("Failed to update room count:", error);
+    }
   };
 
   // 🔄 버튼 누르면 게임방 새로고침
   useEffect(() => {
-    if (rerend === true) {
+    if (rerend) {
       getGameRooms(selectChannel);
       setRerend(false);
     }
-  }, [rerend]);
+  }, [rerend, selectChannel]);
+
+  // 최초 로딩 시 유저 정보와 게임방 리스트 불러오기
+  useEffect(() => {
+    fetchUserInfo();
+    getGameRooms("free"); // 기본 채널 선택
+  }, []);
 
   return (
     <>
@@ -108,16 +90,11 @@ const RoomList = () => {
               >
                 자유 채널
               </ChanelButton>
-              {["bronze", "silver", "Gold"].map((item, index) => {
-                let active = "";
-                if (user && user.userGrade === item) {
-                  active = "nes-btn is-primary";
-                } else {
-                  active = "nes-btn is-disabled";
-                }
+              {channelList.map((item, index) => {
+                const isActive = user && user.userGrade === item;
                 return (
                   <ChanelButton
-                    className={active}
+                    className={`nes-btn ${isActive ? "is-primary" : "is-disabled"}`}
                     key={index}
                     onClick={() => getGameRooms(channelList[index])}
                   >
@@ -146,28 +123,15 @@ const RoomList = () => {
             <div className="nes-container is-rounded bg-white">
               <div className="p-2 flex justify-between">
                 <p> * 게임방</p>
-                {roomLists.length > 0 && roomLists[0] ? (
+                {roomLists.length > 0 ? (
                   <button onClick={() => setRerend(true)}> 🔄 </button>
                 ) : null}
               </div>
               <Uldiv className="nes-list is-circle">
-                {/* 유저가 클릭한 채널의 방만 보이도록 필터링 후 출력하기 */}
-                {roomLists.length > 0 && roomLists[0] ? (
-                  roomLists[0]
-                    .filter((el) => {
-                      console.log(selectChannel);
-                      console.log(
-                        "방 정보 == 선택 채널 일치 여부 : ",
-                        el.tier === selectChannel
-                      );
-                      return el.tier === selectChannel;
-                    })
-                    .filter((el) => {
-                      // 방이 다 찼으면 리스트에 안 띄움
-                      let participants = el.players;
-                      let total = el.players + el.bots;
-                      return participants !== total;
-                    })
+                {roomLists.length > 0 ? (
+                  roomLists
+                    .filter((el) => el.tier === selectChannel)
+                    .filter((el) => el.players !== el.players + el.bots)
                     .map((item, index) => (
                       <GameList key={index} onClick={() => goWaitingRoom(item)}>
                         [{item.tier}] ({item.players}/{item.players + item.bots}
@@ -189,6 +153,7 @@ const RoomList = () => {
   );
 };
 
+// 스타일드 컴포넌트 정의
 const RoomBody = styled.div`
   width: 100vw;
   margin: 20px auto;
