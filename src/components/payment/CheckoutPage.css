@@ -1,0 +1,38 @@
+.checkout-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.payment-button {
+  background-color: #007bff; /* 파란색 버튼 */
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.payment-button:hover {
+  background-color: #0056b3;
+}
+
+.payment-widget-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* 원하는 너비로 조정 */
+  height: 80vh; /* 원하는 높이로 조정 */
+}
+
+#payment-widget,
+#agreement {
+  width: 100%;
+  max-width: 400px;
+  margin-top: 20px;
+}

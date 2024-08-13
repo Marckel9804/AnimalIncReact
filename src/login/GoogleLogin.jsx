@@ -22,10 +22,19 @@ const GoogleLogin = () => {
                 localStorage.setItem('accessToken', newAccessToken);
 
                 const user = result.data.user;
+                const base64Url = newAccessToken.split('.')[1]; // 페이로드 부분 추출
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Base64Url -> Base64
+                const payload = JSON.parse(atob(base64)); // Base64 디코딩 후 JSON 파싱
+                const roles = payload.roleName; // roleName 접근
+                console.log(roles); // ["USER", "ADMIN"]
                 if (!user.userBirthdate || !user.userNickname) {
                     alert("프로필을 완성해주세요.");
                     navigate('/check-profile', { state: { token: newAccessToken } });
-                } else {
+                }
+                else if (roles.includes('ADMIN')) {
+                    navigate('/admin');
+                }
+                else {
                     navigate('/');
                 }
             } else {
