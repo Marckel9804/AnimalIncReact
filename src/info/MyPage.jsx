@@ -5,6 +5,33 @@ import axios from '../utils/axios.js'
 import '../styles/login/MyPage.css'
 import Header from '../components/Header.jsx'
 import Footer from '../components/Footer.jsx'
+import {Tab, TabBody, Tabs, Window, WindowContent, WindowHeader} from "react95";
+import styled from "styled-components";
+
+
+const StyledTab = styled(Tab)`
+    min-width: 120px;
+    text-align: center;
+    padding: 8px; /* 조정된 패딩 */
+    margin-right: 2px; /* 탭 간 간격 */
+    position: relative;
+    top: 1px; /* 선택된 탭의 위치 조정 */
+    z-index: ${props => (props.selected ? 2 : 1)}; /* 선택된 탭이 다른 탭 위에 오도록 */
+    background-color: ${props => (props.selected ? '#fff' : '#f1f1f1')};
+    border-bottom: none;
+
+    &:hover {
+        background-color: #e0e0e0; /* hover 시 색상 변경 */
+        cursor: url('https://unpkg.com/nes.css@latest/assets/cursor-click.png'), pointer; /* 커서를 NES 스타일로 변경 */
+    }
+
+    &.selected {
+        font-weight: bold;
+        z-index: 3; /* 선택된 탭이 가장 위로 올라오도록 */
+        border: 1px solid #000;
+        border-bottom: none; /* 탭 내용 영역과의 경계를 없애기 위해 */
+    }
+`;
 
 Modal.setAppElement('#root') //모달을 앱 요소로 설정
 
@@ -18,6 +45,7 @@ const Mypage = () => {
   const [availablePictures, setAvailablePictures] = useState([]);
   const [selectedPicture, setSelectedPicture] = useState('');
   const [uploadFile, setUploadFile] = useState(null);
+  const [selectedTab, setSelectedTab] = useState(0);
   const [updatedInfo, setUpdatedInfo] = useState({
     userNickname: '',
     userRealname: '',
@@ -239,173 +267,232 @@ const Mypage = () => {
         return <div>Loading...</div>;
     }
 
+    const handleTabChange = (value) => {
+        setSelectedTab(value);
+    };
+
     return (
         <>
-            <Header />
-            <div className="mypage">
-                <div className="mypage-content">
-                    <div className="profile-section">
-                        <div className="profile-name">{userInfo.userNickname}</div>
-                        <div className="profile-image-wrapper nes-pointer" onClick={openProfilePictureModal}>
-                            <img src={selectedPicture || userInfo.userPicture} alt="프로필" className="profile-image"/>
-                        </div>
-                        <div className="profile-icon-wrapper">
-                        <img src={getTierIcon(userInfo.userGrade)} alt="티어 아이콘" className="profile-icon"/>
-                        </div>
-                    </div>
-                    <div className="info-section">
-                    <div className="info-item">
-                            <span className="info-label">이름</span>
-                            <span className="info-value">{userInfo.userRealname}</span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">이메일</span>
-                            <span className="info-value">{userInfo.userEmail}</span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">생년월일</span>
-                            <span className="info-value">{userInfo.userBirthdate}</span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">포인트</span>
-                            <span className="info-value">{userInfo.userPoint} 포인트</span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">루비</span>
-                            <span className="info-value">{userInfo.userRuby} 루비</span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">아이템</span>
-                            <span className="info-value-item nes-pointer" onClick={openItemModal}>
-                                {userInfo.userItems.length} 개
-                            </span>
-                        </div>
-                        <div className="button-section">
-                            <button className="nes-btn is-primary" id="mypage-btn" onClick={openEditModal}>정보 수정
-                            </button>
-                            {!userInfo.slogin && (
-                                <button className="nes-btn is-warning" id="mypage-btn" onClick={openChangePasswordModal}>비밀번호
-                                    변경</button>
-                            )}
-                            <button className="nes-btn is-error" id="mypage-btn" onClick={openDeleteModal}>회원 탈퇴
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <Modal isOpen={isEditModalOpen} onRequestClose={closeEditModal} className="modal">
-                    <h2 className="modal-title">정보 수정</h2>
-                    <div className="modal-content">
-                        <div className="modal-item">
-                            <label>닉네임</label>
-                            <input
-                                type="text"
-                                value={updatedInfo.userNickname}
-                                onChange={(e) => setUpdatedInfo({ ...updatedInfo, userNickname: e.target.value })}
-                            />
-                        </div>
-                        <div className="modal-item">
-                            <label>생년월일</label>
-                            <input
-                                type="text"
-                                value={updatedInfo.userBirthdate}
-                                onChange={(e) => setUpdatedInfo({ ...updatedInfo, userBirthdate: e.target.value })}
-                            />
-                        </div>
-                        <div className="modal-buttons">
-                            <button className="nes-btn is-primary" id="mypage-modal-btn" onClick={handleUpdate}>저장</button>
-                            <button className="nes-btn" id="mypage-modal-btn" onClick={closeEditModal}>닫기</button>
-                        </div>
-                    </div>
-                </Modal>
-                <Modal isOpen={isDeleteModalOpen} onRequestClose={closeDeleteModal} className="modal">
-                    <h2 className="modal-title">회원 탈퇴</h2>
-                    <div className="modal-content">
-                        <p>정말 탈퇴하시겠습니까?</p>
-                        <div className="modal-buttons">
-                            <button className="nes-btn is-error" id="mypage-modal-btn" onClick={handleDelete}>탈퇴</button>
-                            <button className="nes-btn" id="mypage-modal-btn" onClick={closeDeleteModal}>닫기</button>
-                        </div>
-                    </div>
-                </Modal>
-                <Modal isOpen={isChangePasswordModalOpen} onRequestClose={closeChangePasswordModal} className="modal">
-                    <h2 className="modal-title">비밀번호 변경</h2>
-                    <div className="modal-content">
-                        <div className="modal-item">
-                            <label>현재 비밀번호</label>
-                            <input
-                                type="password"
-                                value={passwordInfo.currentPassword}
-                                onChange={(e) => setPasswordInfo({...passwordInfo, currentPassword: e.target.value })}
-                            />
-                        </div>
-                        <div className="modal-item">
-                            <label>새 비밀번호</label>
-                            <input
-                                type="password"
-                                value={passwordInfo.newPassword}
-                                onChange={(e) => setPasswordInfo({...passwordInfo, newPassword: e.target.value })}
-                            />
-                        </div>
-                        <div className="modal-item">
-                            <label>비밀번호 확인</label>
-                            <input
-                                type="password"
-                                value={passwordInfo.confirmPassword}
-                                onChange={(e) => setPasswordInfo({...passwordInfo, confirmPassword: e.target.value })}
-                            />
-                        </div>
-                        <div className="modal-buttons">
-                            <button className="nes-btn is-primary" id="mypage-modal-btn" onClick={handleChangePassword}>변경하기</button>
-                            <button className="nes-btn" id="mypage-modal-btn" onClick={closeChangePasswordModal}>닫기</button>
-                        </div>
-                    </div>
-                </Modal>
-                <Modal isOpen={isProfilePictureModalOpen} onRequestClose={closeProfilePictureModal} className="modal">
-                    <h2 className="modal-title">프로필 사진 선택</h2>
-                    <div className="modal-content">
-                        <div className="modal-item">
-                            <input type="file" onChange={handleFileChange} />
-                        </div>
-                        <div className="modal-buttons">
-                            <button className="nes-btn is-primary" id="mypage-modal-btn" onClick={handleUpload}>업로드
-                            </button>
-                            <button className="nes-btn is-error" id="mypage-modal-btn"
-                                    onClick={closeProfilePictureModal}>취소
-                            </button>
-                        </div>
-                        {availablePictures.map((pic, index) => (
-                            <img
-                                key={index}
-                                src={pic}
-                                alt={`프로필 ${index}`}
-                                className="profile-pic-option"
-                                onClick={() => handleProfilePictureSelect(pic)}
-                            />
-                        ))}
-                    </div>
-                </Modal>
-                <Modal isOpen={isItemModalOpen} onRequestClose={closeItemModal} className="mypage-item-modal">
-                    <h2 className="modal-item-title">보유 아이템 목록</h2>
-                    <div className="modal-item-content">
-                        {userInfo.userItems.length > 0 ? (
-                            userInfo.userItems.map((item, index) => (
-                                <div key={index} className="modal-user-item">
-                                    <img src={item.itemImage} className="modal-item-image"/>
-                                    <div className="modal-item-info">
-                                        <div className="modal-item-name">{item.itemName}</div>
-                                        <div className="modal-item-description">{item.itemDescription}</div>
+            <Header/>
+            <Window style={{ width: '70%', margin: '0 auto', marginTop: '20px' }}>
+                <WindowHeader>
+                    <span role="img" aria-label="my-page">🗂️ My Page</span>
+                </WindowHeader>
+                <WindowContent>
+                    <Tabs value={selectedTab} onChange={handleTabChange}>
+                        <StyledTab value={0} style={{ minWidth: '120px', textAlign: 'center' }}>내 정보</StyledTab>
+                        <StyledTab value={1} style={{ minWidth: '120px', textAlign: 'center' }}>내 정보 수정</StyledTab>
+                        <StyledTab value={2} style={{ minWidth: '120px', textAlign: 'center' }}>회원 탈퇴</StyledTab>
+                        <StyledTab value={3} style={{ minWidth: '120px', textAlign: 'center' }}>내 글 목록</StyledTab>
+                        <StyledTab value={4} style={{ minWidth: '120px', textAlign: 'center' }}>내가 쓴 댓글</StyledTab>
+                        <StyledTab value={5} style={{ minWidth: '120px', textAlign: 'center' }}>내가 신고한 내역</StyledTab>
+                        {!userInfo.slogin &&
+                            <StyledTab value={6} style={{ minWidth: '120px', textAlign: 'center' }}>비밀번호 변경</StyledTab>}
+                    </Tabs>
+                    <TabBody>
+                        {selectedTab === 0 && (
+                            <div className="mypage-content">
+                                <div className="profile-section">
+                                    <div className="profile-name">{userInfo.userNickname}</div>
+                                    <div className="profile-image-wrapper nes-pointer" onClick={openProfilePictureModal}>
+                                        <img src={selectedPicture || userInfo.userPicture} alt="프로필" className="profile-image"/>
+                                    </div>
+                                    <div className="profile-icon-wrapper">
+                                        <img src={getTierIcon(userInfo.userGrade)} alt="티어 아이콘" className="profile-icon"/>
                                     </div>
                                 </div>
-                            ))
-                        ) : (
-                            <p>보유한 아이템이 없습니다.</p>
+                                <div className="info-section">
+                                    <div className="info-item">
+                                        <span className="info-label">이름</span>
+                                        <span className="info-value">{userInfo.userRealname}</span>
+                                    </div>
+                                    <div className="info-item">
+                                        <span className="info-label">이메일</span>
+                                        <span className="info-value">{userInfo.userEmail}</span>
+                                    </div>
+                                    <div className="info-item">
+                                        <span className="info-label">생년월일</span>
+                                        <span className="info-value">{userInfo.userBirthdate}</span>
+                                    </div>
+                                    <div className="info-item">
+                                        <span className="info-label">포인트</span>
+                                        <span className="info-value">{userInfo.userPoint} 포인트</span>
+                                    </div>
+                                    <div className="info-item">
+                                        <span className="info-label">루비</span>
+                                        <span className="info-value">{userInfo.userRuby} 루비</span>
+                                    </div>
+                                    <div className="info-item">
+                                        <span className="info-label">아이템</span>
+                                        <span className="info-value-item nes-pointer" onClick={openItemModal}>
+                                {userInfo.userItems.length} 개
+                            </span>
+                                    </div>
+                                </div>
+                            </div>
                         )}
-                        <button className="nes-btn is-error" id="mypage-item-modal-btn" onClick={closeItemModal}>닫기</button>
+                        {selectedTab === 1 && (
+                            <div className="modal-content">
+                                <div className="modal-item">
+                                    <label>이름</label>
+                                    <input
+                                        type="text"
+                                        value={updatedInfo.userRealname}
+                                        onChange={(e) => setUpdatedInfo({...updatedInfo, userRealname: e.target.value})}
+                                    />
+                                </div>
+                                <div className="modal-item">
+                                    <label>닉네임</label>
+                                    <input
+                                        type="text"
+                                        value={updatedInfo.userNickname}
+                                        onChange={(e) => setUpdatedInfo({...updatedInfo, userNickname: e.target.value})}
+                                    />
+                                </div>
+                                <div className="modal-item">
+                                    <label>닉네임</label>
+                                    <input
+                                        type="text"
+                                        value={updatedInfo.userNickname}
+                                        onChange={(e) => setUpdatedInfo({...updatedInfo, userNickname: e.target.value})}
+                                    />
+                                </div>
+                                <div className="modal-item">
+                                    <label>생년월일</label>
+                                    <input
+                                        type="text"
+                                        value={updatedInfo.userBirthdate}
+                                        onChange={(e) => setUpdatedInfo({
+                                            ...updatedInfo,
+                                            userBirthdate: e.target.value
+                                        })}
+                                    />
+                                </div>
+                                <div className="modal-buttons">
+                                    <button className="nes-btn is-primary" id="mypage-modal-btn"
+                                            onClick={openEditModal}>수정
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        {selectedTab === 2 && (
+                            <div>
+                                <button className="nes-btn is-error" id="mypage-btn" onClick={openDeleteModal}>
+                                    회원 탈퇴
+                                </button>
+                            </div>
+                        )}
+                        {selectedTab === 3 && <div>내 글 목록 내용</div>}
+                        {selectedTab === 4 && <div>내가 쓴 댓글 내용</div>}
+                        {selectedTab === 5 && <div>내가 신고한 내역 내용</div>}
+                        {selectedTab === 6 && !userInfo.slogin && (
+                            <div className="modal-content">
+                                <div className="modal-item">
+                                    <label>현재 비밀번호</label>
+                                    <input
+                                        type="password"
+                                        value={passwordInfo.currentPassword}
+                                        onChange={(e) => setPasswordInfo({...passwordInfo, currentPassword: e.target.value})}
+                                    />
+                                </div>
+                                <div className="modal-item">
+                                    <label>새 비밀번호</label>
+                                    <input
+                                        type="password"
+                                        value={passwordInfo.newPassword}
+                                        onChange={(e) => setPasswordInfo({...passwordInfo, newPassword: e.target.value})}
+                                    />
+                                </div>
+                                <div className="modal-item">
+                                    <label>비밀번호 확인</label>
+                                    <input
+                                        type="password"
+                                        value={passwordInfo.confirmPassword}
+                                        onChange={(e) => setPasswordInfo({...passwordInfo, confirmPassword: e.target.value})}
+                                    />
+                                </div>
+                                <div className="modal-buttons">
+                                    <button className="nes-btn is-primary" id="mypage-modal-btn"
+                                            onClick={openChangePasswordModal}>변경
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </TabBody>
+                </WindowContent>
+            </Window>
+            <Modal isOpen={isEditModalOpen} onRequestClose={closeEditModal} className="modal">
+                <div className="modal-content">
+                    <p>정말 수정하시겠습니까?</p>
+                    <div className="modal-buttons">
+                        <button className="nes-btn is-error" id="mypage-modal-btn" onClick={handleUpdate}>수정</button>
+                        <button className="nes-btn" id="mypage-modal-btn" onClick={closeEditModal}>닫기</button>
                     </div>
-                </Modal>
-            </div>
-            <div className="mypage-background" />
-            <Footer />
+                </div>
+            </Modal>
+            <Modal isOpen={isChangePasswordModalOpen} onRequestClose={closeChangePasswordModal} className="modal">
+                <div className="modal-content">
+                    <p>정말 비밀번호를 변경하시겠습니까?</p>
+                    <div className="modal-buttons">
+                        <button className="nes-btn is-error" id="mypage-modal-btn" onClick={handleChangePassword}>변경</button>
+                        <button className="nes-btn" id="mypage-modal-btn" onClick={closeChangePasswordModal}>닫기</button>
+                    </div>
+                </div>
+            </Modal>
+            <Modal isOpen={isDeleteModalOpen} onRequestClose={closeDeleteModal} className="modal">
+                <h2 className="modal-title">회원 탈퇴</h2>
+                <div className="modal-content">
+                    <p>정말 탈퇴하시겠습니까?</p>
+                    <div className="modal-buttons">
+                        <button className="nes-btn is-error" id="mypage-modal-btn" onClick={handleDelete}>탈퇴</button>
+                        <button className="nes-btn" id="mypage-modal-btn" onClick={closeDeleteModal}>닫기</button>
+                    </div>
+                </div>
+            </Modal>
+            <Modal isOpen={isProfilePictureModalOpen} onRequestClose={closeProfilePictureModal} className="modal">
+                <h2 className="modal-title">프로필 사진 선택</h2>
+                <div className="modal-content">
+                    <div className="modal-item">
+                        <input type="file" onChange={handleFileChange}/>
+                    </div>
+                    <div className="modal-buttons">
+                        <button className="nes-btn is-primary" id="mypage-modal-btn" onClick={handleUpload}>업로드
+                        </button>
+                        <button className="nes-btn is-error" id="mypage-modal-btn"
+                                onClick={closeProfilePictureModal}>취소
+                        </button>
+                    </div>
+                    {availablePictures.map((pic, index) => (
+                        <img
+                            key={index}
+                            src={pic}
+                            alt={`프로필 ${index}`}
+                            className="profile-pic-option"
+                            onClick={() => handleProfilePictureSelect(pic)}
+                        />
+                    ))}
+                </div>
+            </Modal>
+            <Modal isOpen={isItemModalOpen} onRequestClose={closeItemModal} className="mypage-item-modal">
+                <h2 className="modal-item-title">보유 아이템 목록</h2>
+                <div className="modal-item-content">
+                    {userInfo.userItems.length > 0 ? (
+                        userInfo.userItems.map((item, index) => (
+                            <div key={index} className="modal-user-item">
+                                <img src={item.itemImage} className="modal-item-image"/>
+                                <div className="modal-item-info">
+                                    <div className="modal-item-name">{item.itemName}</div>
+                                    <div className="modal-item-description">{item.itemDescription}</div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p>보유한 아이템이 없습니다.</p>
+                    )}
+                    <button className="nes-btn is-error" id="mypage-item-modal-btn" onClick={closeItemModal}>닫기</button>
+                </div>
+            </Modal>
+            <Footer/>
         </>
     );
 };
