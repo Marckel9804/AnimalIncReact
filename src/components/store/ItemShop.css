@@ -74,7 +74,7 @@
 .itemshop-main {
   display: flex;
   align-items: center;
-  overflow-x: auto; /* 스크롤바를 표시 */
+  overflow: hidden; /* 스크롤바 숨기기 */
 }
 
 .itemshop-options {
@@ -201,7 +201,7 @@
   top: 85%;
 
   color: #4cbdb8;
-
+  font-weight: bold; /* 글자 두께를 두껍게 설정 */
   font-size: 24px;
   padding: 10px;
   border-radius: 50%;
@@ -209,6 +209,9 @@
   z-index: 1;
 }
 
+.arrow-button:focus {
+  outline: none; /* 포커스 상태에서도 아웃라인 제거 */
+}
 .arrow-button.left {
   left: 10px;
 }

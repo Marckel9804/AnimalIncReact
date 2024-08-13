@@ -9,7 +9,10 @@ const BoardListPage = () => {
   const location = useLocation()
   const state = location.state || {type:'notice'};
   console.log("location",state)
-  const page = params.page
+
+  // URL에서 쿼리 파라미터로 페이지 값을 가져옴
+  const queryParams = new URLSearchParams(location.search);
+  const page = queryParams.get('page') || '0';
 
   const token = localStorage.getItem('accessToken')
   const decodeToken = jwtDecode(token)
@@ -17,7 +20,7 @@ const BoardListPage = () => {
   console.log('role ', role)
 
   return (
-    <div id='BoardListPage' className='mt-10 flex justify-center'>
+    <div id='BoardListPage' className=' flex justify-center'>
       <BoardListLayout role={role} type={state.type} page={page}/>
 
     </div>

@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import Main from "./components/main/Main";
 import Store from "./components/store/Store";
+import AnimalEncyclopedia from "./components/store/AnimalEncyclopedia";
 import GachaShop from "./components/store/GachaShop";
 import GachaResult from "./components/store/GachaResult";
 import ItemShop from "./components/store/ItemShop";
@@ -35,6 +36,7 @@ import Terms from "./components/Terms";
 import Privacy from "./components/Privacy";
 import "./App.css";
 import "nes.css/css/nes.min.css";
+import AdminPage from "./admin/page/AdminPage.jsx";
 
 const App = () => {
   const containerStyle = {
@@ -80,6 +82,7 @@ const App = () => {
           <Route path="/privacy" element={<Privacy />} />
           {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
           <Route path="/shop" element={<Store />} />
+          <Route path="/animal/encyclopedia" element={<AnimalEncyclopedia />} />
           <Route path="/shop/animal" element={<GachaShop />} />
           <Route
             path="/shop/animal-store/gacha"
@@ -99,21 +102,27 @@ const App = () => {
           <Route path="/check-profile" element={<CheckProfile />} />
           <Route path="/find-password" element={<FindPassword />} />
           {/* 태웅 경로 끝 */}
+
           {/* 게시판 시작 */}
-          <Route path="/board/list/:page" element={<BoardListPage />} />
-          <Route path="/board" element={<Navigate to="/board/list/0" />} />
+          <Route path="/board/list" element={<BoardListPage />} />
+          <Route path="/board" element={<Navigate to="/board/list?page=0" />} />
           <Route path="/board/write/:type" element={<BoardWritePage />} />
           <Route path="/board/detail/:id" element={<BoardDetailPage />} />
           <Route path="/board/update/:id" element={<BoardUpdatePage />} />
           {/* 게시판 끝 */}
+
           {/* 태경 경로 */}
           {/* <Route exact path="/" element={<RoomWait />} /> */}
           <Route exact path="/roomwait/:room_id" element={<RoomWait />} />
           <Route
-            path="/SpaceMinigame"
+            path="/game/page/rooms/SpaceMinigame"
             element={<SpaceMinigame />}
           />
           {/* 태경 경로 끝 */}
+
+          {/* 관리자 페이지 */}
+          <Route path='/admin' element={<AdminPage/>}/>
+
         </Routes>
       </div>
     </Router>

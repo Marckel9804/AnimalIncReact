@@ -3,94 +3,42 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { useLocation, useNavigate } from "react-router-dom";
 
-function WinChat({ show, setShow, ind, comp, stockInfo }) {
-  const [chatMessages, setChatMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [isReady, setIsReady] = useState(false);
-  const [players, setPlayers] = useState([]);
-  const [bots, setBots] = useState(0);
-  const [roomName, setRoomName] = useState(""); // 방 이름을 위한 상태
-  const navigate = useNavigate();
-  const location = useLocation();
-  const {
-    roomId,
-    roomName: initialRoomName,
-    maxPlayers,
-  } = location.state || {}; // roomId와 roomName, maxPlayers를 state로부터 가져오기
-  const socketRef = useRef(null);
-  const clientId = useRef(uuidv4());
+function WinChat({ show, setShow, sendMessage, messages, myStatus }) {
+  const [message, setMessage] = useState("");
+  const messagesEndRef = useRef(null);
 
-  useEffect(() => {
-    const socket = new WebSocket("ws://localhost:4000");
-    socketRef.current = socket;
-
-    socket.onopen = () => {
-      console.log("Connected to WebSocket server");
-    };
-
-    socket.onmessage = async (event) => {
-      const text = await event.data.text();
-      const parsedMessage = JSON.parse(text);
-      setChatMessages((prevMessages) => [...prevMessages, parsedMessage]);
-    };
-
-    socket.onclose = () => {
-      console.log("WebSocket connection closed");
-    };
-
-    return () => {
-      socket.close();
-    };
-  }, []);
-
-  useEffect(() => {
-    const fetchLoggedInPlayer = async () => {
-      try {
-        // 로그인된 플레이어 정보 가져오기
-        const response = await axios.get("http://localhost:8080/api/user/me", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        });
-        const loggedInPlayer = response.data;
-        setPlayers([loggedInPlayer]);
-      } catch (error) {
-        console.error("Error fetching current user data:", error);
-      }
-    };
-
-    const fetchRoomDetails = async () => {
-      if (roomId) {
-        try {
-          const response = await axios.get(
-            `http://localhost:8080/api/user/game/room/${roomId}`
-          );
-          const roomDetails = response.data;
-          if (roomDetails) {
-            setRoomName(roomDetails.roomName);
-          }
-        } catch (error) {
-          console.error("Error fetching room details:", error);
-        }
-      } else {
-        setRoomName(initialRoomName); // 전달받은 roomName을 상태로 설정
-      }
-    };
-
-    fetchLoggedInPlayer();
-    fetchRoomDetails();
-  }, [roomId, initialRoomName]);
-
-  const handleNewMessageChange = (e) => {
-    setNewMessage(e.target.value);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() && socketRef.current) {
-      const message = { sender: clientId.current, text: newMessage };
-      socketRef.current.send(JSON.stringify(message));
-      setNewMessage("");
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const send = () => {
+    const newMessage = {
+      type: "gameChat",
+      content: message,
+    };
+    sendMessage(newMessage);
+    setMessage("");
+  };
+
+  //채팅 종류에 따라 스타일 변경
+  const chatStyle = (message) => {
+    if (message.type === "game") {
+      return { fontWeight: "bold", color: "red", textAlign: "center" };
     }
+    if (message.usernum !== myStatus.userNum) {
+      return { color: "green", textAlign: "end" };
+    }
+  };
+  //채팅 종류에 따라 화면에 보여질 구성 변경
+  const chatContent = (message) => {
+    if (message.type === "game") {
+      return `<게임> : ${message.content}`;
+    }
+    return `${message.sender} : ${message.content}`;
   };
 
   return (
@@ -113,20 +61,29 @@ function WinChat({ show, setShow, ind, comp, stockInfo }) {
             <button className="window-head-btn-disabled items-center">x</button>
           </div>
         </div>
-        <div className="main-window-inside flex flex-col">
-          <div></div>
+        <div className="main-window-inside flex flex-col overflow-y-scroll">
+          <ul>
+            {messages.map((msg, index) => (
+              <li key={index} style={chatStyle(msg)}>
+                {chatContent(msg)}
+              </li>
+            ))}
+            <div ref={messagesEndRef} />
+          </ul>
         </div>
         <div className="mt-2 flex">
           <input
             type="text"
             className="win-chat-input"
-            value={newMessage}
-            onChange={handleNewMessageChange}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                send();
+              }
+            }}
           />
-          <button
-            className="win-chat-btn ml-5 px-5"
-            onClick={handleSendMessage}
-          >
+          <button className="win-chat-btn ml-5 px-5" onClick={send}>
             전송
           </button>
         </div>

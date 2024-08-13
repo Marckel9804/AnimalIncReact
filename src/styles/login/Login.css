@@ -72,8 +72,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 140px; /* 로그인 버튼 너비를 줄임 */
-  height: 60px;
+  width: 120px; /* 로그인 버튼 너비를 줄임 */
+  height: 40px;
   text-align: center;
   font-weight: 700;
   margin: 0 auto; /* 버튼을 가운데 정렬 */
