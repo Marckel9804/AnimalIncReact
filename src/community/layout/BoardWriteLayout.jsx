@@ -3,6 +3,8 @@ import axios from "../../utils/axios.js";
 import {useNavigate} from "react-router-dom";
 import FileUploadTest from "../FileUploadTest.jsx";
 import WriteFileItem from "../component/WriteFileItem.jsx";
+import Header from "../../components/Header.jsx";
+import Footer from "../../components/Footer.jsx";
 
 let initData = {
   type: '',
@@ -94,8 +96,9 @@ const BoardWriteLayout = (props) => {
   }
 
   return (
-    <div id='BoardWriteLayout' className='justify-center w-8/12'>
-      <div className='nes-container with-title'
+    <div id='BoardWriteLayout' className=' flex mt-5 pb-40 justify-center w-full'>
+      <div className='nes-container with-title bg-white mb-4 w-4/5'
+           // style={{width:"1200px"}}
       >
         <p className='title' style={{lineHeight: '0.4', fontSize: '2rem'}}> 자유게시글 작성 </p>
 
@@ -176,6 +179,7 @@ const BoardWriteLayout = (props) => {
 
         </div>
       </div>
+        <Footer/>
     </div>
   )
 }

@@ -73,7 +73,7 @@ const Header = () => {
     try {
       await axios.post('/api/user/logout')
       localStorage.removeItem('accessToken')
-      navigate('/')
+      navigate('/login')
     } catch (error) {
       console.error('Logout Error:', error)
       alert('로그아웃에 실패했습니다.')

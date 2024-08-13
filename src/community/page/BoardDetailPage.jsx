@@ -3,6 +3,7 @@ import BoardDetailLayout from "../layout/BoardDetailLayout.jsx";
 import {useEffect, useState} from "react";
 import axios from "../../utils/axios.js";
 import {jwtDecode} from "jwt-decode";
+import Header from "../../components/Header.jsx";
 
 
 
@@ -29,8 +30,10 @@ const BoardDetailPage = () => {
   }, [id]);
 
   return(
-    <div id='BoardDetailPage' className='flex justify-center'>
+    <div id='BoardDetailPage' className='flex-col justify-center'>
+      <Header/>
       <BoardDetailLayout data={data} mEmail={mEmail} page={page}/>
+      <div id="board-bg" className='fixed top-0 left-0 h-dvh w-dvw bg-cyan-200 -z-10'></div>
     </div>
   )
 }
