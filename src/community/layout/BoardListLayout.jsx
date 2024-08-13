@@ -13,6 +13,7 @@ const BoardListLayout = (props) => {
   const role = props.role
 
   const [type, setType] = useState(props.type)
+  const [tag, setTag] = useState('all');
   const [list, setList] = useState([])
   const [page, setPage] = useState(props.page)
   const [totalPages, setTotalPages] = useState(0);
@@ -65,7 +66,8 @@ const BoardListLayout = (props) => {
                       setType={setType}/>
           <br/>
           <BoardSearchBar type={type}
-                          navi={navi}
+                          tag={tag}
+                          setTag={setTag}
                           setList={setList}/>
 
           <BoardPagenation page={page}
