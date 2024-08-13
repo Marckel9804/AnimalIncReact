@@ -29,6 +29,7 @@ wss.on("connection", (ws) => {
   broadcastPlayers();
 
   ws.on("message", (message) => {
+    console.log("message >> ", message);
     const parsedMessage = JSON.parse(message);
 
     switch (parsedMessage.type) {

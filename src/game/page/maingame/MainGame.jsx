@@ -13,6 +13,7 @@ import News from "./News.jsx";
 import Alert from "./Alert.jsx";
 import folder from "../../.././images/folder.ico";
 import trash from "../../.././images/trash.ico";
+import { v4 as uuidv4 } from "uuid";
 
 function MainGame() {
   // 윈도우 창 닫힘 열림 관리
@@ -25,8 +26,10 @@ function MainGame() {
   const [showNews, setShowNews] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(0);
+  const [alertMsg, setAlertMsg] = useState("경고창");
 
-  const openAlert = () => {
+  const openAlert = (msg) => {
+    setAlertMsg(msg);
     setIsOpen(true);
   };
 
@@ -58,6 +61,64 @@ function MainGame() {
 
   const { room_id } = useParams();
   const navigate = useNavigate();
+
+  //소켓 관련 기능들
+  const [messages, setMessages] = useState([]);
+  const [ws, setWs] = useState(null);
+
+  useEffect(() => {
+    if (myStatus !== null) {
+      const ws = new WebSocket("ws://localhost:4000");
+      ws.onopen = () => {
+        console.log("Connected to server");
+        const playerInfo = {
+          type: "playerInfo",
+          nickname: myStatus.nickName,
+          roomid: gameStatus.gameRoomId,
+        };
+        ws.send(JSON.stringify(playerInfo));
+      };
+      ws.onmessage = (event) => {
+        console.log("Received: ", event.data);
+        const data = JSON.parse(event.data);
+        if (data.type === "message") {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              content: data.content,
+              type: "message",
+              sender: data.sender,
+              usernum: data.usernum,
+            },
+          ]);
+        }
+        if (data.type === "buySell") {
+          let content = `${data.stockId} 주식이 ${data.amount}주 거래되었습니다.`;
+          getUserInfo();
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { content: content, type: "game" },
+          ]);
+        }
+      };
+      setWs(ws);
+      return () => {
+        ws.close();
+      };
+    }
+  }, [myStatus]);
+
+  const sendMessage = (message) => {
+    message = {
+      ...message,
+      roomid: gameStatus.gameRoomId,
+      nickname: myStatus.nickName,
+      usernum: myStatus.userNum,
+    };
+    if (ws) {
+      ws.send(JSON.stringify(message));
+    }
+  };
 
   //숫자를 10^4 단위로 끊어 최대 억까지 표시해주는 함수
   const formatNumber = (number) => {
@@ -140,19 +201,21 @@ function MainGame() {
   };
 
   const getRoomInfo = () => {
-    axios.get(`/game/roomInfo/${room_id}`).then((res) => {
-      console.log("gameStatus", res.data);
-      if (res.data.turn == 0) {
-        updateTurn(0);
-      } else {
-        getUserInfo();
-        getStockInfo();
-      }
-      setGameStatus(res.data);
-    });
-    // .catch((error) => {
-    //   navigate("/");
-    // });
+    axios
+      .get(`/game/roomInfo/${room_id}`)
+      .then((res) => {
+        console.log("gameStatus", res.data);
+        if (res.data.turn == 0) {
+          updateTurn(0);
+        } else {
+          getUserInfo();
+          getStockInfo();
+        }
+        setGameStatus(res.data);
+      })
+      .catch((error) => {
+        navigate("/");
+      });
   };
 
   const updateTurn = (turn) => {
@@ -183,12 +246,12 @@ function MainGame() {
   }, []);
 
   //내가 속한 방 아니면 바로 퇴출임
-  // useEffect(() => {
-  //   if (otherStatus.length === 4 && progress === 100) {
-  //     console.log("댓츠 노노");
-  //     navigate("/");
-  //   }
-  // }, [otherStatus, progress]);
+  useEffect(() => {
+    if (otherStatus.length === 4 && progress === 100) {
+      console.log("댓츠 노노");
+      navigate("/");
+    }
+  }, [otherStatus, progress]);
 
   if (
     gameStatus === null ||
@@ -225,11 +288,7 @@ function MainGame() {
           <img src={trash} style={{ width: "70px", height: "70px" }} />
           <div className={selected == 2 ? "win-item-text" : null}>휴지통</div>
         </div>
-        <Alert
-          sOpen={isOpen}
-          onClose={closeAlert}
-          message="이것은 커스텀 알림창입니다!"
-        />
+        <Alert isOpen={isOpen} onClose={closeAlert} message={alertMsg} />
         <News
           show={showNews}
           setShow={setShowNews}
@@ -266,6 +325,7 @@ function MainGame() {
             showNews={showNews}
             setShowNews={setShowNews}
             openAlert={openAlert}
+            sendMessage={sendMessage}
           />
           <ItemsWin show={showIW} setShow={setShowIW} />
         </div>
@@ -283,6 +343,9 @@ function MainGame() {
             ind={ind}
             comp={comp}
             stockInfo={stockInfo}
+            sendMessage={sendMessage}
+            messages={messages}
+            myStatus={myStatus}
           />
         </div>
       </div>

@@ -1,31 +1,40 @@
 import React, { useState } from "react";
+import alert from "../../.././images/alert.png";
 
 function Alert({ isOpen, onClose, message }) {
+  const [isClicked, setIsClicked] = useState(false);
   return isOpen ? (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
+    <div className={"win-alert-container"}>
       <div
+        className={`main-window flex`}
         style={{
-          padding: "20px",
-          backgroundColor: "white",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
+          paddingLeft: "1.5px",
+          paddingRight: "1.5px",
+          paddingTop: "2px",
         }}
       >
-        <p>{message}</p>
-        <button onClick={onClose}>닫기</button>
+        <div className="window-head-blue">
+          <p style={{ color: "white" }}>Alert</p>
+          <div className=" ml-auto mr-1 flex items-center">
+            <button className="window-head-btn items-center" onClick={onClose}>
+              x
+            </button>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <img src={alert} width={100} height={100} />
+          <div className=" ml-5">{message}</div>
+        </div>
+        <div
+          className={`win-alert-btn ${isClicked ? "clicked" : ""}`}
+          onMouseDown={() => setIsClicked(true)}
+          onMouseUp={() => setIsClicked(false)}
+          onMouseLeave={() => setIsClicked(false)}
+        >
+          <button onClick={onClose} className="win-alert-btn-in ">
+            닫기
+          </button>
+        </div>
       </div>
     </div>
   ) : null;

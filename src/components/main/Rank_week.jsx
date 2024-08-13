@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Rank_week.css'
 import 'nes.css/css/nes.min.css' // NES.css 스타일 임포트
-import axiosInstance from '../../utils/axios.js'
+import axiosInstance from '../../utils/axios.js' // axios 경로
 
 // Rank_week 컴포넌트 정의
 const Rank_week = () => {
-  const [rankingData, setRankingData] = useState([{}, {}, {}])
+  const [rankingData, setRankingData] = useState([])
   const navigate = useNavigate()
 
   // 컴포넌트가 마운트될 때 한 번 실행되는 useEffect 훅
@@ -14,7 +14,7 @@ const Rank_week = () => {
     // 비동기 함수로 API에서 랭킹 데이터를 가져오는 함수 정의
     const fetchRankingData = async () => {
       try {
-        const response = await axiosInstance.get('/api/user/get-profile') // 랭킹 데이터를 가져오는 API 호출
+        const response = await axiosInstance.get('/api/user/rankings') // 전체 랭킹 데이터를 가져오는 API 호출
         const data = response.data
         if (Array.isArray(data)) {
           const sortedData = data.sort((a, b) => b.userPoint - a.userPoint) // userPoint 기준으로 내림차순 정렬
@@ -38,7 +38,7 @@ const Rank_week = () => {
   return (
     <div className="ranking-section-wrapper">
       <div className="ranking-section nes-container with-title is-rounded">
-        {/* 섹션 제목을 textarea의 value로 변경 */}
+        {/* 섹션 제목 */}
         <textarea
           id="textarea_field"
           className="nes-textarea ranktitle"
