@@ -1,19 +1,12 @@
-.mypage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    margin-top: 30px;
-}
-
 .mypage-content {
     display: flex;
     flex-direction: row;
     border: 1px solid #ccc;
     border-radius: 10px;
     overflow: hidden;
-    width: 70%;
-    max-width: 800px;
+    width: 80%;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
 .profile-section {
@@ -83,15 +76,13 @@
     font-weight: bold;
 }
 
-.button-section {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 50px;
-}
-
 #mypage-btn {
-    width: 120px;
-    margin: 10px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 130px;
+    height: 40px;
+    margin: 0 auto;
 }
 
 .modal {
@@ -110,10 +101,12 @@
 .modal-content {
     display: flex;
     flex-direction: column;
+    margin: 0 auto;
 }
 
 .modal-item {
     margin-bottom: 15px;
+    margin: auto;
 }
 
 .modal-item label {
@@ -122,7 +115,7 @@
 }
 
 .modal-item input {
-    width: 100%;
+    width: 400px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -135,19 +128,6 @@
     font-size: 1.25em;
     font-weight: bold;
     margin-bottom: 20px;
-}
-
-.mypage-background {
-    position: fixed;
-    opacity: 40%;
-    top: 0px;
-    width: 100vw;
-    height: 100vh;
-    z-index: -1;
-    background-image: url("../../assets/images/background.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
 }
 
 #mypage-modal-btn {
