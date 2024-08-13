@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import backgroundImage from "../../../assets/background.jpg";
 import axios from "../../../utils/axios.js";
 
@@ -74,7 +74,7 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #4CBDB8;
+  background-color: #4cbdb8;
   color: white;
   padding: 0.5rem;
   border-radius: 8px;
@@ -86,88 +86,97 @@ const RoomWait = () => {
   const [isReady, setIsReady] = useState(false);
   const [players, setPlayers] = useState([]);
   const [bots, setBots] = useState(0);
-  const [roomName, setRoomName] = useState(""); 
+  const [roomName, setRoomName] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  const { roomId, roomName: initialRoomName, maxPlayers, userNum } = location.state || {};
+  const {
+    roomId,
+    roomName: initialRoomName,
+    maxPlayers,
+    userNum,
+  } = location.state || {};
   const socketRef = useRef(null);
   const clientId = useRef(uuidv4());
-  const timerRef = useRef(null); 
+  const timerRef = useRef(null);
+  // 리액트 url 에서 방 번호 가져오기 위한 변수 by hhy
+  const params = useParams();
+  console.log("방 번호 : ", params.room_id);
 
   // 1. insertUserStatus 함수 정의
   const insertUserStatus = async (gameRoomId, userNum) => {
     try {
-      const response = await axios.post('http://localhost:8080/game/insertUserStatus', {
-        params: {
-          gameRoomId: gameRoomId, // 여기서 roomId 대신 gameRoomId 사용
-          userNum: userNum,
-        },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      });
-      console.log('User status inserted:', response.data);
+      const response = await axios.post(
+        "http://localhost:8080/game/insertUserStatus",
+        {
+          params: {
+            gameRoomId: gameRoomId, // 여기서 roomId 대신 gameRoomId 사용
+            userNum: userNum,
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      console.log("User status inserted:", response.data);
     } catch (error) {
-      console.error('Error inserting user status:', error);
+      console.error("Error inserting user status:", error);
     }
   };
-  
-  
 
   // 2. useEffect 내에서 함수 호출
   useEffect(() => {
     console.log("유저 번호 (userNum): ", userNum);
     console.log("게임 방 ID (gameRoomId): ", roomId);
-  
+
     // 사용자가 방에 입장했을 때, 사용자 상태를 데이터베이스에 삽입
     insertUserStatus(roomId, userNum);
-    
+
     // WebSocket 연결 코드
     const socket = new WebSocket("ws://localhost:4000");
     socketRef.current = socket;
-  
+
     socket.onopen = () => {
       console.log("Connected to WebSocket server");
     };
-  
+
     socket.onmessage = async (event) => {
       const text = await event.data.text();
       const parsedMessage = JSON.parse(text);
       setChatMessages((prevMessages) => [...prevMessages, parsedMessage]);
     };
-  
+
     socket.onclose = () => {
       console.log("WebSocket connection closed");
     };
-  
+
     return () => {
       socket.close();
     };
   }, [userNum, roomId]);
-  
 
   useEffect(() => {
     const fetchLoggedInPlayer = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/user/me"
-        );
+        const response = await axios.get("http://localhost:8080/api/user/me");
         const loggedInPlayer = response.data;
         setPlayers([loggedInPlayer]);
       } catch (error) {
-        console.error('Error fetching current user data:', error);
+        console.error("Error fetching current user data:", error);
       }
     };
 
     const fetchRoomDetails = async () => {
       if (roomId) {
         try {
-          const response = await axios.get(`http://localhost:8080/api/user/game/room/${roomId}`);
+          const response = await axios.get(
+            `http://localhost:8080/api/user/game/room/${roomId}`
+          );
           const roomDetails = response.data;
           if (roomDetails) {
             setRoomName(roomDetails.roomName);
           }
         } catch (error) {
-          console.error('Error fetching room details:', error);
+          console.error("Error fetching room details:", error);
         }
       } else {
         setRoomName(initialRoomName);
@@ -191,7 +200,14 @@ const RoomWait = () => {
   };
 
   const handleBackButtonClick = () => {
-    navigate("/CreateRoom");
+    // [뒤로가기] 누르면 유저 수 -1 하는 로직 by hhy🤓
+    axios
+      .post(`/api/user/game/minusCount/${params.room_id}`)
+      .then(() => {
+        console.log("인원수 감소!!");
+        navigate("/CreateRoom");
+      })
+      .catch((error) => console.log(error));
   };
 
   const handleReadyClick = () => {
@@ -241,10 +257,10 @@ const RoomWait = () => {
           </button>
           <button
             type="button"
-            className={`nes-btn ${isReady ? 'is-warning' : 'is-success'}`}
+            className={`nes-btn ${isReady ? "is-warning" : "is-success"}`}
             onClick={handleReadyClick}
           >
-            {isReady ? '취소' : '준비'}
+            {isReady ? "취소" : "준비"}
           </button>
         </HeaderContainer>
         <RoomInfoContainer>
@@ -254,25 +270,35 @@ const RoomWait = () => {
           {players.map((player, index) => (
             <div key={index} className="nes-container is-rounded p-4">
               <Header>
-                <span>{player.userNickname} {index === 0 && isReady && <span>(READY)</span>}</span>
+                <span>
+                  {player.userNickname}{" "}
+                  {index === 0 && isReady && <span>(READY)</span>}
+                </span>
                 <div></div>
               </Header>
               <div className="bg-gray-100 p-4 rounded mt-2 nes-container">
                 <div className="flex items-center">
                   <img
-                    src={`https://via.placeholder.com/150?text=유저이미지${index + 1}`}
+                    src={`https://via.placeholder.com/150?text=유저이미지${
+                      index + 1
+                    }`}
                     alt={`유저이미지${index + 1}`}
                     className="rounded"
                   />
                   <div className="ml-4">
-                    <p className="nes-text">{player.userGrade} {player.userPoint}P</p>
+                    <p className="nes-text">
+                      {player.userGrade} {player.userPoint}P
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
           ))}
           {[...Array(bots)].map((_, index) => (
-            <div key={index + players.length} className="nes-container is-rounded p-4">
+            <div
+              key={index + players.length}
+              className="nes-container is-rounded p-4"
+            >
               <Header>
                 <span>봇 {index + 1}</span>
                 <SmallButton
@@ -309,17 +335,36 @@ const RoomWait = () => {
         </div>
         <div className="mt-4">
           <div
-            style={{ backgroundColor: "#4CBDB8", height: "300px", overflowY: "scroll" }}
+            style={{
+              backgroundColor: "#4CBDB8",
+              height: "300px",
+              overflowY: "scroll",
+            }}
             className="nes-container is-rounded p-4 text-white"
           >
             <section className="message-list">
               {chatMessages.map((message, index) => (
-                <MessageContainer key={index} className={message.sender === clientId.current ? 'right' : 'left'}>
-                  {message.sender !== clientId.current && <i className="nes-bcrikko"></i>}
-                  <MessageBalloon className={`nes-balloon ${message.sender === clientId.current ? 'from-right' : 'from-left'} nes-pointer`}>
+                <MessageContainer
+                  key={index}
+                  className={
+                    message.sender === clientId.current ? "right" : "left"
+                  }
+                >
+                  {message.sender !== clientId.current && (
+                    <i className="nes-bcrikko"></i>
+                  )}
+                  <MessageBalloon
+                    className={`nes-balloon ${
+                      message.sender === clientId.current
+                        ? "from-right"
+                        : "from-left"
+                    } nes-pointer`}
+                  >
                     <p>{message.text}</p>
                   </MessageBalloon>
-                  {message.sender === clientId.current && <i className="nes-bcrikko"></i>}
+                  {message.sender === clientId.current && (
+                    <i className="nes-bcrikko"></i>
+                  )}
                 </MessageContainer>
               ))}
             </section>
