@@ -5,6 +5,7 @@ import {useEffect, useState} from "react";
 import axios from "../../utils/axios.js";
 import BoardSearchBar from "../component/BoardSearchBar.jsx";
 import Header from "../../components/Header.jsx";
+import Footer from "../../components/Footer.jsx";
 
 const BoardListLayout = (props) => {
 
@@ -12,6 +13,7 @@ const BoardListLayout = (props) => {
   const role = props.role
 
   const [type, setType] = useState(props.type)
+  const [tag, setTag] = useState('all');
   const [list, setList] = useState([])
   const [page, setPage] = useState(props.page)
   const [totalPages, setTotalPages] = useState(0);
@@ -55,7 +57,7 @@ const BoardListLayout = (props) => {
 
       <div className='flex justify-center'>
 
-        <div className='flex flex-col justify-center w-11/12 '>
+        <div className='flex flex-col justify-center w-11/12 pb-40'>
 
           <BoardTable page={page}
                       navi={navi}
@@ -64,7 +66,8 @@ const BoardListLayout = (props) => {
                       setType={setType}/>
           <br/>
           <BoardSearchBar type={type}
-                          navi={navi}
+                          tag={tag}
+                          setTag={setTag}
                           setList={setList}/>
 
           <BoardPagenation page={page}
@@ -84,7 +87,7 @@ const BoardListLayout = (props) => {
             left: '0px'
           }}></div>
         </div>
-
+        <Footer/>
       </div>
     </div>
   )

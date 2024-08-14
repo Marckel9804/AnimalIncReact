@@ -1,9 +1,11 @@
 import {useEffect, useState} from "react";
 import axios from "../../utils/axios.js";
+import UserDetail from "./UserDetail.jsx";
 
 const UserTable = (props) => {
 
   const [list, setList] = useState([])
+  const [data, setData] = useState({})
   const menu = props.menu;
 
   useEffect(() => {
@@ -17,8 +19,17 @@ const UserTable = (props) => {
       })
   }, [menu]);
 
-  const onModal = () => {
+  const openModal = (e) => {
+    const row = e.currentTarget;
+    const cells = row.getElementsByTagName('td');
+    const cellValues = Array.from(cells).map(cell => cell.textContent);
+
+    setData(cellValues)
+
     document.getElementById('UserDetailModal').style.display="flex";
+  }
+  const closeModal=() => {
+    document.getElementById('UserDetailModal').style.display="none";
   }
 
   return(
@@ -40,7 +51,7 @@ const UserTable = (props) => {
         {list.map((user, index) => (
           <tr key={index}
               className='hover:bg-emerald-200 nes-pointer'
-              onClick={onModal}
+              onClick={openModal}
           >
             <td className='text-center w-16'>{user.userNum}</td>
             <td className='text-center w-16'>{user.memRoleList}</td>
@@ -58,9 +69,12 @@ const UserTable = (props) => {
       <div id='UserDetailModal'
            className='fixed top-0 left-0 h-dvh w-dvw bg-emerald-100 bg-opacity-40 z-50 flex items-center justify-center'
            style={{display:"none"}}
+           onClick={closeModal}
       >
-        <div className='flex w-64 h-80 rounded-lg border-4 border-emerald-600 justify-center px-8 py-4 bg-gray-50 bg-opacity-100'>
-          hihi
+        <div className='flex min-w-64 min-h-80 rounded-lg border-4 border-emerald-600 justify-center px-8 py-4 bg-gray-50 bg-opacity-100'
+             onClick={(e) => e.stopPropagation()}
+        >
+          <UserDetail data={data}/>
         </div>
       </div>
     </div>
