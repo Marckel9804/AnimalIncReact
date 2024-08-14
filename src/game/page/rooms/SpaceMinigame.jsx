@@ -1,122 +1,138 @@
-import React, { useState, useEffect, useRef } from "react";
-import styled, { keyframes, css } from "styled-components";
-import "nes.css/css/nes.min.css";
+import React, { useState, useEffect, useRef } from 'react'
+import styled, { keyframes, css } from 'styled-components'
+import 'nes.css/css/nes.min.css'
 
 const SpaceMinigame = ({ onClose }) => {
-  const [count, setCount] = useState(0);
-  const [highScore, setHighScore] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [gameMessage, setGameMessage] = useState("");
-  const [gameOver, setGameOver] = useState(false);
-  const [isKeyPressed, setIsKeyPressed] = useState(false);
-  const [hit, setHit] = useState(false);
-  const socketRef = useRef(null);
-  const [clientId, setClientId] = useState(null);
-  const [playerNum, setPlayerNum] = useState(1); // 초기 값 null
-
-  const [playerCounts, setPlayerCounts] = useState([0, 0, 0, 0]);
+  const [count, setCount] = useState(0)
+  const [highScore, setHighScore] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const [gameMessage, setGameMessage] = useState('')
+  const [gameOver, setGameOver] = useState(false)
+  const [isKeyPressed, setIsKeyPressed] = useState(false)
+  const [hit, setHit] = useState(false)
+  const socketRef = useRef(null)
+  const [clientId, setClientId] = useState(null)
+  const [playerNum, setPlayerNum] = useState(1) // 플레이어 번호 상태
+  const [playerCounts, setPlayerCounts] = useState([0, 0, 0, 0]) // 모든 플레이어의 카운트를 관리
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:4000");
-    socketRef.current = socket; // WebSocket 객체를 참조에 할당
+    const initializeWebSocket = () => {
+      const socket = new WebSocket('ws://localhost:4000')
+      socketRef.current = socket // WebSocket 객체를 참조에 할당
 
-    socket.onopen = () => {
-      console.log("Connected to WebSocket server");
-    };
-
-    socket.onmessage = async (event) => {
-      const text = await event.data.text();
-      const data = JSON.parse(text);
-
-      if (data.type === "init" && data.clientId) {
-        setClientId(data.clientId);
-        setPlayerNum(data.playerNum);
+      socket.onopen = () => {
+        console.log('Connected to WebSocket server')
       }
 
-      if (data.type === "count") {
-        console.log("Received message:", data);
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data)
+        console.log('Received message:', data)
 
-        setPlayerCounts((prevCounts) => {
-          const newCounts = [...prevCounts];
-          newCounts[data.playerNum - 1] = data.count;
-          return newCounts;
-        });
+        if (data.type === 'init' && data.clientId) {
+          setClientId(data.clientId)
+          setPlayerNum(data.playerNum)
+        }
+
+        if (data.type === 'count') {
+          setPlayerCounts((prevCounts) => {
+            const newCounts = [...prevCounts]
+            newCounts[data.playerNum - 1] = data.count
+            return newCounts
+          })
+        }
+
+        if (data.type === 'gameOver') {
+          setGameOver(true)
+          if (data.isWinner) {
+            setGameMessage('1등입니다! 게임이 종료되었습니다.')
+          } else {
+            setGameMessage('게임이 종료되었습니다.')
+          }
+          setTimeout(() => {
+            onClose()
+          }, 3000)
+        }
       }
-    };
 
-    socket.onclose = () => {
-      console.log("WebSocket connection closed");
-    };
+      socket.onclose = (event) => {
+        console.log('WebSocket connection closed', event)
+        if (event.code !== 1000) {
+          // 정상적인 종료가 아니면 재연결 시도
+          setTimeout(initializeWebSocket, 1000)
+        }
+      }
+
+      socket.onerror = (error) => {
+        console.error('WebSocket error', error)
+        socket.close() // 에러 발생 시 연결을 닫음
+      }
+    }
+
+    initializeWebSocket()
 
     return () => {
-      socket.close();
-    };
-  }, []);
+      if (socketRef.current) {
+        socketRef.current.close()
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (
-        event.code === "Space" &&
+        event.code === 'Space' &&
         !isKeyPressed &&
         !gameOver &&
-        playerNum !== null
+        playerNum !== null &&
+        socketRef.current &&
+        socketRef.current.readyState === WebSocket.OPEN
       ) {
-        const newCount = count + 1;
-        const newProgress = Math.min(progress + 1, 10);
-        setCount(newCount);
-        setProgress(newProgress);
-        setIsKeyPressed(true);
-        setHit(true);
-        setTimeout(() => setHit(false), 200);
+        const newCount = count + 1
+        const newProgress = Math.min(progress + 1, 10)
+        setCount(newCount)
+        setProgress(newProgress)
+        setIsKeyPressed(true)
+        setHit(true)
+        setTimeout(() => setHit(false), 200)
 
         const playerData = {
-          type: "count",
+          type: 'count',
           clientId,
           count: newCount,
           progress: newProgress,
           playerNum,
-        };
-
-        if (socketRef.current) {
-          socketRef.current.send(JSON.stringify(playerData));
         }
 
+        socketRef.current.send(JSON.stringify(playerData))
+
         setPlayerCounts((prevCounts) => {
-          const newCounts = [...prevCounts];
-          newCounts[playerNum - 1] = newCount;
-          return newCounts;
-        });
+          const newCounts = [...prevCounts]
+          newCounts[playerNum - 1] = newCount
+          return newCounts
+        })
       }
-    };
+    }
 
     const handleKeyUp = (event) => {
-      if (event.code === "Space") {
-        setIsKeyPressed(false);
+      if (event.code === 'Space') {
+        setIsKeyPressed(false)
       }
-    };
+    }
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, [isKeyPressed, gameOver, count, progress, clientId, playerNum]);
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [isKeyPressed, gameOver, count, progress, clientId, playerNum])
 
   useEffect(() => {
     if (count > highScore) {
-      setHighScore(count);
+      setHighScore(count)
     }
-
-    if (count >= 10) {
-      setGameMessage("1등입니다!");
-      setGameOver(true);
-      setTimeout(() => {
-        onClose();
-      }, 1000);
-    }
-  }, [count, highScore, onClose]);
+  }, [count, highScore])
 
   return (
     <MinigameContainer>
@@ -164,9 +180,10 @@ const SpaceMinigame = ({ onClose }) => {
         {gameMessage && <GameMessage>{gameMessage}</GameMessage>}
       </Minigame>
     </MinigameContainer>
-  );
-};
+  )
+}
 
+// styled-components: 게임 UI 스타일링
 const MinigameContainer = styled.div`
   background-color: #4cbdb8;
   width: 100vw;
@@ -174,7 +191,7 @@ const MinigameContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
+`
 
 const Minigame = styled.div`
   border-top: 2px #f0ffff solid;
@@ -184,7 +201,7 @@ const Minigame = styled.div`
   background-color: #c0c0c0;
   width: 90%;
   height: 80%;
-`;
+`
 
 const MinigameHead = styled.div`
   background-color: #808080;
@@ -193,7 +210,7 @@ const MinigameHead = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`;
+`
 
 const BoxIcon = styled.div`
   border-top: 2px #f0ffff solid;
@@ -210,23 +227,23 @@ const BoxIcon = styled.div`
   user-select: none;
   align-items: center;
   cursor: pointer;
-`;
+`
 
 const Instructions = styled.p`
   text-align: center;
   font-size: 2em;
   margin-top: 70px;
-`;
+`
 
 const CountDisplay = styled.div`
   margin-top: 20px;
   text-align: center;
-`;
+`
 
 const ProgressContainer = styled.div`
   width: 99%;
   margin-top: 20px;
-`;
+`
 
 const hitAnimation = keyframes`
   0% {
@@ -236,14 +253,14 @@ const hitAnimation = keyframes`
   100% {
     transform: translateY(0);
   }
-`;
+`
 
 const ButtonContainer = styled.div`
   margin-top: 200px;
   display: flex;
   justify-content: center;
   align-items: center;
-`;
+`
 
 const StyledButton = styled.button`
   position: relative;
@@ -267,7 +284,7 @@ const StyledButton = styled.button`
     css`
       animation: ${hitAnimation} 0.2s ease;
     `}
-`;
+`
 
 const sparkle = keyframes`
   0% {
@@ -277,7 +294,7 @@ const sparkle = keyframes`
   100% {
     opacity: 1;
   }
-`;
+`
 
 const GameMessage = styled.div`
   margin-top: 60px;
@@ -286,18 +303,18 @@ const GameMessage = styled.div`
   text-align: center;
   font-weight: bold;
   animation: ${sparkle} 1s infinite;
-`;
+`
 
 const PlayerList = styled.div`
   margin-top: 95px;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-`;
+`
 
 const Player = styled.div`
   text-align: center;
-`;
+`
 
 const Character = styled.div`
   width: 80px;
@@ -310,6 +327,6 @@ const Character = styled.div`
   align-items: center;
   margin-bottom: 10px;
   font-size: 1.5em;
-`;
+`
 
-export default SpaceMinigame;
+export default SpaceMinigame

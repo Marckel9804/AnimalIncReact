@@ -34,6 +34,12 @@ const Header = () => {
   const goToStore = (navigate) => {
     navigate('/shop')
   }
+
+  const goToPayment = () => {
+    // 결제 페이지로 이동하는 로직
+    navigate('/payment')
+  }
+
   const [userInfo, setUserInfo] = useState({
     userNickname: '',
     userRuby: 0,
@@ -52,7 +58,6 @@ const Header = () => {
       console.log('Fetched user info:', data) // 로그 추가
       setUserInfo({
         userNickname: data.userNickname,
-
         userRuby: data.userRuby,
         userPoint: data.userPoint,
       })
@@ -88,7 +93,15 @@ const Header = () => {
           <span className="header-user-name">{userInfo.userNickname}</span>
           <div className="header-ruby-info">
             <i className="nes-icon trophy header-ruby-icon" />
-            <span className="header-ruby-text">{userInfo.userRuby}</span>
+            <span className="header-ruby-text">
+              {userInfo.userRuby}
+              <button
+                className="nes-btn is-primary add-ruby-btn"
+                onClick={goToPayment}
+              >
+                +
+              </button>
+            </span>
           </div>
           <div className="header-points-info">
             <i className="nes-icon coin header-points-icon" />
