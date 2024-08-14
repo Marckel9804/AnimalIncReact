@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, {useState, useEffect} from 'react'
+import {useNavigate} from 'react-router-dom'
 import Modal from 'react-modal'
 import axios from '../utils/axios.js'
 import '../styles/login/MyPage.css'
@@ -36,60 +36,113 @@ const StyledTab = styled(Tab)`
 Modal.setAppElement('#root') //모달을 앱 요소로 설정
 
 const Mypage = () => {
-  const [userInfo, setUserInfo] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
-  const [isProfilePictureModalOpen, setIsProfilePictureModalOpen] = useState(false);
-  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
-  const [availablePictures, setAvailablePictures] = useState([]);
-  const [selectedPicture, setSelectedPicture] = useState('');
-  const [uploadFile, setUploadFile] = useState(null);
-  const [selectedTab, setSelectedTab] = useState(0);
-  const [updatedInfo, setUpdatedInfo] = useState({
-    userNickname: '',
-    userRealname: '',
-    userBirthdate: '',
-  });
+    const [userInfo, setUserInfo] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+    const [isProfilePictureModalOpen, setIsProfilePictureModalOpen] = useState(false);
+    const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+    const [availablePictures, setAvailablePictures] = useState([]);
+    const [selectedPicture, setSelectedPicture] = useState('');
+    const [uploadFile, setUploadFile] = useState(null);
+    const [selectedTab, setSelectedTab] = useState(0);
+    const [myPosts, setMyPosts] = useState([]);
+    const [myComments, setMyComments] = useState([]);
+    const [myReports, setMyReports] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const postsPerPage = 5;
+    const [updatedInfo, setUpdatedInfo] = useState({
+        userNickname: '',
+        userRealname: '',
+        userBirthdate: '',
+    });
 
-  const [passwordInfo, setPasswordInfo] = useState({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-  });
+    const [passwordInfo, setPasswordInfo] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+    });
 
-  const navigate = useNavigate()
+    const navigate = useNavigate()
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const token = localStorage.getItem('accessToken')
-        if (!token) {
-          alert('로그인을 먼저 해주세요!')
-          navigate('/login')
-          return
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const token = localStorage.getItem('accessToken')
+                if (!token) {
+                    alert('로그인을 먼저 해주세요!')
+                    navigate('/login')
+                    return
+                }
+
+                const response = await axios.get('/api/user/get-profile', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+
+                setUserInfo(response.data)
+                setUpdatedInfo({
+                    userNickname: response.data.userNickname,
+                    userRealname: response.data.userRealname,
+                    userBirthdate: response.data.userBirthdate,
+                })
+            } catch (error) {
+                console.error('Error fetching user info:', error)
+                alert('로그인을 먼저 해주세요!')
+                navigate('/login')
+            }
         }
 
-        const response = await axios.get('/api/user/get-profile', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+        const fetchMyPosts = async () => {
+            try {
+                const response = await axios.get('/api/board/my-posts', {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                    },
+                });
+                setMyPosts(response.data);
+            } catch (error) {
+                console.error('Error fetching my posts:', error);
+            }
+        };
 
-        setUserInfo(response.data)
-        setUpdatedInfo({
-          userNickname: response.data.userNickname,
-          userRealname: response.data.userRealname,
-          userBirthdate: response.data.userBirthdate,
-        })
-      } catch (error) {
-        console.error('Error fetching user info:', error)
-        alert('로그인을 먼저 해주세요!')
-        navigate('/login')
-      }
-    }
-      fetchUserInfo()
-  }, [navigate])
+        const fetchMyComments = async () => {
+            try {
+                const response = await axios.get('/api/board/my-comments', {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                    },
+                });
+                setMyComments(response.data);
+            } catch (error) {
+                console.error('Error fetching my comments:', error);
+            }
+        };
+
+        const fetchMyReports = async () => {
+            try {
+                const response = await axios.get('/api/board/my-reports', {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                    },
+                });
+                setMyReports(response.data);
+            } catch (error) {
+                console.error('Error fetching my reports:', error);
+            }
+        }
+
+        fetchUserInfo()
+        fetchMyPosts()
+        fetchMyComments()
+    }, [navigate]);
+
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = myPosts.slice(indexOfFirstPost, indexOfLastPost);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     if (!userInfo) {
         return <div>Loading...</div>
@@ -138,6 +191,7 @@ const Mypage = () => {
             setUserInfo(response.data);
             alert('정보가 업데이트되었습니다.');
             closeEditModal();
+            navigate('/');
         } catch (error) {
             console.error('Error updating user info:', error);
             alert('정보 업데이트 중 오류가 발생했습니다. 다시 시도해 주세요.');
@@ -274,31 +328,34 @@ const Mypage = () => {
     return (
         <>
             <Header/>
-            <Window style={{ width: '70%', margin: '0 auto', marginTop: '20px' }}>
+            <Window style={{width: '70%', height: '600px', margin: '0 auto', marginTop: '20px'}}>
                 <WindowHeader>
                     <span role="img" aria-label="my-page">🗂️ My Page</span>
                 </WindowHeader>
                 <WindowContent>
                     <Tabs value={selectedTab} onChange={handleTabChange}>
-                        <StyledTab value={0} style={{ minWidth: '120px', textAlign: 'center' }}>내 정보</StyledTab>
-                        <StyledTab value={1} style={{ minWidth: '120px', textAlign: 'center' }}>내 정보 수정</StyledTab>
-                        <StyledTab value={2} style={{ minWidth: '120px', textAlign: 'center' }}>회원 탈퇴</StyledTab>
-                        <StyledTab value={3} style={{ minWidth: '120px', textAlign: 'center' }}>내 글 목록</StyledTab>
-                        <StyledTab value={4} style={{ minWidth: '120px', textAlign: 'center' }}>내가 쓴 댓글</StyledTab>
-                        <StyledTab value={5} style={{ minWidth: '120px', textAlign: 'center' }}>내가 신고한 내역</StyledTab>
+                        <StyledTab value={0} style={{minWidth: '120px', textAlign: 'center'}}>내 정보</StyledTab>
+                        <StyledTab value={1} style={{minWidth: '120px', textAlign: 'center'}}>내 정보 수정</StyledTab>
+                        <StyledTab value={2} style={{minWidth: '120px', textAlign: 'center'}}>회원 탈퇴</StyledTab>
+                        <StyledTab value={3} style={{minWidth: '120px', textAlign: 'center'}}>내 글 목록</StyledTab>
+                        <StyledTab value={4} style={{minWidth: '120px', textAlign: 'center'}}>내가 쓴 댓글</StyledTab>
+                        <StyledTab value={5} style={{minWidth: '120px', textAlign: 'center'}}>내 FAQ</StyledTab>
                         {!userInfo.slogin &&
-                            <StyledTab value={6} style={{ minWidth: '120px', textAlign: 'center' }}>비밀번호 변경</StyledTab>}
+                            <StyledTab value={6} style={{minWidth: '120px', textAlign: 'center'}}>비밀번호 변경</StyledTab>}
                     </Tabs>
                     <TabBody>
                         {selectedTab === 0 && (
                             <div className="mypage-content">
                                 <div className="profile-section">
                                     <div className="profile-name">{userInfo.userNickname}</div>
-                                    <div className="profile-image-wrapper nes-pointer" onClick={openProfilePictureModal}>
-                                        <img src={selectedPicture || userInfo.userPicture} alt="프로필" className="profile-image"/>
+                                    <div className="profile-image-wrapper nes-pointer"
+                                         onClick={openProfilePictureModal}>
+                                        <img src={selectedPicture || userInfo.userPicture} alt="프로필"
+                                             className="profile-image"/>
                                     </div>
                                     <div className="profile-icon-wrapper">
-                                        <img src={getTierIcon(userInfo.userGrade)} alt="티어 아이콘" className="profile-icon"/>
+                                        <img src={getTierIcon(userInfo.userGrade)} alt="티어 아이콘"
+                                             className="profile-icon"/>
                                     </div>
                                 </div>
                                 <div className="info-section">
@@ -382,9 +439,62 @@ const Mypage = () => {
                                 </button>
                             </div>
                         )}
-                        {selectedTab === 3 && <div>내 글 목록 내용</div>}
+                        {selectedTab === 3 && (
+                            <div className="mypage-content-page">
+                                <table className="mypage-table">
+                                    <thead>
+                                    <tr>
+                                        <th>글 제목</th>
+                                        <th>게시판</th>
+                                        <th>태그</th>
+                                        <th>작성 날짜</th>
+                                        <th>댓글 수</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {currentPosts.map((post) => {
+                                        const boardType = post.type === 'free' ? '자유' : post.type === 'notice' ? '공지' : post.type;
+
+                                        return (
+                                            <tr key={post.bcId}>
+                                                <td><a href={`/board/detail/${post.bcId}`}>{post.title}</a></td>
+                                                <td>{boardType}</td>
+                                                <td>{post.bcCode}</td>
+                                                <td>{post.writeDate}</td>
+                                                <td>{post.comments.length}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                    </tbody>
+                                </table>
+                                <div className="mypage-pagination">
+                                    <button
+                                        onClick={() => paginate(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                    >
+                                        이전
+                                    </button>
+                                    {Array.from({ length: Math.ceil(myPosts.length / postsPerPage) }, (_, index) => (
+                                        <button
+                                            key={index + 1}
+                                            onClick={() => paginate(index + 1)}
+                                            className={currentPage === index + 1 ? 'active' : ''}
+                                            id="page-num"
+                                        >
+                                            {index + 1}
+                                        </button>
+                                    ))}
+                                    <button
+                                        onClick={() => paginate(currentPage + 1)}
+                                        disabled={currentPage === Math.ceil(myPosts.length / postsPerPage)}
+                                    >
+                                        다음
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                         {selectedTab === 4 && <div>내가 쓴 댓글 내용</div>}
-                        {selectedTab === 5 && <div>내가 신고한 내역 내용</div>}
+                        {selectedTab === 5 && <div>내가 FAQ 내용</div>}
                         {selectedTab === 6 && !userInfo.slogin && (
                             <div className="modal-content">
                                 <div className="modal-item">
@@ -392,7 +502,10 @@ const Mypage = () => {
                                     <input
                                         type="password"
                                         value={passwordInfo.currentPassword}
-                                        onChange={(e) => setPasswordInfo({...passwordInfo, currentPassword: e.target.value})}
+                                        onChange={(e) => setPasswordInfo({
+                                            ...passwordInfo,
+                                            currentPassword: e.target.value
+                                        })}
                                     />
                                 </div>
                                 <div className="modal-item">
@@ -400,7 +513,10 @@ const Mypage = () => {
                                     <input
                                         type="password"
                                         value={passwordInfo.newPassword}
-                                        onChange={(e) => setPasswordInfo({...passwordInfo, newPassword: e.target.value})}
+                                        onChange={(e) => setPasswordInfo({
+                                            ...passwordInfo,
+                                            newPassword: e.target.value
+                                        })}
                                     />
                                 </div>
                                 <div className="modal-item">
@@ -408,7 +524,10 @@ const Mypage = () => {
                                     <input
                                         type="password"
                                         value={passwordInfo.confirmPassword}
-                                        onChange={(e) => setPasswordInfo({...passwordInfo, confirmPassword: e.target.value})}
+                                        onChange={(e) => setPasswordInfo({
+                                            ...passwordInfo,
+                                            confirmPassword: e.target.value
+                                        })}
                                     />
                                 </div>
                                 <div className="modal-buttons">
@@ -434,7 +553,8 @@ const Mypage = () => {
                 <div className="modal-content">
                     <p>정말 비밀번호를 변경하시겠습니까?</p>
                     <div className="modal-buttons">
-                        <button className="nes-btn is-error" id="mypage-modal-btn" onClick={handleChangePassword}>변경</button>
+                        <button className="nes-btn is-error" id="mypage-modal-btn" onClick={handleChangePassword}>변경
+                        </button>
                         <button className="nes-btn" id="mypage-modal-btn" onClick={closeChangePasswordModal}>닫기</button>
                     </div>
                 </div>

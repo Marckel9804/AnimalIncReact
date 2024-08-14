@@ -67,7 +67,7 @@
 .info-item {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 25px;
     padding-bottom: 10px;
     border-bottom: 1px solid #ccc;
 }
@@ -202,4 +202,65 @@
     width: 80px;
     margin-top: 50px;
     margin-left: 350px;
+}
+
+.mypage-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    height: 45px;
+    position: relative; /* 위치 조정 가능하게 설정 */
+    top: 10px; /* 테이블 아래로 약간의 간격을 주기 위해 */
+}
+
+
+.mypage-pagination button {
+    background-color: #e6eaf3;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    font-size: 16px;
+    outline: none;
+}
+
+.mypage-pagination button.active {
+    color: #506fc3;
+    font-size: 1.25em;
+    font-weight: bold;
+}
+
+.mypage-pagination button:hover {
+    color: #506fc3;
+    font-size: 1.25em;
+    font-weight: bold;
+}
+
+.mypage-pagination button:disabled {
+    cursor: not-allowed;
+    background-color: #e6eaf3;
+}
+
+.mypage-table {
+    width: 80%;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+.mypage-table th,
+.mypage-table td {
+    padding: 10px;
+    margin: 0 auto;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.mypage-table th {
+    background-color: #e6eaf3;
+    font-weight: bold;
+}
+
+.mypage-pagination #page-num {
+    background-color: white;
 }
