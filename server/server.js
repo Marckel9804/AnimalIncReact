@@ -36,7 +36,7 @@ wss.on("connection", (ws) => {
     JSON.stringify({ type: "init", clientId, playerNum: players.length })
   );
 
-  broadcastPlayers();
+  // broadcastPlayers();
 
   ws.on("message", (message) => {
     const parsedMessage = JSON.parse(message.toString()); // Buffer를 문자열로 변환하여 JSON으로 파싱
