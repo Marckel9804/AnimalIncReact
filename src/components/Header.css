@@ -92,7 +92,7 @@
 .header-ruby-text,
 .header-points-text {
   font-size: 1.2em; /* 텍스트 크기 조정 */
-  padding-left: 25px; /* 아이콘과 텍스트 간 간격 조정 */
+  padding-left: 0; /* 아이콘과 텍스트 간 간격 조정 */
 }
 
 /* 버튼 컨테이너 스타일 */

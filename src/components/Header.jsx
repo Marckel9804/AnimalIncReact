@@ -93,10 +93,10 @@ const Header = () => {
           <span className="header-user-name">{userInfo.userNickname}</span>
           <div className="header-ruby-info">
             <i className="nes-icon trophy header-ruby-icon" />
-            <span className="header-ruby-text">
+            <span className="header-ruby-text flex gap-2">
               {userInfo.userRuby}
               <button
-                className="nes-btn is-primary add-ruby-btn"
+                className="nes-btn is-primary add-ruby-btn h-8 flex items-center"
                 onClick={goToPayment}
               >
                 +
