@@ -7,6 +7,7 @@
     width: 80%;
     max-width: 1000px;
     margin: 0 auto;
+    z-index: 1;
 }
 
 .profile-section {
@@ -62,6 +63,7 @@
     flex: 2;
     padding: 20px;
     background-color: #fff;
+    margin-top: 20px;
 }
 
 .info-item {
@@ -80,13 +82,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 130px;
+    width: 140px;
     height: 40px;
     margin: 0 auto;
 }
 
 .modal {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -96,17 +98,19 @@
     width: 300px;
     max-width: 80%;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 99999; /* 모달의 z-index 값을 높게 설정 */
 }
 
 .modal-content {
     display: flex;
     flex-direction: column;
     margin: 0 auto;
+    z-index: 99999; /* 모달의 z-index 값을 높게 설정 */
 }
 
 .modal-item {
-    margin-bottom: 15px;
-    margin: auto;
+    padding: 15px;
+    margin: 0 auto;
 }
 
 .modal-item label {
@@ -115,7 +119,7 @@
 }
 
 .modal-item input {
-    width: 400px;
+    width: 250px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -162,6 +166,7 @@
     justify-content: center;
     font-size: 1.25em;
     font-weight: bold;
+    margin-top: 10px;
     margin-bottom: 20px;
 }
 
@@ -174,6 +179,7 @@
 .modal-item-info {
     display: flex;
     flex-direction: column;
+    margin: 10px;
 }
 
 .modal-item-name {
@@ -185,18 +191,21 @@
     color: #666;
 }
 
-.mypage-item-modal {
-    position: absolute;
+.mypage-modal-item {
+    position: fixed; /* 절대 위치에서 고정된 위치로 변경 */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: white;
-    padding: 20px;
+    padding: 10px;
     border-radius: 8px;
     width: 500px;
     max-width: 80%;
+    height: 500px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 80px;
 }
+
 
 #mypage-item-modal-btn {
     width: 80px;
@@ -263,4 +272,39 @@
 
 .mypage-pagination #page-num {
     background-color: white;
+}
+
+.mypage-nick {
+    margin-left: 140px;
+}
+
+.mypage-nick-change {
+    margin-left: 140px;
+}
+
+.mypage-nickname {
+    width: 280px;
+}
+
+#mypage-nick-error {
+    color: red;
+    margin-left: 140px;
+}
+
+#mypage-nick-success {
+    color: green;
+    margin-left: 140px;
+}
+
+.delete-notice {
+    color: red;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 20px;
+    text-align: center;
+}
+
+.delete-content {
+    text-align: center;
+    padding: 20px;
 }

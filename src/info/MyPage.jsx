@@ -50,7 +50,11 @@ const Mypage = () => {
     const [myComments, setMyComments] = useState([]);
     const [myReports, setMyReports] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [nickname, setNickname] = useState('');
+    const [isNicknameAvailable, setIsNicknameAvailable] = useState(null);
+    const [nicknameError, setNicknameError] = useState('');
     const postsPerPage = 5;
+    const itemsPerPage = 3;
     const [updatedInfo, setUpdatedInfo] = useState({
         userNickname: '',
         userRealname: '',
@@ -136,11 +140,30 @@ const Mypage = () => {
         fetchUserInfo()
         fetchMyPosts()
         fetchMyComments()
+        fetchMyReports()
     }, [navigate]);
+
+    const groupedItems = userInfo ? userInfo.userItems.reduce((acc, item) => {
+        const found = acc.find(i => i.itemId === item.itemId);
+        if (found) {
+            found.count += 1;
+        } else {
+            acc.push({ ...item, count: 1 });
+        }
+        return acc;
+    }, []) : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = myPosts.slice(indexOfFirstPost, indexOfLastPost);
+
+    // 아이템 페이지네이션 계산
+    let currentItems = [];
+    if (userInfo && userInfo.userItems) {
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        currentItems = groupedItems.slice(indexOfFirstItem, indexOfLastItem);
+    }
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -181,7 +204,10 @@ const Mypage = () => {
         try {
             const response = await axios.post(
                 '/api/user/update-profile',
-                updatedInfo,
+                {
+                    ...updatedInfo,
+                    userNickname: nickname,
+                },
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -240,7 +266,11 @@ const Mypage = () => {
             closeChangePasswordModal();
         } catch (error) {
             console.error('Error changing password:', error);
-            alert('비밀번호 변경 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            if (error.response && error.response.status === 403) {
+                alert('현재 비밀번호가 잘못되었습니다. 다시 시도해 주세요.');
+            }else {
+                alert('비밀번호 변경 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            }
         }
     }
 
@@ -325,10 +355,33 @@ const Mypage = () => {
         setSelectedTab(value);
     };
 
+    const checkNicknameAvailability = async () => {
+        if (nickname.trim() === '') {
+            setNicknameError('닉네임을 입력해주세요.');
+            setIsNicknameAvailable(null);
+            return;
+        }
+        try {
+            const response = await axios.post('/api/user/check-nickname', { nickname });
+            setIsNicknameAvailable(response.data.isAvailable);
+            setNicknameError(''); // Clear the error message
+
+            if (response.data.isAvailable) {
+                setUpdatedInfo((prevInfo) => ({
+                    ...prevInfo,
+                    userNickname: nickname,
+                }));
+            }
+        } catch (error) {
+            console.error('Nickname check error:', error);
+            alert('닉네임 중복 확인 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        }
+    };
+
     return (
         <>
             <Header/>
-            <Window style={{width: '70%', height: '600px', margin: '0 auto', marginTop: '20px'}}>
+            <Window style={{width: '70%', height: '550px', margin: '0 auto', marginTop: '20px'}}>
                 <WindowHeader>
                     <span role="img" aria-label="my-page">🗂️ My Page</span>
                 </WindowHeader>
@@ -399,20 +452,17 @@ const Mypage = () => {
                                     />
                                 </div>
                                 <div className="modal-item">
-                                    <label>닉네임</label>
-                                    <input
-                                        type="text"
-                                        value={updatedInfo.userNickname}
-                                        onChange={(e) => setUpdatedInfo({...updatedInfo, userNickname: e.target.value})}
-                                    />
-                                </div>
-                                <div className="modal-item">
-                                    <label>닉네임</label>
-                                    <input
-                                        type="text"
-                                        value={updatedInfo.userNickname}
-                                        onChange={(e) => setUpdatedInfo({...updatedInfo, userNickname: e.target.value})}
-                                    />
+                                    <label className="mypage-nick">닉네임</label>
+                                    <div className="mypage-nick-change">
+                                        <input type="text" value={updatedInfo.userNickname} className="mypage-nickname" onChange={(e) => setNickname(e.target.value)}
+                                               placeholder="닉네임"/>
+                                        <button type="button" id="check-nickname-button" className="nes-btn"
+                                                onClick={checkNicknameAvailability}>중복 확인
+                                        </button>
+                                    </div>
+                                    {nicknameError && <div id="mypage-nick-error">{nicknameError}</div>}
+                                    {isNicknameAvailable === false && <div id="mypage-nick-error">이미 사용 중인 닉네임입니다...</div>}
+                                    {isNicknameAvailable === true && <div id="mypage-nick-success">사용 가능한 닉네임입니다!!!</div>}
                                 </div>
                                 <div className="modal-item">
                                     <label>생년월일</label>
@@ -434,6 +484,11 @@ const Mypage = () => {
                         )}
                         {selectedTab === 2 && (
                             <div>
+                                <h1 className="delete-notice">회원 탈퇴 시 주의 사항</h1>
+                                <div className="delete-content">회원님이 등록하신 개인 정보는 삭제되어 재사용하지 않습니다.</div>
+                                <div className="delete-content">회원 탈퇴 시 결제하신 상품과 재화는 복구되지 않습니다.</div>
+                                <div className="delete-content">회원 탈퇴하시면 계정을 복구 받으실 수 없습니다.</div>
+                                <div className="delete-content">주의 사항을 읽으시고 회원 탈퇴를 결심하셨다면 아래의 회원 탈퇴 버튼을 클릭해주세요.</div>
                                 <button className="nes-btn is-error" id="mypage-btn" onClick={openDeleteModal}>
                                     회원 탈퇴
                                 </button>
@@ -474,7 +529,7 @@ const Mypage = () => {
                                     >
                                         이전
                                     </button>
-                                    {Array.from({ length: Math.ceil(myPosts.length / postsPerPage) }, (_, index) => (
+                                    {Array.from({length: Math.ceil(myPosts.length / postsPerPage)}, (_, index) => (
                                         <button
                                             key={index + 1}
                                             onClick={() => paginate(index + 1)}
@@ -494,7 +549,7 @@ const Mypage = () => {
                             </div>
                         )}
                         {selectedTab === 4 && <div>내가 쓴 댓글 내용</div>}
-                        {selectedTab === 5 && <div>내가 FAQ 내용</div>}
+                        {selectedTab === 5 && <div>FAQ 내용</div>}
                         {selectedTab === 6 && !userInfo.slogin && (
                             <div className="modal-content">
                                 <div className="modal-item">
@@ -593,15 +648,20 @@ const Mypage = () => {
                     ))}
                 </div>
             </Modal>
-            <Modal isOpen={isItemModalOpen} onRequestClose={closeItemModal} className="mypage-item-modal">
+            <Modal
+                isOpen={isItemModalOpen}
+                onRequestClose={closeItemModal}
+                className="mypage-modal-item"
+                appElement={document.getElementById('root')} // 또는 root 요소 설정
+            >
                 <h2 className="modal-item-title">보유 아이템 목록</h2>
                 <div className="modal-item-content">
-                    {userInfo.userItems.length > 0 ? (
-                        userInfo.userItems.map((item, index) => (
+                    {currentItems.length > 0 ? (
+                        currentItems.map((item, index) => (
                             <div key={index} className="modal-user-item">
                                 <img src={item.itemImage} className="modal-item-image"/>
                                 <div className="modal-item-info">
-                                    <div className="modal-item-name">{item.itemName}</div>
+                                    <div className="modal-item-name">{item.itemName} ({item.count}개)</div>
                                     <div className="modal-item-description">{item.itemDescription}</div>
                                 </div>
                             </div>
@@ -609,8 +669,32 @@ const Mypage = () => {
                     ) : (
                         <p>보유한 아이템이 없습니다.</p>
                     )}
-                    <button className="nes-btn is-error" id="mypage-item-modal-btn" onClick={closeItemModal}>닫기</button>
+                    <div className="mypage-pagination">
+                        <button
+                            onClick={() => paginate(currentPage - 1)}
+                            disabled={currentPage === 1}
+                        >
+                            이전
+                        </button>
+                        {Array.from({length: Math.ceil(userInfo.userItems.length / itemsPerPage)}, (_, index) => (
+                            <button
+                                key={index + 1}
+                                onClick={() => paginate(index + 1)}
+                                className={currentPage === index + 1 ? 'active' : ''}
+                                id="page-num"
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
+                        <button
+                            onClick={() => paginate(currentPage + 1)}
+                            disabled={currentPage === Math.ceil(userInfo.userItems.length / itemsPerPage)}
+                        >
+                            다음
+                        </button>
+                    </div>
                 </div>
+                <button className="nes-btn is-error" id="mypage-item-modal-btn" onClick={closeItemModal}>닫기</button>
             </Modal>
             <Footer/>
         </>
