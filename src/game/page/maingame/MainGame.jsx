@@ -14,6 +14,7 @@ import Alert from "./Alert.jsx";
 import folder from "../../.././images/folder.ico";
 import trash from "../../.././images/trash.ico";
 import { v4 as uuidv4 } from "uuid";
+import ItemUse from "./ItemUse.jsx";
 
 function MainGame() {
   // 윈도우 창 닫힘 열림 관리
@@ -24,18 +25,51 @@ function MainGame() {
   const [showWC, setShowWC] = useState(true);
   const [showSB, setShowSB] = useState(false);
   const [showNews, setShowNews] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [alert, setAlert] = useState(false);
+  const [itemUse, setItemUse] = useState(false);
+  const [item, setItem] = useState("shortSelling");
   const [selected, setSelected] = useState(0);
   const [alertMsg, setAlertMsg] = useState("경고창");
+  const companyName = {
+    food1: "SCV Food",
+    food2: "드라군 제과",
+    food3: "스랄 치킨",
+    food4: "아이어 푸드",
+    ship1: "초암 조선",
+    ship2: "HL",
+    ship3: "선양 해운",
+    ship4: "선진 해양",
+    enter1: "JYT",
+    enter2: "YGY",
+    enter3: "브릭스",
+    enter4: "아라키스",
+    elec1: "호드 전자",
+    elec2: "일리단 전자",
+    elec3: "아서스",
+    elec4: "살게라스",
+    tech1: "네오 테크",
+    tech2: "모피어스",
+    tech3: "스미스",
+    tech4: "매트릭스",
+  };
 
   const openAlert = (msg) => {
     setAlertMsg(msg);
-    setIsOpen(true);
+    setAlert(true);
   };
 
   const closeAlert = () => {
-    setIsOpen(false);
+    setAlert(false);
   };
+
+  const openItemUse = (i) => {
+    setItem(i);
+    setItemUse(true);
+  };
+  const closeItemUse = () => {
+    setItemUse(false);
+  };
+
   const setters = {
     showMI,
     showSI,
@@ -148,12 +182,6 @@ function MainGame() {
     let sum = 0;
     for (let i of ind) {
       for (let j = 1; j < 5; j++) {
-        // console.log(`user ${i + 1}: `, user[i + j]);
-        // console.log(
-        //   `stock ${i + j}: `,
-        //   stockInfo[i + j].price[gameStatus.turn - 1]
-        // );
-        // console.log("sum", sum);
         sum = sum + user[i + j] * stockInfo[i + j].price[gameStatus.turn - 1];
       }
     }
@@ -253,6 +281,17 @@ function MainGame() {
     }
   }, [otherStatus, progress]);
 
+  //내 상태가 변하면 즉각 DB에 업데이트
+  useEffect(() => {
+    if (myStatus !== null) {
+      updateMyStatus();
+    }
+  }, [myStatus]);
+
+  const updateMyStatus = () => {
+    axios.post("/game/update/userStatus", myStatus);
+  };
+
   if (
     gameStatus === null ||
     myStatus === null ||
@@ -288,13 +327,26 @@ function MainGame() {
           <img src={trash} style={{ width: "70px", height: "70px" }} />
           <div className={selected == 2 ? "win-item-text" : null}>휴지통</div>
         </div>
-        <Alert isOpen={isOpen} onClose={closeAlert} message={alertMsg} />
+        <Alert isOpen={alert} onClose={closeAlert} message={alertMsg} />
+        <ItemUse
+          isOpen={itemUse}
+          onClose={closeItemUse}
+          item={item}
+          stockInfo={stockInfo}
+          formatNumber={formatNumber}
+          myStatus={myStatus}
+          setMyStatus={setMyStatus}
+          openAlert={openAlert}
+          companyName={companyName}
+          gameStatus={gameStatus}
+        />
         <News
           show={showNews}
           setShow={setShowNews}
           ind={ind}
           comp={comp}
           stockInfo={stockInfo}
+          companyName={companyName}
         />
         <MyInfo
           show={showMI}
@@ -307,6 +359,7 @@ function MainGame() {
           stockInfo={stockInfo}
           setInd={setInd}
           setComp={setComp}
+          companyName={companyName}
         />
         <div className="flex-col" style={{ width: "50%" }}>
           <StockInfo
@@ -326,8 +379,14 @@ function MainGame() {
             setShowNews={setShowNews}
             openAlert={openAlert}
             sendMessage={sendMessage}
+            companyName={companyName}
           />
-          <ItemsWin show={showIW} setShow={setShowIW} />
+          <ItemsWin
+            show={showIW}
+            setShow={setShowIW}
+            openItemUse={openItemUse}
+            myStatus={myStatus}
+          />
         </div>
         <div className="flex-col" style={{ width: "28%" }}>
           <OtherPlayer
