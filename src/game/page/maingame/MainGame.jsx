@@ -7,6 +7,7 @@ import TaskBar from "./TaskBar.jsx";
 import StartBar from "./StartBar.jsx";
 import ItemsWin from "./Items.jsx";
 import WinChat from "./WinChat.jsx";
+import Ladder from "../minigame/Ladder.jsx";
 import axios from "../../../utils/axios.js";
 import { useNavigate, useParams } from "react-router-dom";
 import News from "./News.jsx";
@@ -35,7 +36,7 @@ function MainGame() {
     food2: "드라군 제과",
     food3: "스랄 치킨",
     food4: "아이어 푸드",
-    ship1: "초암 조선",
+    ship1: "초암 공사",
     ship2: "HL",
     ship3: "선양 해운",
     ship4: "선진 해양",
@@ -43,13 +44,13 @@ function MainGame() {
     enter2: "YGY",
     enter3: "브릭스",
     enter4: "아라키스",
-    elec1: "호드 전자",
-    elec2: "일리단 전자",
+    elec1: "호드 컴퍼니",
+    elec2: "살게라스",
     elec3: "아서스",
-    elec4: "살게라스",
+    elec4: "일리단 전자",
     tech1: "네오 테크",
     tech2: "모피어스",
-    tech3: "스미스",
+    tech3: "스미스, INC.",
     tech4: "매트릭스",
   };
 
@@ -328,6 +329,9 @@ function MainGame() {
           <div className={selected == 2 ? "win-item-text" : null}>휴지통</div>
         </div>
         <Alert isOpen={alert} onClose={closeAlert} message={alertMsg} />
+        {/* <div className=" fixed z-30">
+          <Ladder />
+        </div> */}
         <ItemUse
           isOpen={itemUse}
           onClose={closeItemUse}
