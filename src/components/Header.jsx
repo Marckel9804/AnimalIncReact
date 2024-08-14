@@ -34,6 +34,12 @@ const Header = () => {
   const goToStore = (navigate) => {
     navigate('/shop')
   }
+
+  const goToPayment = () => {
+    // 결제 페이지로 이동하는 로직
+    navigate('/payment')
+  }
+
   const [userInfo, setUserInfo] = useState({
     userNickname: '',
     userRuby: 0,
@@ -52,7 +58,6 @@ const Header = () => {
       console.log('Fetched user info:', data) // 로그 추가
       setUserInfo({
         userNickname: data.userNickname,
-
         userRuby: data.userRuby,
         userPoint: data.userPoint,
       })
@@ -68,8 +73,7 @@ const Header = () => {
     try {
       await axios.post('/api/user/logout')
       localStorage.removeItem('accessToken')
-      navigate('/')
-      window.location.reload();
+      navigate('/login')
     } catch (error) {
       console.error('Logout Error:', error)
       alert('로그아웃에 실패했습니다.')
@@ -82,14 +86,19 @@ const Header = () => {
   return (
     <header className="header-header-container">
       <div className="header-header-content">
-        <div className="header-title nes-pointer" onClick={() => navigate('/')}>
+        <div className="header-title" onClick={() => navigate('/')}>
           Animal 주식회사
         </div>
         <div className="header-user-info">
           <span className="header-user-name">{userInfo.userNickname}</span>
           <div className="header-ruby-info">
             <i className="nes-icon trophy header-ruby-icon" />
-            <span className="header-ruby-text">{userInfo.userRuby}</span>
+            <span className="header-ruby-text">
+              {userInfo.userRuby}
+              <button className="add-ruby-btn" onClick={goToPayment}>
+                +
+              </button>
+            </span>
           </div>
           <div className="header-points-info">
             <i className="nes-icon coin header-points-icon" />
