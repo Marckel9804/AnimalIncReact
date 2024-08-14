@@ -13,7 +13,7 @@
   animation: l10-0 2s infinite cubic-bezier(1, 175, 0.5, 175);
 }
 .ladder-loader-hhy::before {
-  content: "please click the button !";
+  content: "please wait ...";
   display: inline-block;
   animation: l10-2 2s infinite;
 }

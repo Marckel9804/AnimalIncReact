@@ -1,71 +1,192 @@
 import WebSocket, { WebSocketServer } from "ws";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 const wss = new WebSocketServer({ port: 4000 });
-let players = [];
-let readyCount = 0;
-let gameState = "waiting";
-let ladder = [];
-let results = [];
+const rooms = new Map();
 
 wss.on("connection", (ws) => {
   const clientId = uuidv4();
-  const player = {
-    clientId,
-    ws,
-    ready: false,
-    nickname: `Player${players.length + 1}`,
-    grade: "Gold",
-    points: 1000,
-  };
-  players.push(player);
-
-  if (players.length > 4) {
-    ws.send(JSON.stringify({ type: "roomFull" }));
-    ws.close();
-    return;
-  }
-
-  broadcastPlayers();
 
   ws.on("message", (message) => {
     const parsedMessage = JSON.parse(message);
 
     switch (parsedMessage.type) {
-      case "ready":
-        handleReadyMessage(parsedMessage);
+      case "join":
+        handleJoin(ws, clientId, parsedMessage.room_id);
         break;
       case "finishPath":
         handleFinishPath(parsedMessage);
         break;
-      default:
-        broadcast(message);
     }
   });
 
   ws.on("close", () => {
-    players = players.filter((p) => p.ws !== ws);
-    broadcastPlayers();
+    for (const [roomId, room] of rooms.entries()) {
+      const playerIndex = room.players.findIndex((p) => p.ws === ws);
+      if (playerIndex !== -1) {
+        room.players.splice(playerIndex, 1);
+        broadcastPlayers(roomId);
+        if (room.players.length === 0) {
+          rooms.delete(roomId);
+        }
+        break;
+      }
+    }
   });
 });
 
-function handleReadyMessage(message) {
-  const player = players.find((p) => p.clientId === message.clientId);
-  if (player) {
-    player.ready = message.ready;
-    readyCount = players.filter((p) => p.ready).length;
+function handleJoin(ws, clientId, roomId) {
+  if (!rooms.has(roomId)) {
+    rooms.set(roomId, {
+      players: [],
+      gameState: "waiting",
+      ladder: [],
+      results: [],
+      totalParticipants: 0,
+      winner: null,
+      rewards: [],
+    });
+  }
 
-    broadcastPlayers();
+  const room = rooms.get(roomId);
 
-    if (readyCount === players.length && players.length > 1) {
-      setTimeout(() => {
-        startGame();
-      }, 5000);
+  axios
+    .get(`http://localhost:8080/api/user/game/ladder/participants/${roomId}`)
+    .then((res) => {
+      room.totalParticipants = res.data.length;
+
+      if (room.players.length < room.totalParticipants) {
+        const newPlayer = {
+          clientId,
+          userNum: res.data[room.players.length].users.userNum,
+          ws,
+          nickname: res.data[room.players.length].users.userNickname,
+          grade: res.data[room.players.length].users.userGrade,
+          userPicture: res.data[room.players.length].users.userPicture,
+        };
+
+        room.players.push(newPlayer);
+        broadcastPlayers(roomId);
+
+        ws.send(
+          JSON.stringify({
+            type: "gameState",
+            state: room.gameState,
+            ladder: room.ladder,
+            players: room.players.map((p) => p.clientId),
+            totalParticipants: room.totalParticipants,
+            currentParticipants: room.players.length,
+          })
+        );
+
+        if (room.players.length === room.totalParticipants) {
+          startCountdown(roomId);
+        }
+      } else {
+        ws.send(JSON.stringify({ type: "roomFull" }));
+      }
+    })
+    .catch((error) => console.log(error));
+}
+
+function startCountdown(roomId) {
+  const room = rooms.get(roomId);
+  room.gameState = "countdown";
+  let countdown = 5;
+  const countdownInterval = setInterval(() => {
+    broadcastToRoom(
+      roomId,
+      JSON.stringify({ type: "countdown", count: countdown })
+    );
+    countdown--;
+    if (countdown < 0) {
+      clearInterval(countdownInterval);
+      startGame(roomId);
+    }
+  }, 1000);
+}
+
+function startGame(roomId) {
+  const room = rooms.get(roomId);
+  room.gameState = "running";
+  room.ladder = createLadder(room.players.length);
+  room.rewards = createRandomRewards(room.players.length);
+  broadcastToRoom(
+    roomId,
+    JSON.stringify({
+      type: "startGame",
+      ladder: room.ladder,
+      players: room.players.map((p) => p.clientId),
+      rewards: room.rewards,
+    })
+  );
+}
+
+function handleFinishPath(message) {
+  for (const [roomId, room] of rooms.entries()) {
+    const playerIndex = room.players.findIndex(
+      (p) => p.clientId === message.clientId
+    );
+    if (playerIndex !== -1) {
+      const result = {
+        clientId: message.clientId,
+        result: message.result,
+        nickname: room.players[playerIndex].nickname,
+      };
+      room.results.push(result);
+      if (room.rewards[message.result] === "win") {
+        room.winner = room.players[playerIndex];
+      }
+      if (room.results.length === room.players.length) {
+        broadcastToRoom(
+          roomId,
+          JSON.stringify({
+            type: "gameEnded",
+            results: room.results,
+            winner: room.winner,
+          })
+        );
+        room.gameState = "waiting";
+        room.results = [];
+        room.ladder = [];
+        room.winner = null;
+        room.rewards = [];
+      }
+      break;
     }
   }
 }
 
-// 사다리 게임에 필요한 로직
+function broadcastPlayers(roomId) {
+  const room = rooms.get(roomId);
+  const playerList = room.players.map((p) => ({
+    clientId: p.clientId,
+    userNum: p.userNum,
+    nickname: p.nickname,
+    grade: p.grade,
+    userPicture: p.userPicture,
+  }));
+  broadcastToRoom(
+    roomId,
+    JSON.stringify({
+      type: "players",
+      players: playerList,
+      totalParticipants: room.totalParticipants,
+      currentParticipants: room.players.length,
+    })
+  );
+}
+
+function broadcastToRoom(roomId, message) {
+  const room = rooms.get(roomId);
+  room.players.forEach((player) => {
+    if (player.ws.readyState === WebSocket.OPEN) {
+      player.ws.send(message);
+    }
+  });
+}
+
 function createLadder(numPlayers) {
   const maxHorizontalLines = Math.floor(Math.random() * 10) * 2 + 2;
   return Array.from({ length: maxHorizontalLines }, () =>
@@ -77,52 +198,11 @@ function createLadder(numPlayers) {
   });
 }
 
-// 사다리 게임 시작~
-function startGame() {
-  gameState = "running";
-  ladder = createLadder(players.length);
-  broadcast(
-    JSON.stringify({
-      type: "startGame",
-      ladder,
-      players: players.map((p) => p.clientId),
-    })
-  );
-}
-
-// 사다리 게임 끝 !
-function handleFinishPath(message) {
-  results.push({ clientId: message.clientId, result: message.result });
-  if (results.length === players.length) {
-    broadcast(JSON.stringify({ type: "gameEnded", results }));
-    gameState = "waiting";
-    results = [];
-    players.forEach((p) => (p.ready = false));
-    readyCount = 0;
-    broadcastPlayers();
-  }
-}
-
-function broadcastPlayers() {
-  const playerList = players.map((p) => ({
-    clientId: p.clientId,
-    nickname: p.nickname,
-    grade: p.grade,
-    points: p.points,
-    ready: p.ready,
-  }));
-
-  broadcast(JSON.stringify({ type: "players", players: playerList }));
-}
-
-function broadcast(message) {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(
-        typeof message === "string" ? message : JSON.stringify(message)
-      );
-    }
-  });
+function createRandomRewards(numPlayers) {
+  const rewards = new Array(numPlayers).fill("bomb");
+  const winIndex = Math.floor(Math.random() * numPlayers);
+  rewards[winIndex] = "win";
+  return rewards;
 }
 
 console.log("WebSocket server is running on ws://localhost:4000");

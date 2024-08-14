@@ -91,7 +91,7 @@ const App = () => {
           <Route path="/shop/item" element={<ItemShop />} />{" "}
           {/* ItemShop 경로를 추가합니다 */}
           <Route path="/createroom" element={<RoomList />} />
-          <Route path="/ladder" element={<Ladder />} />
+          <Route path="/ladder/:room_id" element={<Ladder />} />
           {/*태웅 경로 */}
           <Route path="/naver/callback" element={<NaverCallback />} />
           <Route path="/mypage" element={<Mypage />} />
