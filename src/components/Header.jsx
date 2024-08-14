@@ -95,10 +95,7 @@ const Header = () => {
             <i className="nes-icon trophy header-ruby-icon" />
             <span className="header-ruby-text">
               {userInfo.userRuby}
-              <button
-                className="nes-btn is-primary add-ruby-btn"
-                onClick={goToPayment}
-              >
+              <button className="add-ruby-btn" onClick={goToPayment}>
                 +
               </button>
             </span>
