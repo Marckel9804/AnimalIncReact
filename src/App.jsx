@@ -1,43 +1,43 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from "react";
 import {
   Route,
   BrowserRouter as Router,
   Routes,
   useLocation,
   Navigate,
-} from 'react-router-dom'
-import Main from './components/main/Main'
-import Store from './components/store/Store'
-import AnimalEncyclopedia from './components/store/AnimalEncyclopedia'
-import GachaShop from './components/store/GachaShop'
-import GachaResult from './components/store/GachaResult'
-import ItemShop from './components/store/ItemShop'
-import CheckoutPage from './components/payment/CheckoutPage' // 결제 페이지 컴포넌트 가져오기
-import MainGame from './game/page/maingame/MainGame.jsx'
-import Login from './login/Login.jsx'
-import Register from './login/Register.jsx'
-import Ladder from './game/page/minigame/Ladder.jsx'
-import RoomList from './game/page/rooms/RoomList.jsx'
-import NaverCallback from './login/NaverCallback.jsx'
-import Mypage from './info/MyPage.jsx'
-import Rank from './info/Rank.jsx'
-import axios from './utils/axios.js'
-import GoogleLoginPage from './login/GoogleLogin.jsx'
-import KakaoLogin from './login/KakaoLogin.jsx'
-import NaverLogin from './login/NaverLogin.jsx'
-import CheckProfile from './login/CheckProfile.jsx'
-import BoardListPage from './community/page/BoardListPage.jsx'
-import BoardWritePage from './community/page/BoardWritePage.jsx'
-import BoardDetailPage from './community/page/BoardDetailPage.jsx'
-import BoardUpdatePage from './community/page/BoardUpdatePage.jsx' // App.css 파일을 임포트합니다.
-import RoomWait from './game/page/rooms/RoomWait'
-import SpaceMinigame from './game/page/rooms/SpaceMinigame'
-import FindPassword from './login/FindPassword.jsx'
-import Terms from './components/Terms'
-import Privacy from './components/Privacy'
-import './App.css'
-import 'nes.css/css/nes.min.css'
-import AdminPage from './admin/page/AdminPage.jsx'
+} from "react-router-dom";
+import Main from "./components/main/Main";
+import Store from "./components/store/Store";
+import AnimalEncyclopedia from "./components/store/AnimalEncyclopedia";
+import GachaShop from "./components/store/GachaShop";
+import GachaResult from "./components/store/GachaResult";
+import ItemShop from "./components/store/ItemShop";
+import CheckoutPage from "./components/payment/CheckoutPage"; // 결제 페이지 컴포넌트 가져오기
+import MainGame from "./game/page/maingame/MainGame.jsx";
+import Login from "./login/Login.jsx";
+import Register from "./login/Register.jsx";
+import Ladder from "./game/page/minigame/Ladder.jsx";
+import RoomList from "./game/page/rooms/RoomList.jsx";
+import NaverCallback from "./login/NaverCallback.jsx";
+import Mypage from "./info/MyPage.jsx";
+import Rank from "./info/Rank.jsx";
+import axios from "./utils/axios.js";
+import GoogleLoginPage from "./login/GoogleLogin.jsx";
+import KakaoLogin from "./login/KakaoLogin.jsx";
+import NaverLogin from "./login/NaverLogin.jsx";
+import CheckProfile from "./login/CheckProfile.jsx";
+import BoardListPage from "./community/page/BoardListPage.jsx";
+import BoardWritePage from "./community/page/BoardWritePage.jsx";
+import BoardDetailPage from "./community/page/BoardDetailPage.jsx";
+import BoardUpdatePage from "./community/page/BoardUpdatePage.jsx"; // App.css 파일을 임포트합니다.
+import RoomWait from "./game/page/rooms/RoomWait";
+import SpaceMinigame from "./game/page/rooms/SpaceMinigame";
+import FindPassword from "./login/FindPassword.jsx";
+import Terms from "./components/Terms";
+import Privacy from "./components/Privacy";
+import "./App.css";
+import "nes.css/css/nes.min.css";
+import AdminPage from "./admin/page/AdminPage.jsx";
 
 const App = () => {
 /*  const refreshAccessToken = async () => {
@@ -74,7 +74,8 @@ const App = () => {
           <Route path="/shop/animal-store/gacha" element={<GachaResult />} />
           <Route path="/shop/item" element={<ItemShop />} />
           <Route path="/createroom" element={<RoomList />} />
-          <Route path="/ladder" element={<Ladder />} />
+          <Route path="/ladder/:room_id" element={<Ladder />} />
+          {/*태웅 경로 */}
           <Route path="/payment" element={<CheckoutPage />} />
           <Route path="/naver/callback" element={<NaverCallback />} />
           <Route path="/mypage" element={<Mypage />} />
@@ -97,17 +98,17 @@ const App = () => {
         </Routes>
       </div>
     </Router>
-  )
-}
+  );
+};
 
 /*const TokenRefresher = ({ refreshAccessToken }) => {
   const location = useLocation()
 
   useEffect(() => {
-    refreshAccessToken()
-  }, [location])
+    refreshAccessToken();
+  }, [location]);
 
   return null
 }*/
 
-export default App
+export default App;
