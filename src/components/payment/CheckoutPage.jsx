@@ -10,6 +10,7 @@ const CheckoutPage = () => {
   const [paymentWidget, setPaymentWidget] = useState(null)
   const paymentMethodsWidgetRef = useRef(null)
   const [isPaymentRequested, setIsPaymentRequested] = useState(false)
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null)
 
   useEffect(() => {
     const fetchPaymentWidget = async () => {
@@ -38,6 +39,10 @@ const CheckoutPage = () => {
       { variantKey: 'DEFAULT' }
     )
 
+    paymentMethodsWidget.on('methodSelected', (method) => {
+      setSelectedPaymentMethod(method.methodKey)
+    })
+
     paymentWidget.renderAgreement('#agreement', { variantKey: 'AGREEMENT' })
 
     paymentMethodsWidgetRef.current = paymentMethodsWidget
@@ -65,19 +70,32 @@ const CheckoutPage = () => {
 
   return (
     <div className="checkout-container">
-      {!isPaymentRequested ? (
-        <button className="payment-button" onClick={handlePaymentRequest}>
-          결제하기
-        </button>
-      ) : (
-        <div className="payment-widget-container">
-          <div id="payment-widget" />
-          <div id="agreement" />
-          <button className="payment-button" onClick={handleConfirmPayment}>
+      <div
+        className={`payment-container ${
+          isPaymentRequested ? 'with-border' : ''
+        }`}
+      >
+        {!isPaymentRequested ? (
+          <button className="payment-button" onClick={handlePaymentRequest}>
             결제하기
           </button>
-        </div>
-      )}
+        ) : (
+          <div className="payment-widget-container">
+            <div id="payment-widget" />
+            <div id="agreement" />
+            <div
+              className={`installment-options ${
+                selectedPaymentMethod === '카드' ? 'visible' : ''
+              }`}
+            >
+              {/* 할부 선택 옵션 */}
+            </div>
+            <button className="payment-button" onClick={handleConfirmPayment}>
+              결제하기
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
