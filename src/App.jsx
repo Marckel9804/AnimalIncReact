@@ -40,7 +40,7 @@ import "nes.css/css/nes.min.css";
 import AdminPage from "./admin/page/AdminPage.jsx";
 
 const App = () => {
-/*  const refreshAccessToken = async () => {
+  const refreshAccessToken = async () => {
     const token = localStorage.getItem('accessToken')
     if (token) {
       try {
@@ -53,14 +53,12 @@ const App = () => {
         console.log('Tokens removed due to refresh error.')
       }
     }
-  }*/
+  }
 
   return (
     <Router>
       <div className="flex flex-col relative min-h-screen">
-{/*
         <TokenRefresher refreshAccessToken={refreshAccessToken} />
-*/}
         <Routes>
           <Route path="/game/:room_id" element={<MainGame />} />
           <Route path="/login" element={<Login />} />
@@ -101,7 +99,7 @@ const App = () => {
   );
 };
 
-/*const TokenRefresher = ({ refreshAccessToken }) => {
+const TokenRefresher = ({ refreshAccessToken }) => {
   const location = useLocation()
 
   useEffect(() => {
@@ -109,6 +107,6 @@ const App = () => {
   }, [location]);
 
   return null
-}*/
+}
 
 export default App;
