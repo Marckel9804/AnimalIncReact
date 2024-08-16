@@ -1,5 +1,6 @@
-import WebSocket, { WebSocketServer } from 'ws'
-import { v4 as uuidv4 } from 'uuid'
+import WebSocket, { WebSocketServer } from "ws";
+import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 const wss = new WebSocketServer({ port: 4000 })
 let players = [] // 현재 연결된 플레이어들을 저장하는 배열
@@ -119,7 +120,7 @@ function startCountdown() {
 
 // 사다리 생성 함수 (게임 시작 시 호출됨)
 function createLadder(numPlayers) {
-  const maxHorizontalLines = Math.floor(Math.random() * 10) * 2 + 2
+  const maxHorizontalLines = Math.floor(Math.random() * 10) * 2 + 2;
   return Array.from({ length: maxHorizontalLines }, () =>
     Array(numPlayers - 1).fill(false)
   ).map((row) => {
@@ -157,15 +158,15 @@ function handleFinishPath(message) {
 
 // 게임 중 점수 업데이트 함수 (스페이스바 누를 때 호출됨)
 function handleSpaceBarPress(message) {
-  const player = players.find((p) => p.clientId === message.clientId)
+  const player = players.find((p) => p.clientId === message.clientId);
   if (player) {
-    player.score += 1
+    player.score += 1;
 
-    console.log(`Player ${player.nickname} score: ${player.score}`)
+    console.log(`Player ${player.nickname} score: ${player.score}`);
 
     if (!gameOver && player.score >= 10) {
-      gameOver = true
-      console.log(`Player ${player.nickname} is the winner!`)
+      gameOver = true;
+      console.log(`Player ${player.nickname} is the winner!`);
 
       player.ws.send(
         JSON.stringify({
@@ -173,7 +174,7 @@ function handleSpaceBarPress(message) {
           message: '1등입니다! 게임이 종료되었습니다.',
           isWinner: true,
         })
-      )
+      );
 
       players.forEach((p) => {
         if (p.clientId !== player.clientId) {
@@ -182,9 +183,9 @@ function handleSpaceBarPress(message) {
               type: 'gameOver', // 다른 플레이어들에게도 게임 종료 알림
               message: '게임이 종료되었습니다.',
             })
-          )
+          );
         }
-      })
+      });
     }
 
     broadcast(
@@ -194,7 +195,7 @@ function handleSpaceBarPress(message) {
         count: player.score,
         playerNum: players.indexOf(player) + 1,
       })
-    )
+    );
   }
 }
 
@@ -222,10 +223,10 @@ function broadcast(message) {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(
-        typeof message === 'string' ? message : JSON.stringify(message)
-      )
+        typeof message === "string" ? message : JSON.stringify(message)
+      );
     }
-  })
+  });
 }
 
-console.log('WebSocket server is running on ws://localhost:4000')
+console.log("WebSocket server is running on ws://localhost:4000");
