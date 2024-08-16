@@ -1,6 +1,5 @@
-import WebSocket, { WebSocketServer } from "ws";
-import { v4 as uuidv4 } from "uuid";
-import axios from "axios";
+import WebSocket, { WebSocketServer } from 'ws'
+import { v4 as uuidv4 } from 'uuid'
 
 const wss = new WebSocketServer({ port: 4000 })
 let players = [] // 현재 연결된 플레이어들을 저장하는 배열
@@ -13,59 +12,29 @@ let countdownInterval // 카운트다운 타이머를 저장할 변수
 
 // 클라이언트가 서버에 연결될 때 실행되는 함수
 wss.on('connection', (ws) => {
+  const clientId = uuidv4() // 클라이언트 ID 생성
   ws.on('message', (message) => {
     const parsedMessage = JSON.parse(message.toString())
-
-    // 메시지 디버깅 로그 추가
     console.log('Received message:', parsedMessage)
 
-    // 플레이어 로그인 처리
-    if (parsedMessage.type === 'login') {
-      const player = {
-        clientId: parsedMessage.clientId || uuidv4(), // 플레이어 ID 생성 또는 수신된 ID 사용
-        ws, // WebSocket 연결 객체
-        ready: false, // 초기 레디 상태는 false
-        nickname: parsedMessage.userNickname, // 플레이어 닉네임
-        grade: parsedMessage.userGrade, // 플레이어 등급
-        points: parsedMessage.userPoint, // 플레이어 포인트
-        score: 0, // 초기 점수는 0
-        picture: parsedMessage.userPicture, // 여기서 오타를 수정
-
-      }
-      players.push(player) // 새로운 플레이어를 players 배열에 추가
-
-      console.log('Player added:', player);
-      console.log('Current players:', players); // players 배열 상태 출력
-      // 최대 플레이어 수를 초과하면 연결 종료
-      if (players.length > 4) {
-        ws.send(JSON.stringify({ type: 'roomFull' }))
-        ws.close()
-        return
-      }
-
-      // 초기화 메시지를 클라이언트에 전송
-      ws.send(
-        JSON.stringify({
-          type: 'init',
-          clientId: player.clientId,
-          playerNum: players.length,
-        })
-      )
-
-      // 전체 플레이어 상태를 클라이언트에 브로드캐스트
-      broadcastPlayers()
-    }
-
-    if (parsedMessage.type === 'ready') {
-      console.log('Ready message received:', parsedMessage)
-
-      // Ready 상태 처리 함수 호출
-      handleReadyMessage(parsedMessage)
-    }
-
-    // 채팅 메시지 처리
-    if (parsedMessage.type === 'chat') {
-      broadcast(parsedMessage) // 모든 클라이언트에게 메시지 브로드캐스트
+    switch (parsedMessage.type) {
+      case 'login':
+        handleLogin(parsedMessage, ws, clientId)
+        break
+      case 'ready':
+        handleReadyMessage(parsedMessage)
+        break
+      case 'chat':
+        broadcast(parsedMessage)
+        break
+      case 'count':
+        handleSpaceBarPress(parsedMessage)
+        break
+      case 'finishPath':
+        handleFinishPath(parsedMessage)
+        break
+      default:
+        console.log('Unknown message type:', parsedMessage.type)
     }
   })
 
@@ -76,6 +45,43 @@ wss.on('connection', (ws) => {
     broadcastPlayers() // 모든 클라이언트에게 업데이트된 상태 전송
   })
 })
+
+// 플레이어 로그인 처리 함수
+function handleLogin(parsedMessage, ws, clientId) {
+  const player = {
+    clientId: parsedMessage.clientId || clientId, // 플레이어 ID 생성 또는 수신된 ID 사용
+    ws, // WebSocket 연결 객체
+    ready: false,
+    nickname: parsedMessage.userNickname || `Player${players.length + 1}`, // 닉네임이 없으면 기본값으로 Player 사용
+    grade: parsedMessage.userGrade,
+    points: parsedMessage.userPoint,
+    score: 0,
+    picture: parsedMessage.userPicture, // 여기서 오타를 수정
+
+  }
+  players.push(player) // 새로운 플레이어를 players 배열에 추가
+
+  console.log('Player logged in:', player)
+
+  // 최대 플레이어 수를 초과하면 연결 종료
+  if (players.length > 4) {
+    ws.send(JSON.stringify({ type: 'roomFull' }))
+    ws.close()
+    return
+  }
+
+  // 초기화 메시지를 클라이언트에 전송
+  ws.send(
+    JSON.stringify({
+      type: 'init',
+      clientId: player.clientId,
+      playerNum: players.length,
+    })
+  )
+
+  // 전체 플레이어 상태를 클라이언트에 브로드캐스트
+  broadcastPlayers()
+}
 
 // 플레이어 레디 상태 처리 함수
 function handleReadyMessage(message) {
@@ -120,7 +126,7 @@ function startCountdown() {
 
 // 사다리 생성 함수 (게임 시작 시 호출됨)
 function createLadder(numPlayers) {
-  const maxHorizontalLines = Math.floor(Math.random() * 10) * 2 + 2;
+  const maxHorizontalLines = Math.floor(Math.random() * 10) * 2 + 2
   return Array.from({ length: maxHorizontalLines }, () =>
     Array(numPlayers - 1).fill(false)
   ).map((row) => {
@@ -158,15 +164,15 @@ function handleFinishPath(message) {
 
 // 게임 중 점수 업데이트 함수 (스페이스바 누를 때 호출됨)
 function handleSpaceBarPress(message) {
-  const player = players.find((p) => p.clientId === message.clientId);
+  const player = players.find((p) => p.clientId === message.clientId)
   if (player) {
-    player.score += 1;
+    player.score += 1
 
-    console.log(`Player ${player.nickname} score: ${player.score}`);
+    console.log(`Player ${player.nickname} score: ${player.score}`)
 
     if (!gameOver && player.score >= 10) {
-      gameOver = true;
-      console.log(`Player ${player.nickname} is the winner!`);
+      gameOver = true
+      console.log(`Player ${player.nickname} is the winner!`)
 
       player.ws.send(
         JSON.stringify({
@@ -174,7 +180,7 @@ function handleSpaceBarPress(message) {
           message: '1등입니다! 게임이 종료되었습니다.',
           isWinner: true,
         })
-      );
+      )
 
       players.forEach((p) => {
         if (p.clientId !== player.clientId) {
@@ -183,9 +189,9 @@ function handleSpaceBarPress(message) {
               type: 'gameOver', // 다른 플레이어들에게도 게임 종료 알림
               message: '게임이 종료되었습니다.',
             })
-          );
+          )
         }
-      });
+      })
     }
 
     broadcast(
@@ -195,7 +201,7 @@ function handleSpaceBarPress(message) {
         count: player.score,
         playerNum: players.indexOf(player) + 1,
       })
-    );
+    )
   }
 }
 
@@ -212,7 +218,6 @@ function broadcastPlayers() {
 
   }))
 
-  // 플레이어 상태를 콘솔에 출력
   console.log('플레이어 정보 뿌리는 코드임 >>> ', playerList)
 
   broadcast(JSON.stringify({ type: 'players', players: playerList }))
@@ -223,10 +228,10 @@ function broadcast(message) {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(
-        typeof message === "string" ? message : JSON.stringify(message)
-      );
+        typeof message === 'string' ? message : JSON.stringify(message)
+      )
     }
-  });
+  })
 }
 
-console.log("WebSocket server is running on ws://localhost:4000");
+console.log('WebSocket server is running on ws://localhost:4000')
