@@ -53,18 +53,6 @@ const App = () => {
   }
 
   const refreshAccessToken = async () => {
-<<<<<<< HEAD
-    const token = localStorage.getItem('accessToken')
-    if (token) {
-      try {
-        const response = await axios.post('/api/user/refresh-token')
-        const newAccessToken = response.headers['authorization'].split(' ')[1]
-        localStorage.setItem('accessToken', newAccessToken)
-      } catch (err) {
-        console.log('Error refreshing access token', err)
-        localStorage.removeItem('accessToken')
-        console.log('Tokens removed due to refresh error.')
-=======
     const token = localStorage.getItem('accessToken');
     if (token) {
       try {
@@ -75,18 +63,10 @@ const App = () => {
         console.log('Error refreshing access token', err);
         localStorage.removeItem('accessToken');
         console.log('Tokens removed due to refresh error.');
->>>>>>> dev
       }
     }
   }
 
-<<<<<<< HEAD
-  useEffect(() => {
-    refreshAccessToken()
-  }, [location])
-
-=======
->>>>>>> dev
   return (
     <Router>
       <div className="flex flex-col relative min-h-screen">
@@ -147,9 +127,6 @@ const App = () => {
   )
 }
 
-<<<<<<< HEAD
-export default App
-=======
 const TokenRefresher = ({ refreshAccessToken }) => {
   const location = useLocation();
 
@@ -160,4 +137,3 @@ const TokenRefresher = ({ refreshAccessToken }) => {
   return null;
 }
 export default App;
->>>>>>> dev
