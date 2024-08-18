@@ -16,6 +16,7 @@ import folder from "../../.././images/folder.ico";
 import trash from "../../.././images/trash.ico";
 import { v4 as uuidv4 } from "uuid";
 import ItemUse from "./ItemUse.jsx";
+import Timer from "./Timer.jsx";
 
 function MainGame() {
   // 윈도우 창 닫힘 열림 관리
@@ -24,8 +25,13 @@ function MainGame() {
   const [showOP, setShowOP] = useState(true);
   const [showIW, setShowIW] = useState(true);
   const [showWC, setShowWC] = useState(true);
+  const [showTM, setShowTM] = useState(true);
   const [showSB, setShowSB] = useState(false);
   const [showNews, setShowNews] = useState(false);
+  const [ladder, setLadder] = useState(false);
+
+  const [timer, setTimer] = useState(0);
+
   const [alert, setAlert] = useState(false);
   const [itemUse, setItemUse] = useState(false);
   const [item, setItem] = useState("shortSelling");
@@ -78,12 +84,14 @@ function MainGame() {
     showSB,
     showIW,
     showWC,
+    showTM,
     setShowMI,
     setShowSI,
     setShowOP,
     setShowSB,
     setShowIW,
     setShowWC,
+    setShowTM,
   };
   const [progress, setProgress] = useState(0);
   const [gameStatus, setGameStatus] = useState(null);
@@ -128,12 +136,18 @@ function MainGame() {
           ]);
         }
         if (data.type === "buySell") {
-          let content = `${data.stockId} 주식이 ${data.amount}주 거래되었습니다.`;
+          let content = `${companyName[data.stockId]} 주식이 ${
+            data.amount
+          }주 거래되었습니다.`;
           getUserInfo();
           setMessages((prevMessages) => [
             ...prevMessages,
             { content: content, type: "game" },
           ]);
+        }
+        if (data.type === "timer") {
+          console.log("time", data);
+          setTimer(data.time);
         }
       };
       setWs(ws);
@@ -266,11 +280,19 @@ function MainGame() {
       });
     }, 50);
 
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     // 여기서 데이터를 불러오는 비동기 함수를 호출합니다.
     getRoomInfo();
 
     return () => {
       clearInterval(timer);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
@@ -329,9 +351,11 @@ function MainGame() {
           <div className={selected == 2 ? "win-item-text" : null}>휴지통</div>
         </div>
         <Alert isOpen={alert} onClose={closeAlert} message={alertMsg} />
-        {/* <div className=" fixed z-30">
-          <Ladder />
-        </div> */}
+        {ladder ? (
+          <div className=" fixed z-30">
+            <Ladder roomId={gameStatus.gameRoomId} setMyStatus={setMyStatus} />
+          </div>
+        ) : null}
         <ItemUse
           isOpen={itemUse}
           onClose={closeItemUse}
@@ -352,19 +376,22 @@ function MainGame() {
           stockInfo={stockInfo}
           companyName={companyName}
         />
-        <MyInfo
-          show={showMI}
-          setShow={setShowMI}
-          myStatus={myStatus}
-          formatNumber={formatNumber}
-          updateTurn={updateTurn}
-          gameStatus={gameStatus}
-          sumStock={sumStock}
-          stockInfo={stockInfo}
-          setInd={setInd}
-          setComp={setComp}
-          companyName={companyName}
-        />
+        <div className="flex=col" style={{ width: "21%" }}>
+          <Timer show={showTM} setShow={setShowTM} timer={timer} />
+          <MyInfo
+            show={showMI}
+            setShow={setShowMI}
+            myStatus={myStatus}
+            formatNumber={formatNumber}
+            updateTurn={updateTurn}
+            gameStatus={gameStatus}
+            sumStock={sumStock}
+            stockInfo={stockInfo}
+            setInd={setInd}
+            setComp={setComp}
+            companyName={companyName}
+          />
+        </div>
         <div className="flex-col" style={{ width: "50%" }}>
           <StockInfo
             show={showSI}

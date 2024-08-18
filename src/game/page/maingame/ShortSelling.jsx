@@ -35,7 +35,9 @@ function ShortSelling(props) {
   };
 
   const shortSell = () => {
-    if (isNaN(order) || order == 0) {
+    if (gameStatus.turn === 11) {
+      props.openAlert("현재 턴에서는 사용 할 수 없는 아이템입니다.");
+    } else if (isNaN(order) || order == 0) {
       props.openAlert("주문이 존재하지 않습니다.");
     } else if (props.myStatus.shortSelling > 0) {
       props.setMyStatus({

@@ -6,9 +6,15 @@
 
 .myinfo-container {
   position: relative;
-  margin-top: 10vh;
-  height: 82.5vh;
-  width: 21%;
+  height: 80.5vh;
+}
+
+.win-timer-container {
+  position: relative;
+  height: 10vh;
+  width: 90%;
+  margin-bottom: 20px;
+  left: 50px;
 }
 
 .otherpinfo-container {
@@ -547,4 +553,28 @@
 }
 .win-radio-selected {
   border: 1px dotted black;
+}
+.win-progress {
+  height: 20px;
+  border-top: 1px #252525 solid;
+  border-left: 1px #252525 solid;
+  border-right: 1px #f0ffff solid;
+  border-bottom: 1px #f0ffff solid;
+  width: 90%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: auto;
+  padding: 1px;
+  gap: 2px;
+}
+
+.win-timer-rec {
+  width: 17px;
+  height: 16px;
+  background-color: #000080;
+}
+
+.win-time-btn-container {
+  border: 1px solid black;
 }

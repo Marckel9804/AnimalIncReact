@@ -4,7 +4,7 @@ import bomb from "../../../image/ladder-bomb.jpeg";
 import win from "../../../image/ladder-win.jpeg";
 import "./loading.css";
 
-const Ladder = ({ roomId }) => {
+const Ladder = ({ roomId, setMyStatus }) => {
   const canvasRef = useRef(null);
   const [players, setPlayers] = useState([]);
   const [rewards] = useState([win, bomb, bomb, bomb]);
@@ -274,9 +274,9 @@ const Ladder = ({ roomId }) => {
 };
 
 const LadderContainer = styled.div`
-  background-color: #027d7c;
-  width: 100vw;
-  height: 100vh;
+  background-color: transparent;
+  width: 99vw;
+  height: 99vh;
   display: flex;
   justify-content: center;
   align-items: center;
