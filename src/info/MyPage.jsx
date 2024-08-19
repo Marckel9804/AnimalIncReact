@@ -201,6 +201,24 @@ const Mypage = () => {
     const closeItemModal = () => setIsItemModalOpen(false);
 
     const handleUpdate = async () => {
+        // 필수 입력값 확인
+        if (!updatedInfo.userRealname || !updatedInfo.userNickname || !updatedInfo.userBirthdate) {
+            alert('모든 필드를 입력해주세요.');
+            return;
+        }
+
+        // 닉네임 중복 확인
+        if (isNicknameAvailable === null || isNicknameAvailable === false) {
+            alert('닉네임 중복 확인을 해주세요.');
+            return;
+        }
+
+        // 생년월일 유효성 검사
+        if (!isValidBirthdate(updatedInfo.userBirthdate)) {
+            alert('유효하지 않은 생년월일 형식입니다.');
+            return;
+        }
+
         try {
             const response = await axios.post(
                 '/api/user/update-profile',
@@ -361,6 +379,13 @@ const Mypage = () => {
             setIsNicknameAvailable(null);
             return;
         }
+
+        if (!isValidNickname(nickname)) {
+            setNicknameError('유효하지 않은 닉네임입니다.');
+            setIsNicknameAvailable(false);
+            return;
+        }
+
         try {
             const response = await axios.post('/api/user/check-nickname', { nickname });
             setIsNicknameAvailable(response.data.isAvailable);
@@ -376,6 +401,25 @@ const Mypage = () => {
             console.error('Nickname check error:', error);
             alert('닉네임 중복 확인 중 오류가 발생했습니다. 다시 시도해 주세요.');
         }
+    };
+
+    const isValidNickname = (nickname) => {
+        const invalidPattern = /^[ㄱ-ㅎㅏ-ㅣ]+$/; // 한글 자음/모음만으로 이루어진 닉네임 방지
+        return nickname.length >= 2 && nickname.length <= 12 && !invalidPattern.test(nickname);
+    };
+
+    const isValidBirthdate = (date) => {
+        if (!/^\d{8}$/.test(date)) return false;
+        const year = parseInt(date.slice(0, 4), 10);
+        const month = parseInt(date.slice(4, 6), 10);
+        const day = parseInt(date.slice(6, 8), 10);
+
+        if (year < 1900 || year > new Date().getFullYear()) return false;
+        if (month < 1 || month > 12) return false;
+        if (day < 1 || day > 31) return false;
+
+        const dateObj = new Date(`${year}-${month}-${day}`);
+        return dateObj && dateObj.getMonth() + 1 === month && dateObj.getDate() === day;
     };
 
     return (
@@ -461,8 +505,8 @@ const Mypage = () => {
                                         </button>
                                     </div>
                                     {nicknameError && <div id="mypage-nick-error">{nicknameError}</div>}
-                                    {isNicknameAvailable === false && <div id="mypage-nick-error">이미 사용 중인 닉네임입니다...</div>}
-                                    {isNicknameAvailable === true && <div id="mypage-nick-success">사용 가능한 닉네임입니다!!!</div>}
+                                    {!nicknameError && isNicknameAvailable === false && <div id="mypage-nick-error">이미 사용 중인 닉네임입니다...</div>}
+                                    {!nicknameError && isNicknameAvailable === true && <div id="mypage-nick-success">사용 가능한 닉네임입니다!!!</div>}
                                 </div>
                                 <div className="modal-item">
                                     <label>생년월일</label>
@@ -597,7 +641,7 @@ const Mypage = () => {
             </Window>
             <Modal isOpen={isEditModalOpen} onRequestClose={closeEditModal} className="modal">
                 <div className="modal-content">
-                    <p>정말 수정하시겠습니까?</p>
+                    <p>정말 회원 정보를 수정하시겠습니까?</p>
                     <div className="modal-buttons">
                         <button className="nes-btn is-error" id="mypage-modal-btn" onClick={handleUpdate}>수정</button>
                         <button className="nes-btn" id="mypage-modal-btn" onClick={closeEditModal}>닫기</button>

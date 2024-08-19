@@ -4,7 +4,7 @@ import {
   BrowserRouter as Router,
   Routes,
   useLocation,
-  Navigate,
+  Navigate, useNavigate,
 } from "react-router-dom";
 import Main from "./components/main/Main";
 import Store from "./components/store/Store";
@@ -41,18 +41,45 @@ import AdminPage from "./admin/page/AdminPage.jsx";
 
 const App = () => {
   const refreshAccessToken = async () => {
-    const token = localStorage.getItem('accessToken')
-    if (token) {
+    const token = localStorage.getItem('accessToken');
+    if (token && isTokeExpiringSoon(token)) {
       try {
-        const response = await axios.post('/api/user/refresh-token')
-        const newAccessToken = response.headers['authorization'].split(' ')[1]
-        localStorage.setItem('accessToken', newAccessToken)
+        const response = await axios.post('/api/user/refresh-token');
+        const newAccessToken = response.headers['authorization'].split(' ')[1];
+        localStorage.setItem('accessToken', newAccessToken);
       } catch (err) {
-        console.log('Error refreshing access token', err)
-        localStorage.removeItem('accessToken')
-        console.log('Tokens removed due to refresh error.')
+        console.log('Error refreshing access token', err);
+        localStorage.removeItem('accessToken');
+        alert('세션이 만료되어 자동으로 로그아웃되었습니다.')
+        window.location.href = '/';
       }
     }
+  }
+
+  function decodeJWT(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+        atob(base64)
+            .split('')
+            .map(function (c) {
+              return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join('')
+    );
+
+    return JSON.parse(jsonPayload);
+  }
+
+  const isTokeExpiringSoon = (token) => {
+    const decodedToken = decodeJWT(token);
+    const currentTime = Date.now() / 1000;
+    const tokenExpirationTime = decodedToken.exp;
+
+    const timeLeft = tokenExpirationTime - currentTime;
+    const threshold = 5 * 60;
+
+    return timeLeft < threshold;
   }
 
   return (
