@@ -116,7 +116,7 @@ const AnimalEncyclopedia = () => {
         </div>
         {hoveredAnimal && (
           <div className="animal-alert1-container show">
-            <div className="animal-alert-box">
+            <div className="animal-alert1-box">
               <div className="animal-alert1-title">
                 {hoveredAnimal.animalName || '빈 슬롯'}
               </div>
@@ -129,14 +129,14 @@ const AnimalEncyclopedia = () => {
           </div>
         )}
         {showConfirmation && (
-          <div className="confirmation-dialog">
-            <div className="confirmation-dialog-box">
-              <div className="confirmation-dialog-title">안내</div>
-              <div className="confirmation-dialog-message">
+          <div className="confirmation-dialog1">
+            <div className="confirmation-dialog1-box">
+              <div className="confirmation-dialog1-title">안내</div>
+              <div className="confirmation-dialog1-message">
                 {selectedAnimal.animalName}(을)를
                 <br />내 캐릭터로 선택하시겠습니까?
               </div>
-              <div className="confirmation-dialog-buttons">
+              <div className="confirmation-dialog1-buttons">
                 <button className="nes-btn" onClick={handleConfirm}>
                   확인
                 </button>
