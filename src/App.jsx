@@ -46,12 +46,15 @@ const App = () => {
       try {
         const response = await axios.post('/api/user/refresh-token');
         const newAccessToken = response.headers['authorization'].split(' ')[1];
+        localStorage.removeItem('accessToken');
         localStorage.setItem('accessToken', newAccessToken);
       } catch (err) {
         console.log('Error refreshing access token', err);
-        localStorage.removeItem('accessToken');
-        alert('세션이 만료되어 자동으로 로그아웃되었습니다.')
-        window.location.href = '/';
+        if (err.response && err.response.status === 401) {
+          localStorage.removeItem('accessToken');
+          alert('세션이 만료되어 자동으로 로그아웃되었습니다.');
+          window.location.href = '/';
+        }
       }
     }
   }

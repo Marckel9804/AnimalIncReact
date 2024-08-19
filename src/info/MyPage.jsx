@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {useNavigate} from 'react-router-dom'
 import Modal from 'react-modal'
 import axios from '../utils/axios.js'
@@ -42,9 +42,7 @@ const Mypage = () => {
     const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
     const [isProfilePictureModalOpen, setIsProfilePictureModalOpen] = useState(false);
     const [isItemModalOpen, setIsItemModalOpen] = useState(false);
-    const [availablePictures, setAvailablePictures] = useState([]);
     const [selectedPicture, setSelectedPicture] = useState('');
-    const [uploadFile, setUploadFile] = useState(null);
     const [selectedTab, setSelectedTab] = useState(0);
     const [myPosts, setMyPosts] = useState([]);
     const [myComments, setMyComments] = useState([]);
@@ -53,8 +51,13 @@ const Mypage = () => {
     const [nickname, setNickname] = useState('');
     const [isNicknameAvailable, setIsNicknameAvailable] = useState(null);
     const [nicknameError, setNicknameError] = useState('');
+    const [animals, setAnimals] = useState([]);
+    const [ownedAnimals, setOwnedAnimals] = useState([]);
+    const [hoveredAnimal, setHoveredAnimal] = useState(null);
+    const [selectedAnimal, setSelectedAnimal] = useState(null);
+    const [showConfirmation, setShowConfirmation] = useState(false);
     const postsPerPage = 5;
-    const itemsPerPage = 3;
+    const itemsPerPage = 100;
     const [updatedInfo, setUpdatedInfo] = useState({
         userNickname: '',
         userRealname: '',
@@ -137,10 +140,32 @@ const Mypage = () => {
             }
         }
 
-        fetchUserInfo()
-        fetchMyPosts()
-        fetchMyComments()
-        fetchMyReports()
+        const fetchAnimals = async () => {
+            try {
+                const token = localStorage.getItem('accessToken');
+                const response = await axios.get('/api/animal/encyclopedia', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setAnimals(response.data);
+
+                const ownedResponse = await axios.get('/api/animal/owned-animals', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setOwnedAnimals(ownedResponse.data.map((animal) => animal.animalId));
+            } catch (error) {
+                console.error('Error fetching animals:', error);
+            }
+        };
+
+        fetchUserInfo();
+        fetchMyPosts();
+        fetchMyComments();
+        fetchMyReports();
+        fetchAnimals();
     }, [navigate]);
 
     const groupedItems = userInfo ? userInfo.userItems.reduce((acc, item) => {
@@ -305,64 +330,34 @@ const Mypage = () => {
         }
     };
 
-    const handleProfilePictureSelect = async (pic) => {
-        setSelectedPicture(pic);
-        closeProfilePictureModal();
-
-        const token = localStorage.getItem('accessToken');
-        await axios.post(
-            '/api/user/update-profile-picture',
-            {userPicture: pic},
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-        const response = await axios.get('/api/user/get-profile', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setUserInfo(response.data);
+    const handleProfilePictureSelect = async (animal) => {
+        if (ownedAnimals.includes(animal.animalId)) {
+            setSelectedAnimal(animal);
+            setShowConfirmation(true);
+        }
     }
 
-    const handleFileChange = (event) => {
-        setUploadFile(event.target.files[0]);
-    };
-
     const handleUpload = async () => {
-        if (!uploadFile) return;
-
-        const formData = new FormData();
-        formData.append('file', uploadFile);
-        formData.append('folderName', 'profile-pictures');
-
-        const token = localStorage.getItem('accessToken');
-        const response = await axios.post('/api/upload/img', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        setSelectedPicture(response.data.url);
-        closeProfilePictureModal();
-
-        await axios.post(
-            '/api/user/update-profile-picture',
-            {userPicture: response.data.url},
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
+        try {
+            const token = localStorage.getItem('accessToken');
+            await axios.post(
+                'api/user/select-animal',
+                {
+                    animalId: selectedAnimal.animalId,
                 },
-            }
-        );
-        const userInfoResponse = await axios.get('/api/user/get-profile', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
-        });
-        setUserInfo(userInfoResponse.data);
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            setSelectedPicture(selectedAnimal.animal_image);
+            setShowConfirmation(false);
+            setIsProfilePictureModalOpen(false);
+        } catch (error) {
+            console.error('Error selecting profile picture:', error);
+            alert('프로필 사진 선택 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        }
     }
 
     if (!userInfo) {
@@ -422,6 +417,15 @@ const Mypage = () => {
         return dateObj && dateObj.getMonth() + 1 === month && dateObj.getDate() === day;
     };
 
+    const handleCancel = () => {
+        setShowConfirmation(false);
+        setSelectedAnimal(null);
+    }
+
+    const totalAnimals = animals.length;
+    const emptySlots = Array(50 - totalAnimals).fill({});
+    const filledAnimals = [...animals, ...emptySlots];
+
     return (
         <>
             <Header/>
@@ -430,6 +434,7 @@ const Mypage = () => {
                     <span role="img" aria-label="my-page">🗂️ My Page</span>
                 </WindowHeader>
                 <WindowContent>
+                    {!isProfilePictureModalOpen && !isItemModalOpen && (
                     <Tabs value={selectedTab} onChange={handleTabChange}>
                         <StyledTab value={0} style={{minWidth: '120px', textAlign: 'center'}}>내 정보</StyledTab>
                         <StyledTab value={1} style={{minWidth: '120px', textAlign: 'center'}}>내 정보 수정</StyledTab>
@@ -440,6 +445,7 @@ const Mypage = () => {
                         {!userInfo.slogin &&
                             <StyledTab value={6} style={{minWidth: '120px', textAlign: 'center'}}>비밀번호 변경</StyledTab>}
                     </Tabs>
+                    )}
                     <TabBody>
                         {selectedTab === 0 && (
                             <div className="mypage-content">
@@ -668,28 +674,63 @@ const Mypage = () => {
                     </div>
                 </div>
             </Modal>
-            <Modal isOpen={isProfilePictureModalOpen} onRequestClose={closeProfilePictureModal} className="modal">
-                <h2 className="modal-title">프로필 사진 선택</h2>
-                <div className="modal-content">
-                    <div className="modal-item">
-                        <input type="file" onChange={handleFileChange}/>
+            <Modal isOpen={isProfilePictureModalOpen} onRequestClose={closeProfilePictureModal} className="animal-modal">
+                <div className="animal-modal-content">
+                    <div className="animal-list">
+                        {filledAnimals.map((animal, index) => (
+                            <div
+                                key={index}
+                                className={`animal-card ${
+                                    ownedAnimals.includes(animal.animalId) ? 'owned' : 'locked'
+                                }`}
+                                onMouseEnter={() => setHoveredAnimal(animal)}
+                                onMouseLeave={() => setHoveredAnimal(null)}
+                                onClick={() => handleProfilePictureSelect(animal)}
+                            >
+                                <div className="animal-image-container">
+                                    {animal.animalImage ? (
+                                        <img src={animal.animalImage} alt={animal.animalName} />
+                                    ) : (
+                                        <div className="placeholder-image">No Image</div>
+                                    )}
+                                </div>
+                                <div className="animal-id">No.{animal.animalId || '-'}</div>
+                                <div className="animal-name">{animal.animalName || '빈 슬롯'}</div>
+                            </div>
+                        ))}
                     </div>
-                    <div className="modal-buttons">
-                        <button className="nes-btn is-primary" id="mypage-modal-btn" onClick={handleUpload}>업로드
-                        </button>
-                        <button className="nes-btn is-error" id="mypage-modal-btn"
-                                onClick={closeProfilePictureModal}>취소
-                        </button>
-                    </div>
-                    {availablePictures.map((pic, index) => (
-                        <img
-                            key={index}
-                            src={pic}
-                            alt={`프로필 ${index}`}
-                            className="profile-pic-option"
-                            onClick={() => handleProfilePictureSelect(pic)}
-                        />
-                    ))}
+                    {hoveredAnimal && (
+                        <div className="animal-alert-container show">
+                            <div className="animal-alert-box">
+                                <div className="animal-alert-title">
+                                    {hoveredAnimal.animalName || '빈 슬롯'}
+                                </div>
+                                <div className="animal-alert-message">
+                                    {hoveredAnimal.animalDescription || '설명 없음'}
+                                    <br />
+                                    확률: {hoveredAnimal.animalProbability || '미정'}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {showConfirmation && (
+                        <div className="confirmation-dialog">
+                            <div className="confirmation-dialog-box">
+                                <div className="confirmation-dialog-title">안내</div>
+                                <div className="confirmation-dialog-message">
+                                    {selectedAnimal.animalName}을(를) 메인 캐릭터로 선택하시겠습니까?
+                                </div>
+                                <div className="confirmation-dialog-buttons">
+                                    <button className="nes-btn" onClick={handleUpload}>
+                                        확인
+                                    </button>
+                                    <button className="nes-btn" onClick={handleCancel}>
+                                        취소
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </Modal>
             <Modal
@@ -713,30 +754,6 @@ const Mypage = () => {
                     ) : (
                         <p>보유한 아이템이 없습니다.</p>
                     )}
-                    <div className="mypage-pagination">
-                        <button
-                            onClick={() => paginate(currentPage - 1)}
-                            disabled={currentPage === 1}
-                        >
-                            이전
-                        </button>
-                        {Array.from({length: Math.ceil(userInfo.userItems.length / itemsPerPage)}, (_, index) => (
-                            <button
-                                key={index + 1}
-                                onClick={() => paginate(index + 1)}
-                                className={currentPage === index + 1 ? 'active' : ''}
-                                id="page-num"
-                            >
-                                {index + 1}
-                            </button>
-                        ))}
-                        <button
-                            onClick={() => paginate(currentPage + 1)}
-                            disabled={currentPage === Math.ceil(userInfo.userItems.length / itemsPerPage)}
-                        >
-                            다음
-                        </button>
-                    </div>
                 </div>
                 <button className="nes-btn is-error" id="mypage-item-modal-btn" onClick={closeItemModal}>닫기</button>
             </Modal>
