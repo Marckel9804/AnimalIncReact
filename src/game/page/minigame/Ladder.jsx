@@ -25,7 +25,13 @@ const useBlocker = (blocker, when = true) => {
   }, [blocker, when, navigate]);
 };
 
-const Ladder = () => {
+const Ladder = ({
+  setMyStatus,
+  myStatus,
+  setMimiL,
+  updateTurn,
+  gameStatus,
+}) => {
   const canvasRef = useRef(null);
   const [players, setPlayers] = useState([]);
   const [rewards, setRewards] = useState([]);
@@ -42,6 +48,7 @@ const Ladder = () => {
   const navigate = useNavigate();
   // 👇🏻 게임 우승자 저장하는 변수 !!!!
   const [winner, setWinner] = useState(null);
+  let end = false;
 
   const params = useParams();
   const room_id = params.room_id;
@@ -84,10 +91,26 @@ const Ladder = () => {
           setCountdown(null);
           break;
         case "gameEnded":
-          setResults(message.results);
-          setWinner(message.winner);
-          console.log("우승자 :", message.winner);
-          setGameState("end");
+          if (!end) {
+            end = true;
+            setResults(message.results);
+            console.log("우승자 :", message.winner);
+            if (message.winner.userNum === myStatus.usernum) {
+              const prize = getRandomTwo();
+              setMyStatus({
+                ...myStatus,
+                [prize[0]]: myStatus[prize[0]] + 1,
+                [prize[1]]: myStatus[prize[1]] + 1,
+              });
+            }
+            setGameState("end");
+
+            updateTurn(gameStatus.turn);
+            const turnOff = setInterval(() => {
+              setMimiL(false);
+            }, 3000);
+            turnOff();
+          }
           break;
         case "gameState":
           setGameState(message.state);
@@ -164,6 +187,18 @@ const Ladder = () => {
       setIsGameRunning(false);
     }
   }, [gameState]);
+
+  function getRandomTwo() {
+    const items = [
+      "shortSelling",
+      "fakeNews",
+      "goodNews",
+      "timeMachine",
+      "lottery",
+    ];
+    const shuffled = items.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 2);
+  }
 
   const drawLadderFromStructure = (ladder) => {
     const canvas = canvasRef.current;
@@ -380,9 +415,9 @@ const CountdownText = styled.div`
 `;
 
 const LadderContainer = styled.div`
-  background-color: #027d7c;
-  width: 100vw;
-  height: 100vh;
+  background-color: transparent;
+  width: 99vw;
+  height: 99vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -446,8 +481,8 @@ const Player = styled.div`
 `;
 
 const Character = styled.div`
-  width: 120px;
-  height: 120px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background-color: white;
   box-shadow: 1px 1px 0px 1px #cccccc;
