@@ -66,7 +66,7 @@ const GachaResult = () => {
               </div>
             </div>
           ) : (
-            <div>결과를 불러오는 중...</div>
+            <div className="loader"></div>
           )}
         </div>
       </div>
