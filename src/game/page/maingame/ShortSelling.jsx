@@ -35,7 +35,7 @@ function ShortSelling(props) {
   };
 
   const shortSell = () => {
-    if (props.gameStatus.turn === 11) {
+    if (props.gameStatus.turn === 12) {
       props.openAlert("현재 턴에서는 사용 할 수 없는 아이템입니다.");
     } else if (isNaN(order) || order == 0) {
       props.openAlert("주문이 존재하지 않습니다.");
@@ -92,12 +92,12 @@ function ShortSelling(props) {
           *주의*{" "}
         </p>
         <p style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>
-          이 과정에서 보유금이 부족해질 경우 이전턴의 주가를 기준으로 보유한
-          주식을 랜덤하게 매도해 금액을 갚게 됩니다.
+          이 과정에서 보유금이 마이너스 소지금을 가지게 되고 보유한 주식을 팔아
+          다시 소지금을 얻기 전까진 거래 할 수 없습니다.
         </p>
         <p style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>
-          만일 주식을 전부 매도해도 보유금을 갚지 못할 경우 보유금이 음수가 되고
-          더 이상 거래를 진행하지 못하게 됩니다.
+          만일 주식을 전부 매도해도 보유금을 갚지 못할 경우 더 이상 거래를
+          진행하지 못하게 됩니다.
         </p>
         <p style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>
           그런 경우 유일한 구제 수단은 로또를 통한 빚 변제뿐이기 때문에 공매도는
@@ -105,7 +105,7 @@ function ShortSelling(props) {
         </p>
         <p style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>
           실제 주식에서도 공매도를 진행 할 경우 보유금 이상의 손해를 입을 수
-          있기 떄문에 언제나 주의해야합니다.
+          있기 떄문에 매우 위험한 방식의 거래입니다.
         </p>
       </div>
       <div className=" p-4 flex-col justify-center items-center h-full">

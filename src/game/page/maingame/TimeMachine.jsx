@@ -3,7 +3,6 @@ import React, { useState } from "react";
 function TimeMachine(props) {
   const timeSkip = () => {
     if (props.myStatus.timeMachine > 0) {
-      props.updateTurn(props.gameStatus.turn);
       props.setMyStatus({
         ...props.myStatus,
         timeMachine: props.myStatus.timeMachine - 1,
