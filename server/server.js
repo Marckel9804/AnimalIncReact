@@ -10,6 +10,9 @@ let results = []; // 게임 결과를 저장할 배열
 let gameOver = false; // 게임 종료 여부를 나타내는 플래그
 let countdownInterval; // 카운트다운 타이머를 저장할 변수
 
+let countdowns = {};
+let dept = [];
+
 // 클라이언트가 서버에 연결될 때 실행되는 함수
 wss.on("connection", (ws) => {
   const clientId = uuidv4(); // 클라이언트 ID 생성

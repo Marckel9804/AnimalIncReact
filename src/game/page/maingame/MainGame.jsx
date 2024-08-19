@@ -159,7 +159,8 @@ function MainGame() {
           ]);
         }
         if (data.type === "turn") {
-          if (gameStatus.turn === 1) {
+          setMyStatus({ ...myStatus, newsCount: 5 });
+          if (gameStatus.turn === 2) {
             setMiniL(true);
           }
           if (data.incharge === myStatus.userNum) {
@@ -464,6 +465,9 @@ function MainGame() {
           comp={comp}
           stockInfo={stockInfo}
           companyName={companyName}
+          myStatus={myStatus}
+          setMyStatus={setMyStatus}
+          openAlert={openAlert}
         />
         <div className="flex=col" style={{ width: "21%" }}>
           <Timer show={showTM} setShow={setShowTM} timer={timer} />

@@ -1,7 +1,17 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
-function News({ setShow, show, ind, comp, stockInfo, companyName }) {
+function News({
+  setShow,
+  show,
+  ind,
+  comp,
+  stockInfo,
+  companyName,
+  myStatus,
+  openAlert,
+  setMyStatus,
+}) {
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -32,17 +42,14 @@ function News({ setShow, show, ind, comp, stockInfo, companyName }) {
   }, [stockInfo, ind, comp]);
 
   const handleGenerateNews = async () => {
-    console.log(
-      "전망",
-      stockInfo[ind + comp].weight[stockInfo[ind + comp].weight.length - 1]
-    );
-    setLoading(true);
-    setError("");
+    if (myStatus.newsCount > 0) {
+      setLoading(true);
+      setError("");
 
-    // Create prompt based on input
-    const prompt = `
+      // Create prompt based on input
+      const prompt = `
       지금부터 너는 가상의 뉴스를 작성해야 해. 다음 규칙을 지켜서 기사를 작성해줘:
-
+      
       1. 뉴스는 가상의 특정 기업에 대한 이슈 또는 경제적 상황에 관한 것이어야 해.
       2. 나는 가상의 기업 이름, 해당 기업이 다루는 서비스 종류, 미래의 주가 변화 예측을 제공할 거야.
       3. 너는 이 정보를 바탕으로 해당 기업이나 업종에 관한 기사를 작성해줘. 기사는 주가 변화 예측과 관련된 직접적인 언급 없이 상황을 설명해줘.
@@ -56,40 +63,47 @@ function News({ setShow, show, ind, comp, stockInfo, companyName }) {
       8-1. 예시를 들어줄게. {기업 이름: aa, 서비스 종류: 식품, 주가 변화 예측: +0.4% 상승 할 예정} > 생성한 기사: "최근 sns를 통해 mz세대들 사이에 새로운 간식 열풍이 불며 관련한 점포가 국내에 3개월 사이 32% 증가하며 이에 따라..."
       9. 다시 강조할게. 주가 변화 예측에 -가 붙으면 그러니까 음수면 부정적인 기사, 무조건 절대 부정적인 기사를 써야해.
       10. 주가 변화 예측에 +가 붙으면 무조건 절대로 긍정적인 기사를 써야해.
-
+      
       여기서 주어진 정보는 다음과 같아:
-      기업 이름: ${ind + comp}
+      기업 이름: ${companyName[ind + comp]}
       서비스 종류: ${indKor[ind]}
       주가 변화 예측: ${stockChange}
-
+      
       이 정보를 바탕으로 한국어로 가상의 뉴스를 작성해줘. 주가 언급은 절대 하지 말고, 이슈와 상황에 중점을 두어 작성해줘.
-    `;
+      `;
 
-    try {
-      const response = await axios.post(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          model: "gpt-3.5-turbo",
-          messages: [
-            { role: "system", content: "뉴스 기사를 생성하는 역할을 합니다." },
-            { role: "user", content: prompt },
-          ],
-          temperature: 0.5,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
+      try {
+        const response = await axios.post(
+          "https://api.openai.com/v1/chat/completions",
+          {
+            model: "gpt-3.5-turbo",
+            messages: [
+              {
+                role: "system",
+                content: "뉴스 기사를 생성하는 역할을 합니다.",
+              },
+              { role: "user", content: prompt },
+            ],
+            temperature: 0.5,
           },
-        }
-      );
+          {
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      const generatedNews = response.data.choices[0].message.content.trim();
-      setNews(generatedNews);
-    } catch (err) {
-      setError("뉴스 로딩에 실패했습니다. 다시 시도해 주세요.");
-    } finally {
-      setLoading(false);
+        const generatedNews = response.data.choices[0].message.content.trim();
+        setNews(generatedNews);
+        setMyStatus({ ...myStatus, newsCount: myStatus.newsCount - 1 });
+      } catch (err) {
+        setError("뉴스 로딩에 실패했습니다. 다시 시도해 주세요.");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      openAlert("열람 횟수가 부족합니다.");
     }
   };
   return show ? (
@@ -117,7 +131,9 @@ function News({ setShow, show, ind, comp, stockInfo, companyName }) {
             >
               {loading
                 ? "로딩 중..."
-                : `${companyName[ind + comp]}의 뉴스 열람하기`}
+                : `${companyName[ind + comp]}의 뉴스 열람하기 ${
+                    myStatus.newsCount
+                  } - 회 남음`}
             </button>
           </div>
           {error && <p style={{ color: "red" }}>{error}</p>}
