@@ -2,12 +2,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 100vh;
+  justify-content: center; /* flex-start를 사용하여 위쪽에 배치 */
+
   padding: 20px;
+  top: 10px;
 }
 
 .payment-container {
+  position: fixed;
+
+  top: 150px;
   padding: 20px; /* 내부 여백 추가 */
   max-width: 600px; /* 컨테이너 최대 너비 설정 */
   width: 100%; /* 컨테이너 너비를 100%로 설정 */
