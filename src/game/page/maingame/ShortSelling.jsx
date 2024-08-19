@@ -35,7 +35,7 @@ function ShortSelling(props) {
   };
 
   const shortSell = () => {
-    if (gameStatus.turn === 11) {
+    if (props.gameStatus.turn === 11) {
       props.openAlert("현재 턴에서는 사용 할 수 없는 아이템입니다.");
     } else if (isNaN(order) || order == 0) {
       props.openAlert("주문이 존재하지 않습니다.");
@@ -44,9 +44,12 @@ function ShortSelling(props) {
         ...props.myStatus,
         shortSelling: props.myStatus.shortSelling - 1,
         cash: props.myStatus.cash + total,
-        shortSellRecord:
-          props.myStatus.shortSellRecord +
-          `&${props.stockInfo[stockSelected]}:${order}`,
+      });
+      props.sendMessage({
+        type: "shortSelling",
+        stockid: stockSelected,
+        amount: order,
+        turn: props.gameStatus.turn,
       });
     } else {
       props.openAlert("보유한 아이템이 부족합니다.");

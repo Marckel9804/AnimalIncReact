@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 function Lottery(props) {
   const [showInfo, setShowInfo] = useState(false);
-  const [result, setResult] = useState(0);
+  const [result, setResult] = useState("");
 
   const probabilities = [
     { value: 5000, weight: 30 },
@@ -45,7 +45,22 @@ function Lottery(props) {
 
   const lotto = () => {
     const result = getRandomResult();
-    setResult(result);
+    if (props.myStatus.lottery > 0) {
+      props.setMyStatus({
+        ...props.myStatus,
+        lottery: props.myStatus.lottery - 1,
+        cash: props.myStatus.cash + result,
+      });
+      props.sendMessage({
+        type: "lottery",
+        content: `${props.myStatus.nickName}님이 ${props.formatNumber(
+          result
+        )}원에 당첨되셨습니다`,
+      });
+      setResult(`${props.formatNumber(result)}원에 당첨되셨습니다`);
+    } else {
+      props.openAlert("아이템이 부족합니다.");
+    }
   };
 
   return (
@@ -73,14 +88,14 @@ function Lottery(props) {
         <p>0.15%: 10,000,000(1,000만) ₩ </p>
         <p>0.05%: 50,000,000(5,000만) ₩ </p>
       </div>
-      <div className=" p-4 flex justify-center items-center h-full">
+      <div className=" p-4 flex-col justify-center items-center h-full">
         <div>보유중인 복권:{props.myStatus.lottery}</div>
         <div className={`win-alert-btn mb-4`}>
           <button className="win-alert-btn-in " onClick={lotto}>
             복권 사용
           </button>
         </div>
-        <div>결과:{props.formatNumber(result)}</div>
+        <div>결과:{result}</div>
       </div>
     </div>
   );

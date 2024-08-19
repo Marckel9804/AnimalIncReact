@@ -1,6 +1,19 @@
 import React, { useState } from "react";
 
 function TimeMachine(props) {
+  const timeSkip = () => {
+    if (props.myStatus.timeMachine > 0) {
+      props.updateTurn(props.gameStatus.turn);
+      props.setMyStatus({
+        ...props.myStatus,
+        timeMachine: props.myStatus.timeMachine - 1,
+      });
+      props.sendMessage({ type: "skip" });
+      props.onClose;
+    } else {
+      props.openAlert("아이템이 부족합니다.");
+    }
+  };
   return (
     <div className="h-full flex-col p-5">
       <h2>
@@ -19,7 +32,9 @@ function TimeMachine(props) {
       <div className=" p-4 flex-col justify-center items-center h-full">
         <div className="win-time-btn-container">
           <div className={`win-alert-btn mb-12 mt-12`}>
-            <button className="win-alert-btn-in ">장 마감하기</button>
+            <button className="win-alert-btn-in " onClick={timeSkip}>
+              장 마감하기
+            </button>
           </div>
         </div>
       </div>

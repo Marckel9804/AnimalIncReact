@@ -84,7 +84,7 @@ function GoodNews(props) {
           />
           <div className={`win-alert-btn mb-4`}>
             <button className="win-alert-btn-in " onClick={buyStock}>
-              매도
+              매수
             </button>
           </div>
         </div>

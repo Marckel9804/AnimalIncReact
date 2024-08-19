@@ -16,6 +16,8 @@ function ItemUse({
   openAlert,
   companyName,
   gameStatus,
+  sendMessage,
+  updateTurn,
 }) {
   const title = {
     shortSelling: "공매도",
@@ -33,6 +35,8 @@ function ItemUse({
     onclose,
     companyName,
     gameStatus,
+    sendMessage,
+    updateTurn,
   };
 
   return isOpen ? (

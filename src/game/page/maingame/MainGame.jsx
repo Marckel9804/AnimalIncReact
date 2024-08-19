@@ -14,7 +14,6 @@ import News from "./News.jsx";
 import Alert from "./Alert.jsx";
 import folder from "../../.././images/folder.ico";
 import trash from "../../.././images/trash.ico";
-import { v4 as uuidv4 } from "uuid";
 import ItemUse from "./ItemUse.jsx";
 import Timer from "./Timer.jsx";
 
@@ -28,7 +27,7 @@ function MainGame() {
   const [showTM, setShowTM] = useState(true);
   const [showSB, setShowSB] = useState(false);
   const [showNews, setShowNews] = useState(false);
-  const [ladder, setLadder] = useState(false);
+  const [miniL, setMiniL] = useState(false);
 
   const [timer, setTimer] = useState(0);
 
@@ -118,12 +117,13 @@ function MainGame() {
           type: "playerInfo",
           nickname: myStatus.nickName,
           roomid: gameStatus.gameRoomId,
+          usernum: myStatus.userNum,
         };
         ws.send(JSON.stringify(playerInfo));
       };
       ws.onmessage = (event) => {
-        console.log("Received: ", event.data);
         const data = JSON.parse(event.data);
+        // console.log("message", data);
         if (data.type === "message") {
           setMessages((prevMessages) => [
             ...prevMessages,
@@ -146,9 +146,49 @@ function MainGame() {
           ]);
         }
         if (data.type === "timer") {
-          console.log("time", data);
           setTimer(data.time);
         }
+        if (data.type === "game") {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { content: data.content, type: "game" },
+          ]);
+        }
+        if (data.type === "turn") {
+          if (data.content === "skip") {
+            setTimeout(() => {
+              getStockInfo(), getRoomInfo(), getUserInfo(0);
+            }, 5000);
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { content: "<타임 머신>이 사용되었습니다.", type: "game" },
+            ]);
+          } else {
+            if (data.incharge === myStatus.userNum) {
+              updateTurn(gameStatus.turn);
+            } else {
+              setTimeout(() => {
+                getStockInfo(), getRoomInfo(), getUserInfo(0);
+              }, 3000);
+            }
+          }
+        }
+        if (data.type === "debt") {
+          const stockPriceArray = stockInfo[data.stock].price;
+          const lastStockPrice = stockPriceArray[stockPriceArray.length - 1];
+          const stockValue = lastStockPrice * data.amount;
+          console.log("빚 : ", formatNumber(stockValue));
+          setMyStatus((prevStatus) => ({
+            ...prevStatus,
+            cash: prevStatus.cash - stockValue,
+          }));
+        }
+      };
+      ws.onclose = (event) => {
+        console.log("WebSocket closed: ", event);
+      };
+      ws.onerror = (error) => {
+        console.error("WebSocket error: ", error);
       };
       setWs(ws);
       return () => {
@@ -262,6 +302,7 @@ function MainGame() {
   };
 
   const updateTurn = (turn) => {
+    console.log("updateTurn");
     axios.get(`/game/nextTurn/${room_id}/${turn}`).then((res) => {
       setTimeout(() => {
         getStockInfo(), getRoomInfo(), getUserInfo(0);
@@ -351,9 +392,15 @@ function MainGame() {
           <div className={selected == 2 ? "win-item-text" : null}>휴지통</div>
         </div>
         <Alert isOpen={alert} onClose={closeAlert} message={alertMsg} />
-        {ladder ? (
+        {miniL ? (
           <div className=" fixed z-30">
-            <Ladder roomId={gameStatus.gameRoomId} setMyStatus={setMyStatus} />
+            <Ladder
+              setMyStatus={setMyStatus}
+              myStatus={myStatus}
+              setMiniL={setMiniL}
+              updateTurn={updateTurn}
+              gameStatus={gameStatus}
+            />
           </div>
         ) : null}
         <ItemUse
@@ -367,6 +414,8 @@ function MainGame() {
           openAlert={openAlert}
           companyName={companyName}
           gameStatus={gameStatus}
+          sendMessage={sendMessage}
+          updateTurn={updateTurn}
         />
         <News
           show={showNews}
