@@ -1,54 +1,54 @@
-import { useRef } from "react";
-import axios from "../../../utils/axios.js";
-import moment from "moment";
-import { useNavigate } from "react-router-dom";
+import { useRef } from 'react'
+import axios from '../../../utils/axios.js'
+import moment from 'moment'
+import { useNavigate } from 'react-router-dom'
 
 const CreateRoom = (props) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   // 유저 정보 받기
-  const user = props.user;
+  const user = props.user
 
   // roomId 생성
-  const nowTime = moment().format("YYMMDDHHmm");
-  const roomId = `${nowTime}_R_${user.userNum}`;
-  console.log("방 번호 확인: ", roomId);
+  const nowTime = moment().format('YYMMDDHHmm')
+  const roomId = `${nowTime}_R_${user.userNum}`
+  console.log('방 번호 확인: ', roomId)
   // 방 채널은 본인 티어의 채널만 선택할 수 있다.
-  const channelList = ["Bronze", "Silver", "Gold"];
-  const channelKR = ["브론즈", "실버", "골드"];
+  const channelList = ['Bronze', 'Silver', 'Gold']
+  const channelKR = ['브론즈', '실버', '골드']
 
   // 방 만들기 컴포넌트 띄우면 NES 캐릭터들 랜덤으로 뜨게 만듬
   const randomRef = useRef([
-    "nes-mario",
-    "nes-ash",
-    "nes-pokeball",
-    "nes-bulbasaur",
-    "nes-charmander",
-    "nes-squirtle",
-    "nes-kirby",
-  ]);
-  let randomChar = Math.floor(Math.random() * 7);
+    'nes-mario',
+    'nes-ash',
+    'nes-pokeball',
+    'nes-bulbasaur',
+    'nes-charmander',
+    'nes-squirtle',
+    'nes-kirby',
+  ])
+  let randomChar = Math.floor(Math.random() * 7)
 
   // 유저가 생성하는 방 정보 저장 및 유효성 검사
-  const roomRef = useRef([]);
-  console.log("방 정보: ", roomRef);
+  const roomRef = useRef([])
+  console.log('방 정보: ', roomRef)
 
   const getRoomInfo = () => {
     if (!roomRef.current[0]) {
-      alert("방 제목을 입력해주세요");
-      document.getElementById("name_field").focus();
-      return false;
+      alert('방 제목을 입력해주세요')
+      document.getElementById('name_field').focus()
+      return false
     }
     if (!roomRef.current[1]) {
-      alert("채널을 선택해주세요");
-      return false;
+      alert('채널을 선택해주세요')
+      return false
     }
     if (!roomRef.current[2]) {
-      alert("인원 수를 선택해주세요");
-      return false;
+      alert('인원 수를 선택해주세요')
+      return false
     }
-    insertRoom();
-  };
+    insertRoom()
+  }
 
   // 방 생성하기
   const insertRoom = async () => {
@@ -61,24 +61,24 @@ const CreateRoom = (props) => {
           players: roomRef.current[2],
         })
         .then(() => {
-          alert("📢➰ 게임 방이 만들어졌어요.");
+          alert('📢➰ 게임 방이 만들어졌어요.')
           navigate(`/roomwait/${roomId}`, {
             state: {
               roomId: roomId,
               roomName: roomRef.current[0],
               maxPlayers: roomRef.current[2],
             },
-          });
+          })
         })
         .catch((error) => {
-          alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
-          console.log(error);
-        });
+          alert('😢 문제가 생겼어요... 관리자에게 문의해주세요.')
+          console.log(error)
+        })
     } catch (error) {
-      alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
-      console.log(error);
+      alert('😢 문제가 생겼어요... 관리자에게 문의해주세요.')
+      console.log(error)
     }
-  };
+  }
 
   return (
     <div className="nes-container is-rounded">
@@ -110,10 +110,7 @@ const CreateRoom = (props) => {
             <span>자유</span>
           </label>
           {channelList.map((item, index) => {
-            console.log(
-              "유저 정보 == 방 정보 확인 : ",
-              item === user.userGrade
-            );
+            console.log('유저 정보 == 방 정보 확인 : ', item === user.userGrade)
             {
               return user.userGrade === item ? (
                 <>
@@ -124,13 +121,13 @@ const CreateRoom = (props) => {
                       name="channel"
                       value={item}
                       onClick={(e) => {
-                        roomRef.current[1] = e.target.value;
+                        roomRef.current[1] = e.target.value
                       }}
                     />
                     <span>{channelKR[index]}</span>
                   </label>
                 </>
-              ) : null;
+              ) : null
             }
           })}
         </div>
@@ -191,7 +188,7 @@ const CreateRoom = (props) => {
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CreateRoom;
+export default CreateRoom

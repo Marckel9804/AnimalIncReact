@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
-function News({ setShow, show, ind, comp, stockInfo }) {
+function News({ setShow, show, ind, comp, stockInfo, companyName }) {
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -115,7 +115,9 @@ function News({ setShow, show, ind, comp, stockInfo }) {
               disabled={loading}
               style={{ border: "solid 1px black" }}
             >
-              {loading ? "로딩 중..." : `${ind + comp}의 뉴스 열람하기`}
+              {loading
+                ? "로딩 중..."
+                : `${companyName[ind + comp]}의 뉴스 열람하기`}
             </button>
           </div>
           {error && <p style={{ color: "red" }}>{error}</p>}

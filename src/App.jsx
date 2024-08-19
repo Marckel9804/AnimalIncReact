@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react'
 import {
   Route,
   BrowserRouter as Router,
@@ -24,7 +24,6 @@ import Rank from "./info/Rank.jsx";
 import axios from "./utils/axios.js";
 import GoogleLoginPage from "./login/GoogleLogin.jsx";
 import KakaoLogin from "./login/KakaoLogin.jsx";
-import NaverLogin from "./login/NaverLogin.jsx";
 import CheckProfile from "./login/CheckProfile.jsx";
 import BoardListPage from "./community/page/BoardListPage.jsx";
 import BoardWritePage from "./community/page/BoardWritePage.jsx";
@@ -38,6 +37,8 @@ import Privacy from "./components/Privacy";
 import "./App.css";
 import "nes.css/css/nes.min.css";
 import AdminPage from "./admin/page/AdminPage.jsx";
+import SuccessPage from "./components/payment/SuccessPage.jsx";
+import FailPage from "./components/payment/FailPage.jsx";
 
 const App = () => {
   const refreshAccessToken = async () => {
@@ -97,6 +98,8 @@ const App = () => {
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/shop" element={<Store />} />
+          <Route path="/success" element={<SuccessPage />} />
+          <Route path="/fail" element={<FailPage />} />
           <Route path="/animal/encyclopedia" element={<AnimalEncyclopedia />} />
           <Route path="/shop/animal" element={<GachaShop />} />
           <Route path="/shop/animal-store/gacha" element={<GachaResult />} />
@@ -118,25 +121,22 @@ const App = () => {
           <Route path="/board/detail/:id" element={<BoardDetailPage />} />
           <Route path="/board/update/:id" element={<BoardUpdatePage />} />
           <Route exact path="/roomwait/:room_id" element={<RoomWait />} />
-          <Route
-            path="/game/page/rooms/SpaceMinigame"
-            element={<SpaceMinigame />}
-          />
+          <Route path="/SpaceMinigame" element={<SpaceMinigame />} />
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </div>
     </Router>
-  );
-};
+  )
+}
 
 const TokenRefresher = ({ refreshAccessToken }) => {
   const location = useLocation()
 
   useEffect(() => {
-    refreshAccessToken();
-  }, [location]);
+    refreshAccessToken()
+  }, [location])
 
   return null
 }
 
-export default App;
+export default App
