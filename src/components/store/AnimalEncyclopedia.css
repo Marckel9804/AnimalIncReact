@@ -1,7 +1,7 @@
 /* 전체 컨테이너 스타일 */
-.encyclopedia-container {
+.encyclopedia-container1 {
   position: relative;
-  width: 55%;
+  width: 50%;
   height: 59.5vh;
   text-align: center;
   margin: 0 auto;
@@ -14,25 +14,25 @@
 }
 
 /* 스크롤바 숨기기 및 투명 처리 */
-.encyclopedia-container::-webkit-scrollbar {
+.encyclopedia-container1::-webkit-scrollbar {
   width: 0; /* 스크롤바 너비를 0으로 설정하여 숨김 */
   background: transparent; /* 스크롤바 배경을 투명하게 설정 */
 }
 
 /* 동물 리스트 스타일 */
-.animal-list {
+.animal-list1 {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
-  width: 90%; /* 리스트의 너비를 컨테이너 너비와 동일하게 설정 */
+  width: 95%; /* 리스트의 너비를 컨테이너 너비와 동일하게 설정 */
   padding: 20px;
   box-sizing: border-box;
-  margin-left: 45px;
+  margin-left: 20px;
 }
 
 /* 동물 카드 스타일 */
-.animal-card {
+.animal-card1 {
   border: 2px solid #4cbdb8;
   border-radius: 10px;
   padding: 10px;
@@ -45,18 +45,18 @@
 }
 
 /* 보유한 동물 카드 스타일 */
-.animal-card.owned {
+.animal-card1.owned {
   background-color: white;
 }
 
 /* 잠금 상태의 동물 카드 스타일 */
-.animal-card.locked {
+.animal-card1.locked {
   background-color: #ddd;
   cursor: not-allowed;
 }
 
 /* 이미지 컨테이너 스타일 */
-.animal-image-container {
+.animal-image1-container {
   width: 100%;
   height: 100px;
   overflow: hidden;
@@ -67,7 +67,7 @@
 }
 
 /* 알림 창 컨테이너 스타일 */
-.animal-alert-container {
+.animal-alert1-container {
   position: fixed;
   top: 50%; /* 중앙에 위치 */
   left: 50%;
@@ -84,7 +84,7 @@
 }
 
 /* 알림 창 표시 상태 변경 */
-.animal-alert-container.show {
+.animal-alert1-container.show {
   display: block; /* 커서가 이미지 위에 있을 때 표시 */
 }
 
