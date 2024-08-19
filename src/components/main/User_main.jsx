@@ -1,22 +1,28 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import './User_main.css'
 import 'nes.css/css/nes.min.css' // NES.css 스타일 임포트
+import axiosInstance from '../../utils/axios.js' // 경로 수정
 
 const User_main = () => {
   const [userInfo, setUserInfo] = useState({
     animal_image: '',
     user_tier: '',
   })
+  const location = useLocation()
+  const selectedAnimal = location.state?.selectedAnimal || {}
 
   const navigate = useNavigate()
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await fetch('/user/tier')
-        const data = await response.json()
-        setUserInfo(data)
+        const response = await axiosInstance.get('/api/user/get-profile')
+        const data = response.data
+        setUserInfo({
+          animal_image: data.animal_image,
+          user_tier: data.userGrade, // userGrade를 user_tier로 매핑
+        })
       } catch (error) {
         console.error('Error fetching user info:', error)
       }
@@ -24,6 +30,10 @@ const User_main = () => {
 
     fetchUserInfo()
   }, [])
+
+  useEffect(() => {
+    console.log('Selected Animal:', selectedAnimal) // 선택된 캐릭터 정보를 출력
+  }, [selectedAnimal])
 
   const goToMypage = () => {
     navigate(`/mypage`)
@@ -43,11 +53,14 @@ const User_main = () => {
         <span className="user-tier">티어: {userInfo.user_tier}</span>
         <div className="image-background"></div>
         <img
-          src={userInfo.animal_image || 'default-image-path.jpg'}
+          src={
+            selectedAnimal.animalImage ||
+            userInfo.animal_image ||
+            'https://via.placeholder.com/150' // 기본 이미지 URL
+          }
           alt="캐릭터 이미지"
           className="character-image"
         />
-
         <div className="user-buttons1">
           <button className="nes-btn header-btn mypage1" onClick={goToMypage}>
             마이페이지

@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import axios from "../../utils/axios.js";
 import {useNavigate} from "react-router-dom";
+import Footer from "../../components/Footer.jsx";
 
 const BoardUpdateLayout = (props) => {
   const id = props.id;
@@ -48,8 +49,8 @@ const BoardUpdateLayout = (props) => {
   };
 
   return (
-    <div id='BoardUpdateLayout' className='justify-center w-8/12'>
-      <div className='nes-container with-title'>
+    <div id='BoardUpdateLayout' className='flex justify-center mt-5 pb-40'>
+      <div className='nes-container with-title bg-white w-4/5'>
         <p className='title' style={{lineHeight: '0.4', fontSize: '2rem'}}> 게시글 수정 </p>
 
         <div id='board-update-code-select'
@@ -107,6 +108,7 @@ const BoardUpdateLayout = (props) => {
                 onClick={onUpdate}
         >수정</button>
       </div>
+      <Footer/>
     </div>
   );
 };

@@ -13,6 +13,13 @@ export default defineConfig({
         secure: false,
         ws: true,
       },
+      "/hangang": {
+        target: "http://api.hangang.life",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/hangang/, ""),
+        secure: false,
+        ws: true,
+      },
       // "/api": {
       //   target: "http://223.130.160.171",
       //   changeOrigin: true,

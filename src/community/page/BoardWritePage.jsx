@@ -2,6 +2,9 @@ import {useNavigate, useParams} from "react-router-dom";
 import BoardWriteLayout from "../layout/BoardWriteLayout.jsx";
 import {useEffect, useState} from "react";
 import axios from "../../utils/axios.js";
+import '../Board.scss'
+import Header from "../../components/Header.jsx";
+import Footer from "../../components/Footer.jsx";
 
 const BoardWritePage = () => {
 
@@ -20,9 +23,10 @@ const BoardWritePage = () => {
   }, [type]);
 
   return (
-    <div id='BoardWritePage' className='flex mt-10 justify-center'>
-
+    <div id='BoardWritePage' className='flex-col justify-center w-full'>
+      <Header/>
       <BoardWriteLayout type={type} email={email}/>
+      <div id="board-bg" className='fixed top-0 left-0 h-dvh w-dvw bg-cyan-200 -z-10'></div>
     </div>
   )
 }

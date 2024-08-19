@@ -9,14 +9,33 @@ import ItemsWin from "./Items.jsx";
 import WinChat from "./WinChat.jsx";
 import axios from "../../../utils/axios.js";
 import { useNavigate, useParams } from "react-router-dom";
+import News from "./News.jsx";
+import Alert from "./Alert.jsx";
+import folder from "../../.././images/folder.ico";
+import trash from "../../.././images/trash.ico";
+import { v4 as uuidv4 } from "uuid";
 
 function MainGame() {
+  // 윈도우 창 닫힘 열림 관리
   const [showMI, setShowMI] = useState(true);
   const [showSI, setShowSI] = useState(true);
   const [showOP, setShowOP] = useState(true);
   const [showIW, setShowIW] = useState(true);
   const [showWC, setShowWC] = useState(true);
   const [showSB, setShowSB] = useState(false);
+  const [showNews, setShowNews] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState(0);
+  const [alertMsg, setAlertMsg] = useState("경고창");
+
+  const openAlert = (msg) => {
+    setAlertMsg(msg);
+    setIsOpen(true);
+  };
+
+  const closeAlert = () => {
+    setIsOpen(false);
+  };
   const setters = {
     showMI,
     showSI,
@@ -39,12 +58,71 @@ function MainGame() {
 
   const [ind, setInd] = useState("food");
   const [comp, setComp] = useState("1");
-  const userinfo =
-    "#########차후 해당 변수를 유저 정보를 불러오는 코드로 대체#########";
 
   const { room_id } = useParams();
   const navigate = useNavigate();
+
+  //소켓 관련 기능들
+  const [messages, setMessages] = useState([]);
+  const [ws, setWs] = useState(null);
+
+  useEffect(() => {
+    if (myStatus !== null) {
+      const ws = new WebSocket("ws://localhost:4000");
+      ws.onopen = () => {
+        console.log("Connected to server");
+        const playerInfo = {
+          type: "playerInfo",
+          nickname: myStatus.nickName,
+          roomid: gameStatus.gameRoomId,
+        };
+        ws.send(JSON.stringify(playerInfo));
+      };
+      ws.onmessage = (event) => {
+        console.log("Received: ", event.data);
+        const data = JSON.parse(event.data);
+        if (data.type === "message") {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              content: data.content,
+              type: "message",
+              sender: data.sender,
+              usernum: data.usernum,
+            },
+          ]);
+        }
+        if (data.type === "buySell") {
+          let content = `${data.stockId} 주식이 ${data.amount}주 거래되었습니다.`;
+          getUserInfo();
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { content: content, type: "game" },
+          ]);
+        }
+      };
+      setWs(ws);
+      return () => {
+        ws.close();
+      };
+    }
+  }, [myStatus]);
+
+  const sendMessage = (message) => {
+    message = {
+      ...message,
+      roomid: gameStatus.gameRoomId,
+      nickname: myStatus.nickName,
+      usernum: myStatus.userNum,
+    };
+    if (ws) {
+      ws.send(JSON.stringify(message));
+    }
+  };
+
+  //숫자를 10^4 단위로 끊어 최대 억까지 표시해주는 함수
   const formatNumber = (number) => {
+    if (number < 10000) return number + " ";
     const hundredMillion = Math.floor(number / 100000000);
     const remainderAfterHundredMillion = number % 100000000;
     const tenThousand = Math.floor(remainderAfterHundredMillion / 10000);
@@ -52,18 +130,37 @@ function MainGame() {
 
     let result = "";
     if (hundredMillion > 0) {
-      result += `${hundredMillion}억 `;
+      result += `${hundredMillion.toLocaleString()}억 `;
     }
     if (tenThousand > 0) {
-      result += `${tenThousand}만 `;
+      result += `${tenThousand.toLocaleString()}만 `;
     }
     if (remainder !== 0) {
-      result += remainder;
+      result += remainder.toLocaleString() + " ";
     }
 
-    return result.trim();
+    return result;
   };
 
+  //자산 계산식
+  const sumStock = (user) => {
+    const ind = ["food", "ship", "enter", "elec", "tech"];
+    let sum = 0;
+    for (let i of ind) {
+      for (let j = 1; j < 5; j++) {
+        // console.log(`user ${i + 1}: `, user[i + j]);
+        // console.log(
+        //   `stock ${i + j}: `,
+        //   stockInfo[i + j].price[gameStatus.turn - 1]
+        // );
+        // console.log("sum", sum);
+        sum = sum + user[i + j] * stockInfo[i + j].price[gameStatus.turn - 1];
+      }
+    }
+    return sum;
+  };
+
+  //백엔드에서 정보 받아오는 코드들
   const getUserInfo = () => {
     axios
       .get(`/game/userStatus/${room_id}`)
@@ -104,28 +201,32 @@ function MainGame() {
   };
 
   const getRoomInfo = () => {
-    axios.get(`/game/roomInfo/${room_id}`).then((res) => {
-      console.log("gameStatus", res.data);
-      if (res.data.turn == 0) {
-        testCall(0);
-      } else {
-        getUserInfo();
-        getStockInfo();
-      }
-      setGameStatus(res.data);
-    });
+    axios
+      .get(`/game/roomInfo/${room_id}`)
+      .then((res) => {
+        console.log("gameStatus", res.data);
+        if (res.data.turn == 0) {
+          updateTurn(0);
+        } else {
+          getUserInfo();
+          getStockInfo();
+        }
+        setGameStatus(res.data);
+      })
+      .catch((error) => {
+        navigate("/");
+      });
   };
 
-  const testCall = (turn) => {
-    axios.get(`/game/test/${room_id}/${turn}`).then((res) => {
-      console.log("test", res);
-
+  const updateTurn = (turn) => {
+    axios.get(`/game/nextTurn/${room_id}/${turn}`).then((res) => {
       setTimeout(() => {
         getStockInfo(), getRoomInfo(), getUserInfo(0);
       }, 3000);
     });
   };
 
+  //시작시 로딩 바, 정보 로딩
   useEffect(() => {
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
@@ -144,6 +245,7 @@ function MainGame() {
     };
   }, []);
 
+  //내가 속한 방 아니면 바로 퇴출임
   useEffect(() => {
     if (otherStatus.length === 4 && progress === 100) {
       console.log("댓츠 노노");
@@ -159,12 +261,8 @@ function MainGame() {
     progress < 100
   ) {
     return (
-      <div>
-        <progress
-          className="nes-progress main-game-loading"
-          value={progress}
-          max="100"
-        />
+      <div className="main-game-loading">
+        <progress className="nes-progress " value={progress} max="100" />
       </div>
     );
   }
@@ -172,23 +270,62 @@ function MainGame() {
   return (
     <div className="maingame-container">
       <div className="flex pt-4 pr-4 pl-4 pb-12 ">
+        <div
+          className="win-item-icon top-8 left-8 absolute"
+          onClick={() => {
+            setSelected(1);
+          }}
+        >
+          <img src={folder} style={{ width: "70px", height: "70px" }} />
+          <div className={selected == 1 ? "win-item-text" : null}>낫띵</div>
+        </div>
+        <div
+          className="win-item-icon top-40 left-8 absolute"
+          onClick={() => {
+            setSelected(2);
+          }}
+        >
+          <img src={trash} style={{ width: "70px", height: "70px" }} />
+          <div className={selected == 2 ? "win-item-text" : null}>휴지통</div>
+        </div>
+        <Alert isOpen={isOpen} onClose={closeAlert} message={alertMsg} />
+        <News
+          show={showNews}
+          setShow={setShowNews}
+          ind={ind}
+          comp={comp}
+          stockInfo={stockInfo}
+        />
         <MyInfo
           show={showMI}
           setShow={setShowMI}
           myStatus={myStatus}
           formatNumber={formatNumber}
+          updateTurn={updateTurn}
+          gameStatus={gameStatus}
+          sumStock={sumStock}
+          stockInfo={stockInfo}
+          setInd={setInd}
+          setComp={setComp}
         />
         <div className="flex-col" style={{ width: "50%" }}>
           <StockInfo
             show={showSI}
             setShow={setShowSI}
-            testCall={testCall}
+            updateTurn={updateTurn}
+            myStatus={myStatus}
+            setMyStatus={setMyStatus}
+            gameStatus={gameStatus}
             stockInfo={stockInfo}
             ind={ind}
             setInd={setInd}
             comp={comp}
             setComp={setComp}
-            gameStatus={gameStatus}
+            formatNumber={formatNumber}
+            showNews={showNews}
+            setShowNews={setShowNews}
+            openAlert={openAlert}
+            sendMessage={sendMessage}
           />
           <ItemsWin show={showIW} setShow={setShowIW} />
         </div>
@@ -198,6 +335,7 @@ function MainGame() {
             setShow={setShowOP}
             otherStatus={otherStatus}
             formatNumber={formatNumber}
+            sumStock={sumStock}
           />
           <WinChat
             show={showWC}
@@ -205,12 +343,13 @@ function MainGame() {
             ind={ind}
             comp={comp}
             stockInfo={stockInfo}
+            sendMessage={sendMessage}
+            messages={messages}
+            myStatus={myStatus}
           />
         </div>
       </div>
-
       <StartBar show={showSB} />
-
       <TaskBar {...setters} />
     </div>
   );

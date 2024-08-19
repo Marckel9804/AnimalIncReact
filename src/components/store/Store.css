@@ -47,7 +47,7 @@
   color: #fff;
 }
 
-.header-link {
+.gacha-link {
   background-color: #fff;
   color: #4cbdb8;
   text-decoration: none;
@@ -56,15 +56,20 @@
   cursor: pointer;
   margin-right: 600px;
 }
-.header-link:hover {
+.gacha-link:hover {
   background-color: #e0e0e0;
 }
 
 .header-close {
+  position: absolute;
   cursor: pointer;
   padding: 10px 15px;
   font-size: 24px;
-  color: black;
+  color: white;
+  background: transparent;
+  top: -4px;
+  right: 20px;
+
   /*  이거 위치 이동이 안되서 나중에 하겠음 */
 }
 
