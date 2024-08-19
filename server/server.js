@@ -84,58 +84,50 @@ function handleLogin(parsedMessage, ws, clientId) {
 }
 
 // 플레이어 레디 상태 처리 함수
-// 플레이어 레디 상태 처리 함수
-function handleReadyMessage(message) {
+async function handleReadyMessage(message) {
   if (!message.clientId) {
-    console.log('Received undefined clientId. Message ignored:', message)
-    return // clientId가 undefined인 경우 처리를 중단
+    console.log('Received undefined clientId. Message ignored:', message);
+    return;
   }
 
-  const player = players.find((p) => p.clientId === message.clientId)
+  const player = players.find((p) => p.clientId === message.clientId);
   if (player) {
-    player.ready = message.ready
+    player.ready = message.ready;
     console.log(
       `플레이어 ${player.nickname}의 레디 상태가 ${
         player.ready ? '레디됨' : '레디 취소됨'
       }로 설정되었습니다.`
-    )
-    readyCount = players.filter((p) => p.ready).length
-    broadcastPlayers()
-    
-    // 모든 플레이어가 준비 완료되었을 때만 카운트다운 시작
+    );
+
+    readyCount = players.filter((p) => p.ready).length;
+
+    broadcastPlayers();
+
     if (readyCount === players.length && players.length > 1) {
-      startCountdown()
-    } else {
-      // 준비 취소된 경우 카운트다운 중지 및 모든 플레이어에게 알림
-      if (countdownInterval) {
-        clearInterval(countdownInterval)
-        countdownInterval = null
-      }
-      broadcast({ type: 'countdownCanceled' }) // 클라이언트에 카운트다운이 취소되었음을 알림
-      console.log('카운트다운이 중지되었습니다.')
+      await startCountdown();
     }
   } else {
-    console.log('플레이어를 찾을 수 없습니다:', message.clientId)
+    console.log('플레이어를 찾을 수 없습니다:', message.clientId);
   }
 }
 
 
-
 // 카운트다운 시작 함수
-function startCountdown() {
-  let countdown = 5 // 5초 카운트다운
-  broadcast({ type: 'countdown', countdown })
+async function startCountdown() {
+  let countdown = 5; // 5초 카운트다운
+  broadcast({ type: 'countdown', countdown });
 
-  countdownInterval = setInterval(() => {
-    countdown -= 1
+  countdownInterval = setInterval(async () => {
+    countdown -= 1;
     if (countdown > 0) {
-      broadcast({ type: 'countdown', countdown }) // 매초 카운트다운 업데이트
+      broadcast({ type: 'countdown', countdown }); // 매초 카운트다운 업데이트
     } else {
-      clearInterval(countdownInterval)
-      startGame() // 카운트다운이 끝나면 게임 시작
+      clearInterval(countdownInterval);
+      await startGame(); // 카운트다운이 끝나면 게임 시작
     }
-  }, 1000)
+  }, 1000);
 }
+
 
 // 사다리 생성 함수 (게임 시작 시 호출됨)
 function createLadder(numPlayers) {

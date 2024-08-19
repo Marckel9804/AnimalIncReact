@@ -117,7 +117,7 @@ const CreateRoom = (props) => {
             {
               return user.userGrade === item ? (
                 <>
-                  <label>
+                  <label key={item}>
                     <input
                       type="radio"
                       className="nes-radio"
