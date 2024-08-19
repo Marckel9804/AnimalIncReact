@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {useNavigate} from 'react-router-dom'
 import Modal from 'react-modal'
 import axios from '../utils/axios.js'
@@ -42,15 +42,22 @@ const Mypage = () => {
     const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
     const [isProfilePictureModalOpen, setIsProfilePictureModalOpen] = useState(false);
     const [isItemModalOpen, setIsItemModalOpen] = useState(false);
-    const [availablePictures, setAvailablePictures] = useState([]);
     const [selectedPicture, setSelectedPicture] = useState('');
-    const [uploadFile, setUploadFile] = useState(null);
     const [selectedTab, setSelectedTab] = useState(0);
     const [myPosts, setMyPosts] = useState([]);
     const [myComments, setMyComments] = useState([]);
     const [myReports, setMyReports] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [nickname, setNickname] = useState('');
+    const [isNicknameAvailable, setIsNicknameAvailable] = useState(null);
+    const [nicknameError, setNicknameError] = useState('');
+    const [animals, setAnimals] = useState([]);
+    const [ownedAnimals, setOwnedAnimals] = useState([]);
+    const [hoveredAnimal, setHoveredAnimal] = useState(null);
+    const [selectedAnimal, setSelectedAnimal] = useState(null);
+    const [showConfirmation, setShowConfirmation] = useState(false);
     const postsPerPage = 5;
+    const itemsPerPage = 100;
     const [updatedInfo, setUpdatedInfo] = useState({
         userNickname: '',
         userRealname: '',
@@ -133,14 +140,55 @@ const Mypage = () => {
             }
         }
 
-        fetchUserInfo()
-        fetchMyPosts()
-        fetchMyComments()
+        const fetchAnimals = async () => {
+            try {
+                const token = localStorage.getItem('accessToken');
+                const response = await axios.get('/api/animal/encyclopedia', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setAnimals(response.data);
+
+                const ownedResponse = await axios.get('/api/animal/owned-animals', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setOwnedAnimals(ownedResponse.data.map((animal) => animal.animalId));
+            } catch (error) {
+                console.error('Error fetching animals:', error);
+            }
+        };
+
+        fetchUserInfo();
+        fetchMyPosts();
+        fetchMyComments();
+        fetchMyReports();
+        fetchAnimals();
     }, [navigate]);
+
+    const groupedItems = userInfo ? userInfo.userItems.reduce((acc, item) => {
+        const found = acc.find(i => i.itemId === item.itemId);
+        if (found) {
+            found.count += 1;
+        } else {
+            acc.push({ ...item, count: 1 });
+        }
+        return acc;
+    }, []) : [];
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = myPosts.slice(indexOfFirstPost, indexOfLastPost);
+
+    // 아이템 페이지네이션 계산
+    let currentItems = [];
+    if (userInfo && userInfo.userItems) {
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        currentItems = groupedItems.slice(indexOfFirstItem, indexOfLastItem);
+    }
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -178,10 +226,31 @@ const Mypage = () => {
     const closeItemModal = () => setIsItemModalOpen(false);
 
     const handleUpdate = async () => {
+        // 필수 입력값 확인
+        if (!updatedInfo.userRealname || !updatedInfo.userNickname || !updatedInfo.userBirthdate) {
+            alert('모든 필드를 입력해주세요.');
+            return;
+        }
+
+        // 닉네임 중복 확인
+        if (isNicknameAvailable === null || isNicknameAvailable === false) {
+            alert('닉네임 중복 확인을 해주세요.');
+            return;
+        }
+
+        // 생년월일 유효성 검사
+        if (!isValidBirthdate(updatedInfo.userBirthdate)) {
+            alert('유효하지 않은 생년월일 형식입니다.');
+            return;
+        }
+
         try {
             const response = await axios.post(
                 '/api/user/update-profile',
-                updatedInfo,
+                {
+                    ...updatedInfo,
+                    userNickname: nickname,
+                },
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -240,7 +309,11 @@ const Mypage = () => {
             closeChangePasswordModal();
         } catch (error) {
             console.error('Error changing password:', error);
-            alert('비밀번호 변경 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            if (error.response && error.response.status === 403) {
+                alert('현재 비밀번호가 잘못되었습니다. 다시 시도해 주세요.');
+            }else {
+                alert('비밀번호 변경 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            }
         }
     }
 
@@ -257,64 +330,34 @@ const Mypage = () => {
         }
     };
 
-    const handleProfilePictureSelect = async (pic) => {
-        setSelectedPicture(pic);
-        closeProfilePictureModal();
-
-        const token = localStorage.getItem('accessToken');
-        await axios.post(
-            '/api/user/update-profile-picture',
-            {userPicture: pic},
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-        const response = await axios.get('/api/user/get-profile', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setUserInfo(response.data);
+    const handleProfilePictureSelect = async (animal) => {
+        if (ownedAnimals.includes(animal.animalId)) {
+            setSelectedAnimal(animal);
+            setShowConfirmation(true);
+        }
     }
 
-    const handleFileChange = (event) => {
-        setUploadFile(event.target.files[0]);
-    };
-
     const handleUpload = async () => {
-        if (!uploadFile) return;
-
-        const formData = new FormData();
-        formData.append('file', uploadFile);
-        formData.append('folderName', 'profile-pictures');
-
-        const token = localStorage.getItem('accessToken');
-        const response = await axios.post('/api/upload/img', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        setSelectedPicture(response.data.url);
-        closeProfilePictureModal();
-
-        await axios.post(
-            '/api/user/update-profile-picture',
-            {userPicture: response.data.url},
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
+        try {
+            const token = localStorage.getItem('accessToken');
+            await axios.post(
+                'api/user/select-animal',
+                {
+                    animalId: selectedAnimal.animalId,
                 },
-            }
-        );
-        const userInfoResponse = await axios.get('/api/user/get-profile', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
-        });
-        setUserInfo(userInfoResponse.data);
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            setSelectedPicture(selectedAnimal.animal_image);
+            setShowConfirmation(false);
+            setIsProfilePictureModalOpen(false);
+        } catch (error) {
+            console.error('Error selecting profile picture:', error);
+            alert('프로필 사진 선택 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        }
     }
 
     if (!userInfo) {
@@ -325,14 +368,73 @@ const Mypage = () => {
         setSelectedTab(value);
     };
 
+    const checkNicknameAvailability = async () => {
+        if (nickname.trim() === '') {
+            setNicknameError('닉네임을 입력해주세요.');
+            setIsNicknameAvailable(null);
+            return;
+        }
+
+        if (!isValidNickname(nickname)) {
+            setNicknameError('유효하지 않은 닉네임입니다.');
+            setIsNicknameAvailable(false);
+            return;
+        }
+
+        try {
+            const response = await axios.post('/api/user/check-nickname', { nickname });
+            setIsNicknameAvailable(response.data.isAvailable);
+            setNicknameError(''); // Clear the error message
+
+            if (response.data.isAvailable) {
+                setUpdatedInfo((prevInfo) => ({
+                    ...prevInfo,
+                    userNickname: nickname,
+                }));
+            }
+        } catch (error) {
+            console.error('Nickname check error:', error);
+            alert('닉네임 중복 확인 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        }
+    };
+
+    const isValidNickname = (nickname) => {
+        const invalidPattern = /^[ㄱ-ㅎㅏ-ㅣ]+$/; // 한글 자음/모음만으로 이루어진 닉네임 방지
+        return nickname.length >= 2 && nickname.length <= 12 && !invalidPattern.test(nickname);
+    };
+
+    const isValidBirthdate = (date) => {
+        if (!/^\d{8}$/.test(date)) return false;
+        const year = parseInt(date.slice(0, 4), 10);
+        const month = parseInt(date.slice(4, 6), 10);
+        const day = parseInt(date.slice(6, 8), 10);
+
+        if (year < 1900 || year > new Date().getFullYear()) return false;
+        if (month < 1 || month > 12) return false;
+        if (day < 1 || day > 31) return false;
+
+        const dateObj = new Date(`${year}-${month}-${day}`);
+        return dateObj && dateObj.getMonth() + 1 === month && dateObj.getDate() === day;
+    };
+
+    const handleCancel = () => {
+        setShowConfirmation(false);
+        setSelectedAnimal(null);
+    }
+
+    const totalAnimals = animals.length;
+    const emptySlots = Array(50 - totalAnimals).fill({});
+    const filledAnimals = [...animals, ...emptySlots];
+
     return (
         <>
             <Header/>
-            <Window style={{width: '70%', height: '600px', margin: '0 auto', marginTop: '20px'}}>
+            <Window style={{width: '70%', height: '550px', margin: '0 auto', marginTop: '20px'}}>
                 <WindowHeader>
                     <span role="img" aria-label="my-page">🗂️ My Page</span>
                 </WindowHeader>
                 <WindowContent>
+                    {!isProfilePictureModalOpen && !isItemModalOpen && (
                     <Tabs value={selectedTab} onChange={handleTabChange}>
                         <StyledTab value={0} style={{minWidth: '120px', textAlign: 'center'}}>내 정보</StyledTab>
                         <StyledTab value={1} style={{minWidth: '120px', textAlign: 'center'}}>내 정보 수정</StyledTab>
@@ -343,6 +445,7 @@ const Mypage = () => {
                         {!userInfo.slogin &&
                             <StyledTab value={6} style={{minWidth: '120px', textAlign: 'center'}}>비밀번호 변경</StyledTab>}
                     </Tabs>
+                    )}
                     <TabBody>
                         {selectedTab === 0 && (
                             <div className="mypage-content">
@@ -399,20 +502,17 @@ const Mypage = () => {
                                     />
                                 </div>
                                 <div className="modal-item">
-                                    <label>닉네임</label>
-                                    <input
-                                        type="text"
-                                        value={updatedInfo.userNickname}
-                                        onChange={(e) => setUpdatedInfo({...updatedInfo, userNickname: e.target.value})}
-                                    />
-                                </div>
-                                <div className="modal-item">
-                                    <label>닉네임</label>
-                                    <input
-                                        type="text"
-                                        value={updatedInfo.userNickname}
-                                        onChange={(e) => setUpdatedInfo({...updatedInfo, userNickname: e.target.value})}
-                                    />
+                                    <label className="mypage-nick">닉네임</label>
+                                    <div className="mypage-nick-change">
+                                        <input type="text" value={updatedInfo.userNickname} className="mypage-nickname" onChange={(e) => setNickname(e.target.value)}
+                                               placeholder="닉네임"/>
+                                        <button type="button" id="check-nickname-button" className="nes-btn"
+                                                onClick={checkNicknameAvailability}>중복 확인
+                                        </button>
+                                    </div>
+                                    {nicknameError && <div id="mypage-nick-error">{nicknameError}</div>}
+                                    {!nicknameError && isNicknameAvailable === false && <div id="mypage-nick-error">이미 사용 중인 닉네임입니다...</div>}
+                                    {!nicknameError && isNicknameAvailable === true && <div id="mypage-nick-success">사용 가능한 닉네임입니다!!!</div>}
                                 </div>
                                 <div className="modal-item">
                                     <label>생년월일</label>
@@ -434,6 +534,11 @@ const Mypage = () => {
                         )}
                         {selectedTab === 2 && (
                             <div>
+                                <h1 className="delete-notice">회원 탈퇴 시 주의 사항</h1>
+                                <div className="delete-content">회원님이 등록하신 개인 정보는 삭제되어 재사용하지 않습니다.</div>
+                                <div className="delete-content">회원 탈퇴 시 결제하신 상품과 재화는 복구되지 않습니다.</div>
+                                <div className="delete-content">회원 탈퇴하시면 계정을 복구 받으실 수 없습니다.</div>
+                                <div className="delete-content">주의 사항을 읽으시고 회원 탈퇴를 결심하셨다면 아래의 회원 탈퇴 버튼을 클릭해주세요.</div>
                                 <button className="nes-btn is-error" id="mypage-btn" onClick={openDeleteModal}>
                                     회원 탈퇴
                                 </button>
@@ -474,7 +579,7 @@ const Mypage = () => {
                                     >
                                         이전
                                     </button>
-                                    {Array.from({ length: Math.ceil(myPosts.length / postsPerPage) }, (_, index) => (
+                                    {Array.from({length: Math.ceil(myPosts.length / postsPerPage)}, (_, index) => (
                                         <button
                                             key={index + 1}
                                             onClick={() => paginate(index + 1)}
@@ -494,7 +599,7 @@ const Mypage = () => {
                             </div>
                         )}
                         {selectedTab === 4 && <div>내가 쓴 댓글 내용</div>}
-                        {selectedTab === 5 && <div>내가 FAQ 내용</div>}
+                        {selectedTab === 5 && <div>FAQ 내용</div>}
                         {selectedTab === 6 && !userInfo.slogin && (
                             <div className="modal-content">
                                 <div className="modal-item">
@@ -542,7 +647,7 @@ const Mypage = () => {
             </Window>
             <Modal isOpen={isEditModalOpen} onRequestClose={closeEditModal} className="modal">
                 <div className="modal-content">
-                    <p>정말 수정하시겠습니까?</p>
+                    <p>정말 회원 정보를 수정하시겠습니까?</p>
                     <div className="modal-buttons">
                         <button className="nes-btn is-error" id="mypage-modal-btn" onClick={handleUpdate}>수정</button>
                         <button className="nes-btn" id="mypage-modal-btn" onClick={closeEditModal}>닫기</button>
@@ -569,39 +674,79 @@ const Mypage = () => {
                     </div>
                 </div>
             </Modal>
-            <Modal isOpen={isProfilePictureModalOpen} onRequestClose={closeProfilePictureModal} className="modal">
-                <h2 className="modal-title">프로필 사진 선택</h2>
-                <div className="modal-content">
-                    <div className="modal-item">
-                        <input type="file" onChange={handleFileChange}/>
+            <Modal isOpen={isProfilePictureModalOpen} onRequestClose={closeProfilePictureModal} className="animal-modal">
+                <div className="animal-modal-content">
+                    <div className="animal-list">
+                        {filledAnimals.map((animal, index) => (
+                            <div
+                                key={index}
+                                className={`animal-card ${
+                                    ownedAnimals.includes(animal.animalId) ? 'owned' : 'locked'
+                                }`}
+                                onMouseEnter={() => setHoveredAnimal(animal)}
+                                onMouseLeave={() => setHoveredAnimal(null)}
+                                onClick={() => handleProfilePictureSelect(animal)}
+                            >
+                                <div className="animal-image-container">
+                                    {animal.animalImage ? (
+                                        <img src={animal.animalImage} alt={animal.animalName} />
+                                    ) : (
+                                        <div className="placeholder-image">No Image</div>
+                                    )}
+                                </div>
+                                <div className="animal-id">No.{animal.animalId || '-'}</div>
+                                <div className="animal-name">{animal.animalName || '빈 슬롯'}</div>
+                            </div>
+                        ))}
                     </div>
-                    <div className="modal-buttons">
-                        <button className="nes-btn is-primary" id="mypage-modal-btn" onClick={handleUpload}>업로드
-                        </button>
-                        <button className="nes-btn is-error" id="mypage-modal-btn"
-                                onClick={closeProfilePictureModal}>취소
-                        </button>
-                    </div>
-                    {availablePictures.map((pic, index) => (
-                        <img
-                            key={index}
-                            src={pic}
-                            alt={`프로필 ${index}`}
-                            className="profile-pic-option"
-                            onClick={() => handleProfilePictureSelect(pic)}
-                        />
-                    ))}
+                    {hoveredAnimal && (
+                        <div className="animal-alert-container show">
+                            <div className="animal-alert-box">
+                                <div className="animal-alert-title">
+                                    {hoveredAnimal.animalName || '빈 슬롯'}
+                                </div>
+                                <div className="animal-alert-message">
+                                    {hoveredAnimal.animalDescription || '설명 없음'}
+                                    <br />
+                                    확률: {hoveredAnimal.animalProbability || '미정'}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {showConfirmation && (
+                        <div className="confirmation-dialog">
+                            <div className="confirmation-dialog-box">
+                                <div className="confirmation-dialog-title">안내</div>
+                                <div className="confirmation-dialog-message">
+                                    {selectedAnimal.animalName}을(를) 메인 캐릭터로 선택하시겠습니까?
+                                </div>
+                                <div className="confirmation-dialog-buttons">
+                                    <button className="nes-btn" onClick={handleUpload}>
+                                        확인
+                                    </button>
+                                    <button className="nes-btn" onClick={handleCancel}>
+                                        취소
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </Modal>
-            <Modal isOpen={isItemModalOpen} onRequestClose={closeItemModal} className="mypage-item-modal">
+            <Modal
+                isOpen={isItemModalOpen}
+                onRequestClose={closeItemModal}
+                className="mypage-modal-item"
+                appElement={document.getElementById('root')} // 또는 root 요소 설정
+            >
                 <h2 className="modal-item-title">보유 아이템 목록</h2>
                 <div className="modal-item-content">
-                    {userInfo.userItems.length > 0 ? (
-                        userInfo.userItems.map((item, index) => (
+                    {currentItems.length > 0 ? (
+                        currentItems.map((item, index) => (
                             <div key={index} className="modal-user-item">
                                 <img src={item.itemImage} className="modal-item-image"/>
                                 <div className="modal-item-info">
-                                    <div className="modal-item-name">{item.itemName}</div>
+                                    <div className="modal-item-name">{item.itemName} ({item.count}개)</div>
                                     <div className="modal-item-description">{item.itemDescription}</div>
                                 </div>
                             </div>
@@ -609,8 +754,8 @@ const Mypage = () => {
                     ) : (
                         <p>보유한 아이템이 없습니다.</p>
                     )}
-                    <button className="nes-btn is-error" id="mypage-item-modal-btn" onClick={closeItemModal}>닫기</button>
                 </div>
+                <button className="nes-btn is-error" id="mypage-item-modal-btn" onClick={closeItemModal}>닫기</button>
             </Modal>
             <Footer/>
         </>

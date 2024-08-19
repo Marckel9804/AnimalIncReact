@@ -18,27 +18,60 @@ const Register = () => {
     const [isVerificationCodeSent, setIsVerificationCodeSent] = useState(false);
     const navigate = useNavigate();
 
+    const isValidNickname = (nickname) => {
+        const invalidPattern = /^[ㄱ-ㅎㅏ-ㅣ]+$/; // 한글 자음/모음만으로 이루어진 닉네임 방지
+        return nickname.length >= 2 && nickname.length <= 12 && !invalidPattern.test(nickname);
+    };
+
+    // 생년월일 유효성 검사 함수
+    const isValidBirthdate = (date) => {
+        if (!/^\d{8}$/.test(date)) return false;
+        const year = parseInt(date.slice(0, 4), 10);
+        const month = parseInt(date.slice(4, 6), 10);
+        const day = parseInt(date.slice(6, 8), 10);
+
+        if (year < 1900 || year > new Date().getFullYear()) return false;
+        if (month < 1 || month > 12) return false;
+        if (day < 1 || day > 31) return false;
+
+        const dateObj = new Date(`${year}-${month}-${day}`);
+        return dateObj && dateObj.getMonth() + 1 === month && dateObj.getDate() === day;
+    };
+
     const handleRegister = async () => {
+        // 모든 필드가 입력되었는지 확인
+        if (!name || !emailUser || !emailDomain || !password || !passwordConfirm || !nickname || !birthdate) {
+            alert('모든 정보를 입력해주세요.');
+            return;
+        }
+
+        // 비밀번호 확인
         if (password !== passwordConfirm) {
             alert('비밀번호가 일치하지 않습니다.');
             return;
         }
 
+        // 닉네임 중복 확인 여부 및 유효성 검사
+        if (isNicknameAvailable === null || isNicknameAvailable === false) {
+            alert('닉네임 중복 확인을 해주세요.');
+            return;
+        }
+
+        // 이메일 인증 확인
         if (!isEmailVerified) {
             alert('이메일 인증을 완료해주세요.');
             return;
         }
 
-        if (!password) {
-            alert('비밀번호를 입력해주세요.');
+        // 생년월일 형식이 유효한지 확인
+        if (!isValidBirthdate(birthdate)) {
+            alert('유효하지 않은 생년월일 형식입니다.');
             return;
         }
 
         try {
             const email = `${emailUser}@${emailDomain}`;
-
             const formattedBirthdate = `${birthdate.slice(0, 4)}-${birthdate.slice(4, 6)}-${birthdate.slice(6, 8)}`;
-
             const response = await axios.post('/api/user/register', {
                 userEmail: email,
                 userRealname: name,
@@ -61,6 +94,13 @@ const Register = () => {
             setIsNicknameAvailable(null);
             return;
         }
+
+        if (!isValidNickname(nickname)) {
+            setNicknameError('유효하지 않은 닉네임입니다.');
+            setIsNicknameAvailable(false);
+            return;
+        }
+
         try {
             const response = await axios.post('/api/user/check-nickname', { nickname });
             setIsNicknameAvailable(response.data.isAvailable);
@@ -170,8 +210,8 @@ const Register = () => {
                     </button>
                 </div>
                 {nicknameError && <div id="error-message">{nicknameError}</div>}
-                {isNicknameAvailable === false && <div id="error-message">이미 사용 중인 닉네임입니다...</div>}
-                {isNicknameAvailable === true && <div id="success-message">사용 가능한 닉네임입니다!!!</div>}
+                {!nicknameError && isNicknameAvailable === false && <div id="error-message">이미 사용 중인 닉네임입니다...</div>}
+                {!nicknameError && isNicknameAvailable === true && <div id="success-message">사용 가능한 닉네임입니다!!!</div>}
                 <div className="register-input">
                     <input type="text" value={birthdate} onChange={(e) => setBirthdate(e.target.value)}
                            placeholder="생년월일 (YYYYMMDD)"/>

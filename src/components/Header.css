@@ -193,3 +193,150 @@
   background-color: #3a9d8f; /* 호버 시 배경색 변경 */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* 호버 시 그림자 변경 */
 }
+
+/* 모달 창 스타일 */
+.ruby-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; /* 모달 너비를 넓혀서 한 줄에 3개씩 보이도록 설정 */
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+
+  overflow: hidden;
+  border: 2px solid #4cbdb8;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(76, 189, 184, 0.5);
+}
+
+.ruby-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+}
+
+/* 모달 헤더 스타일 */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #4cbdb8;
+  padding: 10px;
+  border-radius: 10px 10px 0 0;
+}
+
+.ruby-modal-title {
+  font-size: 1.5em;
+  color: white;
+  margin: 0 auto; /* 가운데 정렬을 위한 설정 */
+  text-align: center; /* 텍스트 가운데 정렬 */
+  width: 100%; /* 부모 요소의 전체 너비를 차지하게 설정 */
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  color: white;
+  cursor: pointer;
+}
+
+/* 루비 옵션 스타일 */
+.ruby-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 한 줄에 3개씩 배치 */
+  gap: 15px;
+  padding: 20px 0;
+}
+
+.ruby-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f7f7f7;
+  border: 2px dotted #4cbdb8;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.ruby-option:hover {
+  background-color: #e0f7f7;
+}
+
+.ruby-option i {
+  margin-bottom: 10px;
+}
+
+.ruby-option-info {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.rubypayment-alert-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 150px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 4px solid #4cbdb8;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(76, 189, 184, 0.5);
+  z-index: 1100; /* z-index를 높여서 모달 창 위에 표시되도록 설정 */
+}
+
+.rubypayment-alert-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+}
+
+.rubypayment-alert-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.rubypayment-alert-message {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.rubypayment-alert-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.rubypayment-alert-btn {
+  background-color: #4cbdb8;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  height: 40px;
+  width: 120px;
+  color: black;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.1);
+  line-height: 0.8;
+}
+
+.rubypayment-alert-btn:hover {
+  background-color: #36a29f;
+}

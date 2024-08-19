@@ -11,6 +11,7 @@ const AnimalEncyclopedia = () => {
   const [hoveredAnimal, setHoveredAnimal] = useState(null)
   const [selectedAnimal, setSelectedAnimal] = useState(null)
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false) // 성공 메시지 상태 추가
 
   const navigate = useNavigate()
 
@@ -64,13 +65,16 @@ const AnimalEncyclopedia = () => {
           },
         }
       )
-      navigate('/animal/encyclopedia', {
-        state: { selectedAnimal: selectedAnimal },
-      })
       setShowConfirmation(false)
+      setShowSuccessMessage(true) // 성공 메시지 표시
+
+      // 2초 후에 /shop으로 이동
+      setTimeout(() => {
+        navigate('/shop')
+      }, 2000)
     } catch (error) {
       console.error('Error selecting animal:', error)
-      alert('메인 캐릭터 선택에 실패했습니다.')
+      alert('내 캐릭터 선택에 실패했습니다.')
     }
   }
 
@@ -129,8 +133,7 @@ const AnimalEncyclopedia = () => {
             <div className="confirmation-dialog-box">
               <div className="confirmation-dialog-title">안내</div>
               <div className="confirmation-dialog-message">
-                {selectedAnimal.animalName}을(를) 메인 캐릭터로
-                선택하시겠습니까?
+                {selectedAnimal.animalName}을(를) 내 캐릭터로 선택하시겠습니까?
               </div>
               <div className="confirmation-dialog-buttons">
                 <button className="nes-btn" onClick={handleConfirm}>
@@ -142,6 +145,9 @@ const AnimalEncyclopedia = () => {
               </div>
             </div>
           </div>
+        )}
+        {showSuccessMessage && (
+          <div className="success-message">내 캐릭터가 변경되었습니다.</div>
         )}
       </div>
       <Footer />

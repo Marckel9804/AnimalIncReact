@@ -23,7 +23,7 @@
   height: 90%; /* 높이 조정 */
   background-color: rgba(255, 255, 255, 0.7); /* 흰색 배경에 70% 투명도 */
   border-radius: 40px; /* 컨테이너 꼭지점 둥글게 */
-  z-index: -1; /* 내용 뒤에 배치 */
+  z-index: 0; /* 내용 뒤에 배치 */
 }
 
 .ranktitle {
@@ -53,6 +53,7 @@
   list-style: none;
 
   margin-top: 110px;
+  z-index: 2;
 }
 
 .ranking-item {

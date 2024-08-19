@@ -63,14 +63,14 @@ const MessageContainer = styled.section`
   .nes-bcrikko {
     margin: 0 1rem;
   }
-`;
+`
 
 const MessageBalloon = styled.div`
   &.from-left,
   &.from-right {
     color: black;
   }
-`;
+`
 
 const PlayerImage = styled.img`
   width: 150px;  // 원하는 너비로 설정
@@ -96,24 +96,20 @@ const RoomWait = () => {
 
   const insertUserStatus = async (gameRoomId, userNum) => {
     try {
-      const response = await axios.post(
-        "/game/insertUserStatus",
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // 인증 토큰 추가
-          },
-          params: {
-            gameRoomId: gameRoomId,
-            userNum: userNum,
-          },
-        }
-      );
-      console.log("User status inserted:", response.data);
+      const response = await axios.post('/game/insertUserStatus', null, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`, // 인증 토큰 추가
+        },
+        params: {
+          gameRoomId: gameRoomId,
+          userNum: userNum,
+        },
+      })
+      console.log('User status inserted:', response.data)
     } catch (error) {
-      console.error("Error inserting user status:", error);
+      console.error('Error inserting user status:', error)
     }
-  };
+  }
 
   // 게임 시작 시 DB에 유저 상태를 저장하는 함수
   const saveUserStatus = async (gameRoomId, userNum) => {
@@ -138,7 +134,7 @@ const RoomWait = () => {
         console.error("Server response:", error.response);
       }
     }
-  };
+  }
 
   // WebSocket 연결 설정 및 메시지 처리
   useEffect(() => {
@@ -265,11 +261,11 @@ const RoomWait = () => {
     axios
       .post(`/api/user/game/minusCount/${params.room_id}`)
       .then(() => {
-        console.log("인원수 감소!!");
-        navigate("/CreateRoom");
+        console.log('인원수 감소!!')
+        navigate('/CreateRoom')
       })
-      .catch((error) => console.log(error));
-  };
+      .catch((error) => console.log(error))
+  }
 
   const handleReadyClick = () => {
     console.log('Ready button clicked');
@@ -312,7 +308,13 @@ const RoomWait = () => {
       socketRef.current.send(JSON.stringify({ type: 'chat', ...message }));
       setNewMessage('');
     }
-  };
+  }
+
+  const PlayerImage = styled.img`
+    width: 150px; // 원하는 너비로 설정
+    height: 150px; // 원하는 높이로 설정
+    object-fit: cover; // 이미지가 잘리더라도 비율을 유지하며 박스에 맞춥니다.
+  `
 
   return (
     <Container>
@@ -327,10 +329,10 @@ const RoomWait = () => {
           </button>
           <button
             type="button"
-            className={`nes-btn ${isReady ? "is-warning" : "is-success"}`}
+            className={`nes-btn ${isReady ? 'is-warning' : 'is-success'}`}
             onClick={handleReadyClick}
           >
-            {isReady ? "취소" : "준비"}
+            {isReady ? '취소' : '준비'}
           </button>
         </HeaderContainer>
         <RoomInfoContainer>
@@ -345,8 +347,7 @@ const RoomWait = () => {
             <div className="nes-container is-rounded p-4" key={index}>
               <Header>
                 <span>
-                  {player.nickname}{" "}
-                  {player.ready && <span>(READY)</span>}
+                  {player.nickname} {player.ready && <span>(READY)</span>}
                 </span>
               </Header>
               <div className="bg-gray-100 p-4 rounded mt-2 nes-container">
@@ -369,9 +370,9 @@ const RoomWait = () => {
         <div className="mt-4">
           <div
             style={{
-              backgroundColor: "#4CBDB8",
-              height: "300px",
-              overflowY: "scroll",
+              backgroundColor: '#4CBDB8',
+              height: '300px',
+              overflowY: 'scroll',
             }}
             className="nes-container is-rounded p-4 text-white"
           >
@@ -380,16 +381,19 @@ const RoomWait = () => {
                 chatMessages.map((message, index) => (
                   <MessageContainer
                     key={index}
-                    className={message.sender === clientId.current ? "right" : "left"} 
+                    className={
+                      message.sender === clientId.current ? 'right' : 'left'
+                    }
                   >
                     {message.sender !== clientId.current && (
                       <i className="nes-bcrikko"></i>
                     )}
                     <MessageBalloon
-                      className={`nes-balloon ${message.sender === clientId.current
-                        ? "from-right"
-                        : "from-left"
-                        } nes-pointer`}
+                      className={`nes-balloon ${
+                        message.sender === clientId.current
+                          ? 'from-right'
+                          : 'from-left'
+                      } nes-pointer`}
                     >
                       <p>{message.text}</p>
                     </MessageBalloon>
@@ -423,7 +427,7 @@ const RoomWait = () => {
         </div>
       </Content>
     </Container>
-  );
-};
+  )
+}
 
-export default RoomWait;
+export default RoomWait

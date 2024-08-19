@@ -11,6 +11,7 @@ function MyInfo({
   stockInfo,
   setInd,
   setComp,
+  companyName,
 }) {
   const rows = 21;
   const cols = 4;
@@ -29,7 +30,7 @@ function MyInfo({
     const ind = Math.floor((row - 1) / 4);
     const turn = stockInfo[indList[ind] + comp].price.length;
     if (col === 0) {
-      return indList[ind] + comp;
+      return companyName[indList[ind] + comp];
     }
     if (col === 1) {
       return myStatus[indList[ind] + comp];
@@ -46,8 +47,26 @@ function MyInfo({
     }
   };
 
-  //등락여부에 따라 색
-  const cellColor = (data, col) => {
+  // 색 규칙
+  const cellColor = (data, col, row) => {
+    if (col === 0 && row !== 0) {
+      const i = Math.floor((row - 1) / 4);
+      if (i < 1) {
+        return { backgroundColor: "rgba(60, 179, 113, 0.5)" };
+      }
+      if (i < 2) {
+        return { backgroundColor: "rgba(128, 128, 128, 0.5)" };
+      }
+      if (i < 3) {
+        return { backgroundColor: "rgba(237, 156, 165, 0.5)" };
+      }
+      if (i < 4) {
+        return { backgroundColor: "rgba(75, 137, 220, 0.5)" };
+      }
+      if (i < 5) {
+        return { backgroundColor: "rgba(255, 255, 127, 0.5)" };
+      }
+    }
     if (col === 3) {
       if (data.startsWith("-") && data.endsWith("%")) {
         return { color: "blue" };
@@ -131,7 +150,7 @@ function MyInfo({
                         return (
                           <td
                             key={colIndex}
-                            style={cellColor(cellData, colIndex)}
+                            style={cellColor(cellData, colIndex, rowIndex)}
                             className=" relative"
                             id={"T" + rowIndex + "-" + colIndex}
                           >

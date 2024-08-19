@@ -15,7 +15,6 @@ const Main = () => {
         <User_main />
       </div>
       <div id="backImg" />
-      <Footer />
     </>
   );
 };
