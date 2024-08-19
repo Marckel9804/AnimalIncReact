@@ -159,9 +159,9 @@ function MainGame() {
           ]);
         }
         if (data.type === "turn") {
-          // if (gameStatus.turn === 6) {
-          setMiniL(true);
-          // }
+          if (gameStatus.turn === 1) {
+            setMiniL(true);
+          }
           if (data.incharge === myStatus.userNum) {
             updateTurn(gameStatus.turn);
           } else {
