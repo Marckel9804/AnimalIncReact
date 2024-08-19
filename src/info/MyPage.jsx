@@ -94,6 +94,7 @@ const Mypage = () => {
                     userRealname: response.data.userRealname,
                     userBirthdate: response.data.userBirthdate,
                 })
+                setNickname(response.data.userNickname);
             } catch (error) {
                 console.error('Error fetching user info:', error)
                 alert('로그인을 먼저 해주세요!')
@@ -227,7 +228,7 @@ const Mypage = () => {
 
     const handleUpdate = async () => {
         // 필수 입력값 확인
-        if (!updatedInfo.userRealname || !updatedInfo.userNickname || !updatedInfo.userBirthdate) {
+        if (!updatedInfo.userRealname || !nickname || !updatedInfo.userBirthdate) {
             alert('모든 필드를 입력해주세요.');
             return;
         }
@@ -504,8 +505,13 @@ const Mypage = () => {
                                 <div className="modal-item">
                                     <label className="mypage-nick">닉네임</label>
                                     <div className="mypage-nick-change">
-                                        <input type="text" value={updatedInfo.userNickname} className="mypage-nickname" onChange={(e) => setNickname(e.target.value)}
-                                               placeholder="닉네임"/>
+                                        <input
+                                            type="text"
+                                            value={nickname} // nickname 상태를 value로 설정
+                                            className="mypage-nickname"
+                                            onChange={(e) => setNickname(e.target.value)} // nickname 상태를 업데이트
+                                            placeholder="닉네임"
+                                        />
                                         <button type="button" id="check-nickname-button" className="nes-btn"
                                                 onClick={checkNicknameAvailability}>중복 확인
                                         </button>
@@ -518,7 +524,7 @@ const Mypage = () => {
                                     <label>생년월일</label>
                                     <input
                                         type="text"
-                                        value={updatedInfo.userBirthdate}
+                                        placeholder="YYYYMMDD 형식으로 작성"
                                         onChange={(e) => setUpdatedInfo({
                                             ...updatedInfo,
                                             userBirthdate: e.target.value
