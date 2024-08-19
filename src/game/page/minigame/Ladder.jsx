@@ -28,7 +28,7 @@ const useBlocker = (blocker, when = true) => {
 const Ladder = ({
   setMyStatus,
   myStatus,
-  setMimiL,
+  setMiniL,
   updateTurn,
   gameStatus,
 }) => {
@@ -94,6 +94,9 @@ const Ladder = ({
           if (!end) {
             end = true;
             setResults(message.results);
+            setInterval(() => {
+              setMiniL(false);
+            }, 8000);
             console.log("우승자 :", message.winner);
             if (message.winner.userNum === myStatus.usernum) {
               const prize = getRandomTwo();
@@ -105,11 +108,7 @@ const Ladder = ({
             }
             setGameState("end");
 
-            updateTurn(gameStatus.turn);
-            const turnOff = setInterval(() => {
-              setMimiL(false);
-            }, 3000);
-            turnOff();
+            // updateTurn(gameStatus.turn);
           }
           break;
         case "gameState":

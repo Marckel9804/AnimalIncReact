@@ -276,7 +276,7 @@ function StockInfo(props) {
                 ) : null}
                 뉴스 보기
               </button>
-              <button
+              {/* <button
                 className="nes-btn is-error"
                 style={{ padding: 0 }}
                 onClick={() => {
@@ -284,7 +284,7 @@ function StockInfo(props) {
                 }}
               >
                 다음 턴({gameStatus.turn + 1})
-              </button>
+              </button> */}
             </div>
           </div>
           <div className="win-chart-container">
