@@ -1,5 +1,5 @@
-import React, {useState, useEffect, useRef} from 'react'
-import {useNavigate} from 'react-router-dom'
+import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Modal from 'react-modal'
 import axios from '../utils/axios.js'
 import '../styles/login/MyPage.css'
@@ -95,6 +95,7 @@ const Mypage = () => {
                     userBirthdate: response.data.userBirthdate,
                 })
                 setNickname(response.data.userNickname);
+                setSelectedPicture(response.data.animalImage);
             } catch (error) {
                 console.error('Error fetching user info:', error)
                 alert('로그인을 먼저 해주세요!')
@@ -355,6 +356,7 @@ const Mypage = () => {
             setSelectedPicture(selectedAnimal.animal_image);
             setShowConfirmation(false);
             setIsProfilePictureModalOpen(false);
+            navigate('/');
         } catch (error) {
             console.error('Error selecting profile picture:', error);
             alert('프로필 사진 선택 중 오류가 발생했습니다. 다시 시도해 주세요.');

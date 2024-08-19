@@ -1,10 +1,10 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import Rank_week from "./Rank_week";
-import User_main from "./User_main";
-import "./Main.css";
-import Header from "../Header";
-import Footer from "../Footer";
+import React from 'react'
+
+import Rank_week from './Rank_week'
+import User_main from './User_main'
+import './Main.css'
+import Header from '../Header'
+import Footer from '../Footer'
 
 const Main = () => {
   return (
@@ -15,8 +15,9 @@ const Main = () => {
         <User_main />
       </div>
       <div id="backImg" />
+      <Footer />
     </>
-  );
-};
+  )
+}
 
-export default Main;
+export default Main

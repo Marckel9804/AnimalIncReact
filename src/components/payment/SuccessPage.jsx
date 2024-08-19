@@ -37,7 +37,7 @@ const SuccessPage = () => {
         // 3초 후 메인 페이지로 이동
         setTimeout(() => {
           navigate('/')
-        }, 3000)
+        }, 2500)
       } catch (error) {
         console.error('Error confirming payment:', error)
         navigate(
@@ -70,6 +70,7 @@ const SuccessPage = () => {
   return (
     <>
       <Header />
+      <div id="backImg" />
       <div className="success-container">
         {showSuccessAlert && (
           <div className="success-alert-container">
