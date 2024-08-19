@@ -21,7 +21,6 @@ const ItemShop = () => {
   const fetchUserRuby = async () => {
     try {
       const token = localStorage.getItem('token')
-      console.log('Using token:', token)
       const response = await axios.get('/api/item/ruby', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -38,7 +37,6 @@ const ItemShop = () => {
       const fetchItems = async () => {
         try {
           const response = await axios.get('/api/item/list')
-          console.log('Fetched Items:', response.data)
           setItems(Array.isArray(response.data) ? response.data : [])
         } catch (error) {
           console.error('Error fetching items:', error)
@@ -114,6 +112,7 @@ const ItemShop = () => {
   return (
     <>
       <Header userRuby={userRuby} />
+      <div id="backImg" />
       <div className="itemshop-container">
         <div className="itemshop-header">
           <h2 className="itemshop-title">아이템 상점</h2>
@@ -183,8 +182,9 @@ const ItemShop = () => {
           <div className="itemshop-alert-box">
             <h3 className="itemshop-alert-title">알림</h3>
             <p className="itemshop-alert-message">
-              {selectedItem.itemName}을(를) {selectedItem.itemPrice} 루비에
-              구매하시겠습니까?
+              {selectedItem.itemName} 을(를)
+              <br />
+              {selectedItem.itemPrice} 루비에 구매하시겠습니까?
             </p>
             <div className="itemshop-alert-buttons">
               <button

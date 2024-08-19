@@ -23,14 +23,16 @@
   height: 90%; /* 높이 조정 */
   background-color: rgba(255, 255, 255, 0.7); /* 흰색 배경에 70% 투명도 */
   border-radius: 40px; /* 컨테이너 꼭지점 둥글게 */
-  z-index: 0; /* 내용 뒤에 배치 */
+  z-index: -1; /* 내용 뒤에 배치 */
 }
 
 .ranktitle {
+  position: relative;
+  top: 35px;
   font-size: 1.2em; /* 텍스트 크기 줄이기 */
   color: black !important; /* 텍스트 색상 */
   font-weight: bold; /* 글씨를 굵게 설정 */
-  margin-top: 10px; /* 위쪽 간격 줄이기 */
+  margin-top: 20px; /* 위쪽 간격 줄이기 */
   margin-bottom: 10px; /* 아래 간격 줄이기 */
   background-color: rgba(76, 189, 184, 0.3); /* 배경색 및 투명도 설정 */
   border-radius: 10px; /* 모서리 둥글게 */

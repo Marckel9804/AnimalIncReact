@@ -21,10 +21,11 @@
 .main-container {
   display: flex;
   justify-content: space-around;
-  align-items: center; /* 수직 중앙 정렬 */
+  align-items: center;
   padding: 20px;
-  height: 100%; /* 전체 높이 */
-
-  gap: 180px; /* 아이템 간의 간격을 줄이기 위해 10px로 조정 */
-  width: 100%; /* 부모 컨테이너 너비 조정 */
+  height: 100%;
+  gap: 180px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
 }
