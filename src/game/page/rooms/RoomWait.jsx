@@ -89,28 +89,6 @@ const RoomWait = () => {
   const clientId = useRef(uuidv4())
   const params = useParams();
 
-  // DB에 유저 상태를 삽입하는 함수
-  const insertUserStatus = async (gameRoomId, userNum) => {
-    try {
-      const response = await axios.post(
-        "/game/insertUserStatus",
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // 인증 토큰 추가
-          },
-          params: {
-            gameRoomId: gameRoomId,
-            userNum: userNum,
-          },
-        }
-      );
-      console.log("User status inserted:", response.data);
-    } catch (error) {
-      console.error("Error inserting user status:", error);
-    }
-  };
-
   // 게임 시작 시 DB에 유저 상태를 저장하는 함수
   const saveUserStatus = async (gameRoomId, userNum) => {
     try {
@@ -177,19 +155,22 @@ const RoomWait = () => {
       socket.onmessage = (event) => {
         const parsedMessage = JSON.parse(event.data);
         console.log('Received from server:', parsedMessage);
-  
+      
         if (parsedMessage.type === 'players') {
           console.log('플레이어 데이터:', parsedMessage.players);
           setPlayers(parsedMessage.players);
         } else if (parsedMessage.type === 'countdown') {
           console.log(`카운트다운: ${parsedMessage.countdown}초`);
           setGameStartCountdown(parsedMessage.countdown);
+        } else if (parsedMessage.type === 'countdownCanceled') {
+          console.log('카운트다운이 취소되었습니다.');
+          setGameStartCountdown(null); // 카운트다운을 초기화
         } else if (parsedMessage.type === 'startGame') {
           console.log('게임이 시작됩니다!');
-  
+      
           // 게임 시작 메시지를 받았을 때 saveUserStatus와 insertUserStatus 함수를 호출합니다.
           saveUserStatus(roomId, loggedInPlayerId);
-  
+      
           // 게임 페이지로 이동
           navigate(`/game/${roomId}`);
         } else if (parsedMessage.type === 'chat') {
@@ -205,6 +186,7 @@ const RoomWait = () => {
           );
         }
       };
+      
   
       socket.onclose = () => {
         console.log('WebSocket connection closed');

@@ -84,6 +84,7 @@ function handleLogin(parsedMessage, ws, clientId) {
 }
 
 // 플레이어 레디 상태 처리 함수
+// 플레이어 레디 상태 처리 함수
 function handleReadyMessage(message) {
   if (!message.clientId) {
     console.log('Received undefined clientId. Message ignored:', message)
@@ -100,13 +101,25 @@ function handleReadyMessage(message) {
     )
     readyCount = players.filter((p) => p.ready).length
     broadcastPlayers()
+    
+    // 모든 플레이어가 준비 완료되었을 때만 카운트다운 시작
     if (readyCount === players.length && players.length > 1) {
       startCountdown()
+    } else {
+      // 준비 취소된 경우 카운트다운 중지 및 모든 플레이어에게 알림
+      if (countdownInterval) {
+        clearInterval(countdownInterval)
+        countdownInterval = null
+      }
+      broadcast({ type: 'countdownCanceled' }) // 클라이언트에 카운트다운이 취소되었음을 알림
+      console.log('카운트다운이 중지되었습니다.')
     }
   } else {
     console.log('플레이어를 찾을 수 없습니다:', message.clientId)
   }
 }
+
+
 
 // 카운트다운 시작 함수
 function startCountdown() {
