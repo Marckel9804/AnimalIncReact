@@ -10,8 +10,6 @@ const User_main = () => {
     user_tier: '',
   })
   const location = useLocation()
-  const selectedAnimal = location.state?.selectedAnimal || {}
-
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -19,8 +17,10 @@ const User_main = () => {
       try {
         const response = await axiosInstance.get('/api/user/get-profile')
         const data = response.data
+
+        // API에서 받은 데이터를 state에 저장
         setUserInfo({
-          animal_image: data.animal_image,
+          animal_image: data.animalImage, // selected_animal_id에 해당하는 이미지
           user_tier: data.userGrade, // userGrade를 user_tier로 매핑
         })
       } catch (error) {
@@ -30,10 +30,6 @@ const User_main = () => {
 
     fetchUserInfo()
   }, [])
-
-  useEffect(() => {
-    console.log('Selected Animal:', selectedAnimal) // 선택된 캐릭터 정보를 출력
-  }, [selectedAnimal])
 
   const goToMypage = () => {
     navigate(`/mypage`)
@@ -54,9 +50,7 @@ const User_main = () => {
         <div className="image-background"></div>
         <img
           src={
-            selectedAnimal.animalImage ||
-            userInfo.animal_image ||
-            'https://via.placeholder.com/150' // 기본 이미지 URL
+            userInfo.animal_image || 'https://via.placeholder.com/150' // 기본 이미지 URL
           }
           alt="캐릭터 이미지"
           className="character-image"
