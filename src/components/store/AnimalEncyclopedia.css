@@ -145,3 +145,19 @@
   font-size: 0.9em;
   margin: 0;
 }
+/* 성공 메시지 스타일 */
+.success-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(76, 189, 184, 0.9);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  z-index: 10000;
+}

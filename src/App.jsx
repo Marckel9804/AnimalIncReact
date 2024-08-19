@@ -13,6 +13,8 @@ import GachaShop from './components/store/GachaShop'
 import GachaResult from './components/store/GachaResult'
 import ItemShop from './components/store/ItemShop'
 import CheckoutPage from './components/payment/CheckoutPage' // 결제 페이지 컴포넌트 가져오기
+import SuccessPage from './components/payment/SuccessPage'
+import FailPage from './components/payment/FailPage'
 import MainGame from './game/page/maingame/MainGame.jsx'
 import Login from './login/Login.jsx'
 import Register from './login/Register.jsx'
@@ -67,6 +69,8 @@ const App = () => {
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/shop" element={<Store />} />
+          <Route path="/success" element={<SuccessPage />} />
+          <Route path="/fail" element={<FailPage />} />
           <Route path="/animal/encyclopedia" element={<AnimalEncyclopedia />} />
           <Route path="/shop/animal" element={<GachaShop />} />
           <Route path="/shop/animal-store/gacha" element={<GachaResult />} />
