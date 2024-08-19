@@ -675,37 +675,37 @@ const Mypage = () => {
                 </div>
             </Modal>
             <Modal isOpen={isProfilePictureModalOpen} onRequestClose={closeProfilePictureModal} className="animal-modal">
-                <div className="animal-modal-content">
-                    <div className="animal-list">
+                <div className="mypage-animal-modal-content">
+                    <div className="mypage-animal-list">
                         {filledAnimals.map((animal, index) => (
                             <div
                                 key={index}
-                                className={`animal-card ${
+                                className={`mypage-animal-card ${
                                     ownedAnimals.includes(animal.animalId) ? 'owned' : 'locked'
                                 }`}
                                 onMouseEnter={() => setHoveredAnimal(animal)}
                                 onMouseLeave={() => setHoveredAnimal(null)}
                                 onClick={() => handleProfilePictureSelect(animal)}
                             >
-                                <div className="animal-image-container">
+                                <div className="mypage-animal-image-container">
                                     {animal.animalImage ? (
                                         <img src={animal.animalImage} alt={animal.animalName} />
                                     ) : (
                                         <div className="placeholder-image">No Image</div>
                                     )}
                                 </div>
-                                <div className="animal-id">No.{animal.animalId || '-'}</div>
-                                <div className="animal-name">{animal.animalName || '빈 슬롯'}</div>
+                                <div className="mypage-animal-id">No.{animal.animalId || '-'}</div>
+                                <div className="mypage-animal-name">{animal.animalName || '빈 슬롯'}</div>
                             </div>
                         ))}
                     </div>
                     {hoveredAnimal && (
-                        <div className="animal-alert-container show">
-                            <div className="animal-alert-box">
-                                <div className="animal-alert-title">
+                        <div className="mypage-animal-alert-container show">
+                            <div className="mypage-animal-alert-box">
+                                <div className="mypage-animal-alert-title">
                                     {hoveredAnimal.animalName || '빈 슬롯'}
                                 </div>
-                                <div className="animal-alert-message">
+                                <div className="mypage-animal-alert-message">
                                     {hoveredAnimal.animalDescription || '설명 없음'}
                                     <br />
                                     확률: {hoveredAnimal.animalProbability || '미정'}
@@ -714,13 +714,13 @@ const Mypage = () => {
                         </div>
                     )}
                     {showConfirmation && (
-                        <div className="confirmation-dialog">
-                            <div className="confirmation-dialog-box">
-                                <div className="confirmation-dialog-title">안내</div>
-                                <div className="confirmation-dialog-message">
+                        <div className="mypage-confirmation-dialog">
+                            <div className="mypage-confirmation-dialog-box">
+                                <div className="mypage-confirmation-dialog-title">안내</div>
+                                <div className="mypage-confirmation-dialog-message">
                                     {selectedAnimal.animalName}을(를) 메인 캐릭터로 선택하시겠습니까?
                                 </div>
-                                <div className="confirmation-dialog-buttons">
+                                <div className="mypage-confirmation-dialog-buttons">
                                     <button className="nes-btn" onClick={handleUpload}>
                                         확인
                                     </button>
