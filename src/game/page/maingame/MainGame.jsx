@@ -7,13 +7,15 @@ import TaskBar from "./TaskBar.jsx";
 import StartBar from "./StartBar.jsx";
 import ItemsWin from "./Items.jsx";
 import WinChat from "./WinChat.jsx";
+import Ladder from "../minigame/Ladder.jsx";
 import axios from "../../../utils/axios.js";
 import { useNavigate, useParams } from "react-router-dom";
 import News from "./News.jsx";
 import Alert from "./Alert.jsx";
 import folder from "../../.././images/folder.ico";
 import trash from "../../.././images/trash.ico";
-import { v4 as uuidv4 } from "uuid";
+import ItemUse from "./ItemUse.jsx";
+import Timer from "./Timer.jsx";
 
 function MainGame() {
   // 윈도우 창 닫힘 열림 관리
@@ -22,20 +24,58 @@ function MainGame() {
   const [showOP, setShowOP] = useState(true);
   const [showIW, setShowIW] = useState(true);
   const [showWC, setShowWC] = useState(true);
+  const [showTM, setShowTM] = useState(true);
   const [showSB, setShowSB] = useState(false);
   const [showNews, setShowNews] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [miniL, setMiniL] = useState(false);
+
+  const [timer, setTimer] = useState(0);
+
+  const [alert, setAlert] = useState(false);
+  const [itemUse, setItemUse] = useState(false);
+  const [item, setItem] = useState("shortSelling");
   const [selected, setSelected] = useState(0);
   const [alertMsg, setAlertMsg] = useState("경고창");
+  const companyName = {
+    food1: "SCV Food",
+    food2: "드라군 제과",
+    food3: "스랄 치킨",
+    food4: "아이어 푸드",
+    ship1: "초암 공사",
+    ship2: "HL",
+    ship3: "선양 해운",
+    ship4: "선진 해양",
+    enter1: "JYT",
+    enter2: "YGY",
+    enter3: "브릭스",
+    enter4: "아라키스",
+    elec1: "호드 컴퍼니",
+    elec2: "살게라스",
+    elec3: "아서스",
+    elec4: "일리단 전자",
+    tech1: "네오 테크",
+    tech2: "모피어스",
+    tech3: "스미스, INC.",
+    tech4: "매트릭스",
+  };
 
   const openAlert = (msg) => {
     setAlertMsg(msg);
-    setIsOpen(true);
+    setAlert(true);
   };
 
   const closeAlert = () => {
-    setIsOpen(false);
+    setAlert(false);
   };
+
+  const openItemUse = (i) => {
+    setItem(i);
+    setItemUse(true);
+  };
+  const closeItemUse = () => {
+    setItemUse(false);
+  };
+
   const setters = {
     showMI,
     showSI,
@@ -43,12 +83,14 @@ function MainGame() {
     showSB,
     showIW,
     showWC,
+    showTM,
     setShowMI,
     setShowSI,
     setShowOP,
     setShowSB,
     setShowIW,
     setShowWC,
+    setShowTM,
   };
   const [progress, setProgress] = useState(0);
   const [gameStatus, setGameStatus] = useState(null);
@@ -75,12 +117,13 @@ function MainGame() {
           type: "playerInfo",
           nickname: myStatus.nickName,
           roomid: gameStatus.gameRoomId,
+          usernum: myStatus.userNum,
         };
         ws.send(JSON.stringify(playerInfo));
       };
       ws.onmessage = (event) => {
-        console.log("Received: ", event.data);
         const data = JSON.parse(event.data);
+        // console.log("message", data);
         if (data.type === "message") {
           setMessages((prevMessages) => [
             ...prevMessages,
@@ -93,13 +136,59 @@ function MainGame() {
           ]);
         }
         if (data.type === "buySell") {
-          let content = `${data.stockId} 주식이 ${data.amount}주 거래되었습니다.`;
+          let content = `${companyName[data.stockId]} 주식이 ${
+            data.amount
+          }주 거래되었습니다.`;
           getUserInfo();
           setMessages((prevMessages) => [
             ...prevMessages,
             { content: content, type: "game" },
           ]);
         }
+        if (data.type === "timer") {
+          setTimer(data.time);
+        }
+        if (data.type === "game") {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { content: data.content, type: "game" },
+          ]);
+        }
+        if (data.type === "turn") {
+          if (data.content === "skip") {
+            setTimeout(() => {
+              getStockInfo(), getRoomInfo(), getUserInfo(0);
+            }, 5000);
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { content: "<타임 머신>이 사용되었습니다.", type: "game" },
+            ]);
+          } else {
+            if (data.incharge === myStatus.userNum) {
+              updateTurn(gameStatus.turn);
+            } else {
+              setTimeout(() => {
+                getStockInfo(), getRoomInfo(), getUserInfo(0);
+              }, 3000);
+            }
+          }
+        }
+        if (data.type === "debt") {
+          const stockPriceArray = stockInfo[data.stock].price;
+          const lastStockPrice = stockPriceArray[stockPriceArray.length - 1];
+          const stockValue = lastStockPrice * data.amount;
+          console.log("빚 : ", formatNumber(stockValue));
+          setMyStatus((prevStatus) => ({
+            ...prevStatus,
+            cash: prevStatus.cash - stockValue,
+          }));
+        }
+      };
+      ws.onclose = (event) => {
+        console.log("WebSocket closed: ", event);
+      };
+      ws.onerror = (error) => {
+        console.error("WebSocket error: ", error);
       };
       setWs(ws);
       return () => {
@@ -148,12 +237,6 @@ function MainGame() {
     let sum = 0;
     for (let i of ind) {
       for (let j = 1; j < 5; j++) {
-        // console.log(`user ${i + 1}: `, user[i + j]);
-        // console.log(
-        //   `stock ${i + j}: `,
-        //   stockInfo[i + j].price[gameStatus.turn - 1]
-        // );
-        // console.log("sum", sum);
         sum = sum + user[i + j] * stockInfo[i + j].price[gameStatus.turn - 1];
       }
     }
@@ -219,6 +302,7 @@ function MainGame() {
   };
 
   const updateTurn = (turn) => {
+    console.log("updateTurn");
     axios.get(`/game/nextTurn/${room_id}/${turn}`).then((res) => {
       setTimeout(() => {
         getStockInfo(), getRoomInfo(), getUserInfo(0);
@@ -237,11 +321,19 @@ function MainGame() {
       });
     }, 50);
 
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     // 여기서 데이터를 불러오는 비동기 함수를 호출합니다.
     getRoomInfo();
 
     return () => {
       clearInterval(timer);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
@@ -252,6 +344,17 @@ function MainGame() {
       navigate("/");
     }
   }, [otherStatus, progress]);
+
+  //내 상태가 변하면 즉각 DB에 업데이트
+  useEffect(() => {
+    if (myStatus !== null) {
+      updateMyStatus();
+    }
+  }, [myStatus]);
+
+  const updateMyStatus = () => {
+    axios.post("/game/update/userStatus", myStatus);
+  };
 
   if (
     gameStatus === null ||
@@ -288,26 +391,56 @@ function MainGame() {
           <img src={trash} style={{ width: "70px", height: "70px" }} />
           <div className={selected == 2 ? "win-item-text" : null}>휴지통</div>
         </div>
-        <Alert isOpen={isOpen} onClose={closeAlert} message={alertMsg} />
+        <Alert isOpen={alert} onClose={closeAlert} message={alertMsg} />
+        {miniL ? (
+          <div className=" fixed z-30">
+            <Ladder
+              setMyStatus={setMyStatus}
+              myStatus={myStatus}
+              setMiniL={setMiniL}
+              updateTurn={updateTurn}
+              gameStatus={gameStatus}
+            />
+          </div>
+        ) : null}
+        <ItemUse
+          isOpen={itemUse}
+          onClose={closeItemUse}
+          item={item}
+          stockInfo={stockInfo}
+          formatNumber={formatNumber}
+          myStatus={myStatus}
+          setMyStatus={setMyStatus}
+          openAlert={openAlert}
+          companyName={companyName}
+          gameStatus={gameStatus}
+          sendMessage={sendMessage}
+          updateTurn={updateTurn}
+        />
         <News
           show={showNews}
           setShow={setShowNews}
           ind={ind}
           comp={comp}
           stockInfo={stockInfo}
+          companyName={companyName}
         />
-        <MyInfo
-          show={showMI}
-          setShow={setShowMI}
-          myStatus={myStatus}
-          formatNumber={formatNumber}
-          updateTurn={updateTurn}
-          gameStatus={gameStatus}
-          sumStock={sumStock}
-          stockInfo={stockInfo}
-          setInd={setInd}
-          setComp={setComp}
-        />
+        <div className="flex=col" style={{ width: "21%" }}>
+          <Timer show={showTM} setShow={setShowTM} timer={timer} />
+          <MyInfo
+            show={showMI}
+            setShow={setShowMI}
+            myStatus={myStatus}
+            formatNumber={formatNumber}
+            updateTurn={updateTurn}
+            gameStatus={gameStatus}
+            sumStock={sumStock}
+            stockInfo={stockInfo}
+            setInd={setInd}
+            setComp={setComp}
+            companyName={companyName}
+          />
+        </div>
         <div className="flex-col" style={{ width: "50%" }}>
           <StockInfo
             show={showSI}
@@ -326,8 +459,14 @@ function MainGame() {
             setShowNews={setShowNews}
             openAlert={openAlert}
             sendMessage={sendMessage}
+            companyName={companyName}
           />
-          <ItemsWin show={showIW} setShow={setShowIW} />
+          <ItemsWin
+            show={showIW}
+            setShow={setShowIW}
+            openItemUse={openItemUse}
+            myStatus={myStatus}
+          />
         </div>
         <div className="flex-col" style={{ width: "28%" }}>
           <OtherPlayer

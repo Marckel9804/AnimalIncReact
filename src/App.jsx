@@ -76,7 +76,8 @@ const App = () => {
           <Route path="/shop/animal-store/gacha" element={<GachaResult />} />
           <Route path="/shop/item" element={<ItemShop />} />
           <Route path="/createroom" element={<RoomList />} />
-          <Route path="/ladder" element={<Ladder />} />
+          <Route path="/ladder/:room_id" element={<Ladder />} />
+          {/*태웅 경로 */}
           <Route path="/payment" element={<CheckoutPage />} />
           <Route path="/naver/callback" element={<NaverCallback />} />
           <Route path="/mypage" element={<Mypage />} />
@@ -91,10 +92,7 @@ const App = () => {
           <Route path="/board/detail/:id" element={<BoardDetailPage />} />
           <Route path="/board/update/:id" element={<BoardUpdatePage />} />
           <Route exact path="/roomwait/:room_id" element={<RoomWait />} />
-          <Route
-            path="/game/page/rooms/SpaceMinigame"
-            element={<SpaceMinigame />}
-          />
+          <Route path="/SpaceMinigame" element={<SpaceMinigame />} />
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </div>

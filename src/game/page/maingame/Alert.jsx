@@ -25,12 +25,7 @@ function Alert({ isOpen, onClose, message }) {
           <img src={alert} width={100} height={100} />
           <div className=" ml-5">{message}</div>
         </div>
-        <div
-          className={`win-alert-btn ${isClicked ? "clicked" : ""}`}
-          onMouseDown={() => setIsClicked(true)}
-          onMouseUp={() => setIsClicked(false)}
-          onMouseLeave={() => setIsClicked(false)}
-        >
+        <div className={`win-alert-btn `}>
           <button onClick={onClose} className="win-alert-btn-in ">
             닫기
           </button>

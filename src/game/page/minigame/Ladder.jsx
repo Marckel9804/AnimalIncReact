@@ -1,22 +1,66 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import bomb from "../../../image/ladder-bomb.jpeg";
 import win from "../../../image/ladder-win.jpeg";
 import "./loading.css";
+import { useParams, useNavigate } from "react-router-dom";
 
-const Ladder = ({ roomId }) => {
+// Custom hook to block navigation
+const useBlocker = (blocker, when = true) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!when) return;
+
+    const unblock = navigate((tx) => {
+      if (window.confirm(blocker)) {
+        unblock();
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    return unblock;
+  }, [blocker, when, navigate]);
+};
+
+const Ladder = ({
+  setMyStatus,
+  myStatus,
+  setMimiL,
+  updateTurn,
+  gameStatus,
+}) => {
   const canvasRef = useRef(null);
   const [players, setPlayers] = useState([]);
-  const [rewards] = useState([win, bomb, bomb, bomb]);
+  const [rewards, setRewards] = useState([]);
   const [gameState, setGameState] = useState("waiting");
   const [results, setResults] = useState([]);
   const [ladder, setLadder] = useState([]);
-  const [modal, setModal] = useState(false);
+  const [modal, setModal] = useState(true);
   const [clientId, setClientId] = useState(null);
-  const [ws, setWs] = useState(null);
+  const [ws, setWs] = useState();
+  const [countdown, setCountdown] = useState(null);
+  const [totalParticipants, setTotalParticipants] = useState(0);
+  const [currentParticipants, setCurrentParticipants] = useState(0);
+  const [isGameRunning, setIsGameRunning] = useState(false);
+  const navigate = useNavigate();
+  // 👇🏻 게임 우승자 저장하는 변수 !!!!
+  const [winner, setWinner] = useState(null);
+  let end = false;
+
+  const params = useParams();
+  const room_id = params.room_id;
 
   const canvasWidth = 896 * 2;
   const canvasHeight = 300;
+
+  const blocker = useCallback(() => {
+    return "게임이 진행 중입니다. 정말로 나가시겠습니까?";
+  }, []);
+
+  useBlocker(blocker, isGameRunning);
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:4000");
@@ -24,7 +68,7 @@ const Ladder = ({ roomId }) => {
 
     socket.onopen = () => {
       console.log("Connected to the server");
-      ws.send(JSON.stringify({ type: "join", roomId }));
+      socket.send(JSON.stringify({ type: "join", room_id }));
     };
 
     socket.onmessage = (event) => {
@@ -32,15 +76,54 @@ const Ladder = ({ roomId }) => {
       switch (message.type) {
         case "players":
           setPlayers(message.players);
+          setTotalParticipants(message.totalParticipants);
+          setCurrentParticipants(message.currentParticipants);
+          console.log("players : ", message.players);
+          break;
+        case "countdown":
+          setCountdown(message.count);
           break;
         case "startGame":
           setLadder(message.ladder);
+          setRewards(message.rewards);
           setGameState("running");
           setModal(false);
+          setCountdown(null);
           break;
         case "gameEnded":
-          setResults(message.results);
-          setGameState("end");
+          if (!end) {
+            end = true;
+            setResults(message.results);
+            console.log("우승자 :", message.winner);
+            if (message.winner.userNum === myStatus.usernum) {
+              const prize = getRandomTwo();
+              setMyStatus({
+                ...myStatus,
+                [prize[0]]: myStatus[prize[0]] + 1,
+                [prize[1]]: myStatus[prize[1]] + 1,
+              });
+            }
+            setGameState("end");
+
+            updateTurn(gameStatus.turn);
+            const turnOff = setInterval(() => {
+              setMimiL(false);
+            }, 3000);
+            turnOff();
+          }
+          break;
+        case "gameState":
+          setGameState(message.state);
+          setTotalParticipants(message.totalParticipants);
+          setCurrentParticipants(message.currentParticipants);
+          if (message.state === "running") {
+            setLadder(message.ladder);
+            setModal(false);
+            setCountdown(null);
+          }
+          break;
+        case "roomFull":
+          alert("The room is full. Please try again later.");
           break;
       }
     };
@@ -52,7 +135,7 @@ const Ladder = ({ roomId }) => {
     return () => {
       socket.close();
     };
-  }, [roomId]);
+  }, [room_id]);
 
   useEffect(() => {
     if (players.length > 0 && !clientId) {
@@ -67,16 +150,55 @@ const Ladder = ({ roomId }) => {
     }
   }, [ladder, gameState]);
 
-  const toggleReady = () => {
-    if (ws && clientId) {
-      const player = players.find((p) => p.clientId === clientId);
-      if (player) {
-        ws.send(
-          JSON.stringify({ type: "ready", clientId, ready: !player.ready })
-        );
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (isGameRunning) {
+        e.preventDefault();
+        e.returnValue = "게임이 진행 중입니다. 정말로 나가시겠습니까?";
       }
+    };
+
+    const handlePopState = (e) => {
+      if (isGameRunning) {
+        if (window.confirm("게임이 진행 중입니다. 정말로 나가시겠습니까?")) {
+          navigate(-1);
+        } else {
+          window.history.pushState(null, "", window.location.pathname);
+        }
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("popstate", handlePopState);
+
+    // 페이지 로드 시 history에 현재 상태 추가
+    window.history.pushState(null, "", window.location.pathname);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [isGameRunning, navigate]);
+
+  useEffect(() => {
+    if (gameState === "running") {
+      setIsGameRunning(true);
+    } else {
+      setIsGameRunning(false);
     }
-  };
+  }, [gameState]);
+
+  function getRandomTwo() {
+    const items = [
+      "shortSelling",
+      "fakeNews",
+      "goodNews",
+      "timeMachine",
+      "lottery",
+    ];
+    const shuffled = items.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 2);
+  }
 
   const drawLadderFromStructure = (ladder) => {
     const canvas = canvasRef.current;
@@ -209,62 +331,68 @@ const Ladder = ({ roomId }) => {
           Ladder Game <BoxIcon>x</BoxIcon>
         </LadderHead>
         <GameContent>
+          <ParticipantInfo>
+            <div className="text-3xl font-bold">
+              Players: {currentParticipants} / {totalParticipants}
+            </div>
+          </ParticipantInfo>
           <PlayerList>
             {players.map((player) => (
               <Player key={player.clientId}>
-                {player.nickname}
-                <Character>{player.ready ? "Ready" : "Not Ready"}</Character>
+                <div className="text-xl font-bold">{player.nickname}</div>
+                <Character>
+                  <img src={player.userPicture} alt={player.nickname} />
+                </Character>
               </Player>
             ))}
           </PlayerList>
           {gameState !== "waiting" && (
-            <canvas
-              ref={canvasRef}
-              width={canvasWidth}
-              height={canvasHeight}
-              style={{ margin: "20px 0", display: "block", width: "110%" }}
-            />
+            <>
+              <canvas
+                ref={canvasRef}
+                width={canvasWidth}
+                height={canvasHeight}
+                style={{ margin: "20px 0", display: "block", width: "110%" }}
+              />
+              <RewardList>
+                {rewards.map((rewardType, index) => (
+                  <RewardItem key={index}>
+                    <Reward
+                      src={rewardType === "win" ? win : bomb}
+                      alt={`Reward ${index + 1}`}
+                    />
+                    {gameState === "end" && (
+                      <ParticipantId>
+                        <div className="text-xl font-bold">
+                          {results.find((r) => r.result === index)?.nickname ||
+                            ""}
+                        </div>
+                      </ParticipantId>
+                    )}
+                  </RewardItem>
+                ))}
+              </RewardList>
+              {gameState === "end" && winner && (
+                <WinnerAnnouncement>
+                  Winner: {winner.nickname}!
+                </WinnerAnnouncement>
+              )}
+            </>
           )}
-          <RewardList>
-            {players.map((player, index) => (
-              <RewardItem key={player.clientId}>
-                <Reward
-                  src={rewards[index % rewards.length]}
-                  alt={`Reward ${index + 1}`}
-                />
-                {gameState === "end" && (
-                  <ParticipantId>
-                    {
-                      players[
-                        results.find((r) => r.clientId === player.clientId)
-                          ?.result
-                      ]?.nickname
-                    }
-                  </ParticipantId>
-                )}
-              </RewardItem>
-            ))}
-          </RewardList>
         </GameContent>
-        {gameState === "waiting" && (
-          <button className="nes-btn is-warning" onClick={toggleReady}>
-            {players.find((p) => p.clientId === clientId)?.ready
-              ? "Cancel Ready"
-              : "Ready"}
-          </button>
-        )}
         {modal && (
           <LadderWindow>
             <LadderHead>
-              세상에서 제일 지루한 중학교는? 로딩중 ...<BoxIcon>x</BoxIcon>
+              Waiting for players... {currentParticipants} / {totalParticipants}
+              <BoxIcon>x</BoxIcon>
             </LadderHead>
             <Loading>
-              <div className="ladder-loader-hhy"></div>
-              {gameState === "start" && (
-                <button className="nes-btn is-warning" onClick={startGame}>
-                  Start Game
-                </button>
+              {countdown !== null ? (
+                <CountdownText>{countdown}</CountdownText>
+              ) : (
+                <CountdownText>다른 참가자들 기다리는 중 ...</CountdownText>
               )}
+              <div className="ladder-loader-hhy"></div>
             </Loading>
           </LadderWindow>
         )}
@@ -273,10 +401,23 @@ const Ladder = ({ roomId }) => {
   );
 };
 
+const WinnerAnnouncement = styled.div`
+  font-size: 3em;
+  font-weight: bold;
+  margin-top: 20px;
+  color: #ffd700;
+`;
+
+const CountdownText = styled.div`
+  font-size: 48px;
+  font-weight: bold;
+  margin-top: 20px;
+`;
+
 const LadderContainer = styled.div`
-  background-color: #027d7c;
-  width: 100vw;
-  height: 100vh;
+  background-color: transparent;
+  width: 99vw;
+  height: 99vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -326,7 +467,7 @@ const BoxIcon = styled.div`
 `;
 
 const PlayerList = styled.div`
-  margin-top: 5px;
+  margin-top: 30px;
   width: 70%;
   display: flex;
   flex-direction: row;
@@ -334,7 +475,9 @@ const PlayerList = styled.div`
 `;
 
 const Player = styled.div`
-  text-align: center;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
 `;
 
 const Character = styled.div`
@@ -354,8 +497,8 @@ const RewardList = styled.div`
 `;
 
 const Reward = styled.img`
-  width: 70px;
-  height: 70px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
 `;
 
@@ -378,7 +521,7 @@ const LadderWindow = styled.div`
   border-left: 2px #f0ffff solid;
   border-right: 2px #252525 solid;
   border-bottom: 2px #252525 solid;
-  z-index: 10; // 다른 요소들 위에 표시되도록 z-index 설정
+  z-index: 10;
 `;
 
 const RewardItem = styled.div`
@@ -390,6 +533,11 @@ const RewardItem = styled.div`
 const ParticipantId = styled.div`
   margin-top: 5px;
   font-weight: bold;
+`;
+
+const ParticipantInfo = styled.div`
+  font-size: 18px;
+  margin-top: 10px;
 `;
 
 export default Ladder;
