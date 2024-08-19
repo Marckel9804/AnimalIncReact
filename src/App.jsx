@@ -89,7 +89,7 @@ const App = () => {
           <Route path="/board/update/:id" element={<BoardUpdatePage />} />
           <Route exact path="/roomwait/:room_id" element={<RoomWait />} />
           <Route
-            path="/game/page/rooms/SpaceMinigame"
+            path="/SpaceMinigame"
             element={<SpaceMinigame />}
           />
           <Route path="/admin" element={<AdminPage />} />
