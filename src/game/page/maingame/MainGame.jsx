@@ -16,6 +16,7 @@ import folder from "../../.././images/folder.ico";
 import trash from "../../.././images/trash.ico";
 import ItemUse from "./ItemUse.jsx";
 import Timer from "./Timer.jsx";
+import FinalResult from "./FinalResult.jsx";
 
 function MainGame() {
   // 윈도우 창 닫힘 열림 관리
@@ -28,6 +29,8 @@ function MainGame() {
   const [showSB, setShowSB] = useState(false);
   const [showNews, setShowNews] = useState(false);
   const [miniL, setMiniL] = useState(false);
+  const [final, setFinal] = useState(false);
+  const [result, setResult] = useState(null);
 
   const [timer, setTimer] = useState(0);
 
@@ -106,7 +109,7 @@ function MainGame() {
 
   //소켓 관련 기능들
   const [messages, setMessages] = useState([]);
-  const [ws, setWs] = useState(null);
+  const [ws, setWs] = useState(new WebSocket("ws://localhost:4000"));
 
   useEffect(() => {
     if (myStatus !== null) {
@@ -118,6 +121,7 @@ function MainGame() {
           nickname: myStatus.nickName,
           roomid: gameStatus.gameRoomId,
           usernum: myStatus.userNum,
+          turn: gameStatus.turn,
         };
         ws.send(JSON.stringify(playerInfo));
       };
@@ -155,22 +159,25 @@ function MainGame() {
           ]);
         }
         if (data.type === "turn") {
+          // if (gameStatus.turn === 6) {
+          setMiniL(true);
+          // }
+          if (data.incharge === myStatus.userNum) {
+            updateTurn(gameStatus.turn);
+          } else {
+            if (gameStatus.turn !== 12)
+              setTimeout(() => {
+                getStockInfo(), getRoomInfo(), getUserInfo(0);
+              }, 3000);
+          }
           if (data.content === "skip") {
-            setTimeout(() => {
-              getStockInfo(), getRoomInfo(), getUserInfo(0);
-            }, 5000);
+            // setTimeout(() => {
+            //   getStockInfo(), getRoomInfo(), getUserInfo(0);
+            // }, 5000);
             setMessages((prevMessages) => [
               ...prevMessages,
               { content: "<타임 머신>이 사용되었습니다.", type: "game" },
             ]);
-          } else {
-            if (data.incharge === myStatus.userNum) {
-              updateTurn(gameStatus.turn);
-            } else {
-              setTimeout(() => {
-                getStockInfo(), getRoomInfo(), getUserInfo(0);
-              }, 3000);
-            }
           }
         }
         if (data.type === "debt") {
@@ -183,6 +190,11 @@ function MainGame() {
             cash: prevStatus.cash - stockValue,
           }));
         }
+        if (data.type === "gameover") {
+          console.log("게임 결과", data);
+          setFinal(true);
+          setResult(data.content);
+        }
       };
       ws.onclose = (event) => {
         console.log("WebSocket closed: ", event);
@@ -192,7 +204,8 @@ function MainGame() {
       };
       setWs(ws);
       return () => {
-        ws.close();
+        // console.log("소켓 오프");
+        // ws.close();
       };
     }
   }, [myStatus]);
@@ -205,7 +218,14 @@ function MainGame() {
       usernum: myStatus.userNum,
     };
     if (ws) {
-      ws.send(JSON.stringify(message));
+      if (ws.readyState === WebSocket.OPEN) {
+        console.log("메시지 전송:", message);
+        ws.send(JSON.stringify(message));
+      } else {
+        console.log("WebSocket이 열려 있지 않습니다. 상태:", ws.readyState);
+      }
+    } else {
+      console.log("WebSocket이 null입니다:", ws);
     }
   };
 
@@ -303,11 +323,26 @@ function MainGame() {
 
   const updateTurn = (turn) => {
     console.log("updateTurn");
-    axios.get(`/game/nextTurn/${room_id}/${turn}`).then((res) => {
-      setTimeout(() => {
-        getStockInfo(), getRoomInfo(), getUserInfo(0);
-      }, 3000);
-    });
+    if (turn === 12) {
+      const userTotal = otherStatus.map((item) => ({
+        usernum: item.userNum,
+        nickname: item.nickName,
+        total: item.cash + sumStock(item),
+      }));
+      userTotal.push({
+        usernum: myStatus.userNum,
+        nickname: myStatus.nickName,
+        total: myStatus.cash + sumStock(myStatus),
+      });
+      console.log(userTotal);
+      sendMessage({ type: "gameover", data: userTotal });
+    } else {
+      axios.get(`/game/nextTurn/${room_id}/${turn}`).then((res) => {
+        setTimeout(() => {
+          getStockInfo(), getRoomInfo(), getUserInfo(0);
+        }, 3000);
+      });
+    }
   };
 
   //시작시 로딩 바, 정보 로딩
@@ -392,6 +427,11 @@ function MainGame() {
           <div className={selected == 2 ? "win-item-text" : null}>휴지통</div>
         </div>
         <Alert isOpen={alert} onClose={closeAlert} message={alertMsg} />
+        <FinalResult
+          isOpen={final}
+          result={result}
+          formatNumber={formatNumber}
+        />
         {miniL ? (
           <div className=" fixed z-30">
             <Ladder

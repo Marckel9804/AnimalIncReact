@@ -28,7 +28,7 @@ function Timer({ show, setShow, timer }) {
             <button className="window-head-btn-disabled items-center">x</button>
           </div>
         </div>
-        {timer}/180
+        {/* {timer}/180 */}
         <div className="win-progress">
           {Array.from({ length: rectangles }).map((_, index) => (
             <div key={index} className="win-timer-rec"></div>
