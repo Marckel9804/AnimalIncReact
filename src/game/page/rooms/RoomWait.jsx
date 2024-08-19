@@ -1,4 +1,3 @@
-// RoomWait.jsx
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -84,10 +83,31 @@ const RoomWait = () => {
   const [gameStartCountdown, setGameStartCountdown] = useState(null) // 게임 시작 카운트다운 상태
   const navigate = useNavigate()
   const location = useLocation()
-  const { roomId, roomName: initialRoomName } = location.state || {}
+  const { roomId, roomName: initialRoomName,userNum  } = location.state || {}
   const socketRef = useRef(null)
   const clientId = useRef(uuidv4())
   const params = useParams();
+
+  const insertUserStatus = async (gameRoomId, userNum) => {
+    try {
+      const response = await axios.post(
+        "/game/insertUserStatus",
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // 인증 토큰 추가
+          },
+          params: {
+            gameRoomId: gameRoomId,
+            userNum: userNum,
+          },
+        }
+      );
+      console.log("User status inserted:", response.data);
+    } catch (error) {
+      console.error("Error inserting user status:", error);
+    }
+  };
 
   // 게임 시작 시 DB에 유저 상태를 저장하는 함수
   const saveUserStatus = async (gameRoomId, userNum) => {
@@ -133,6 +153,7 @@ const RoomWait = () => {
   }, [])
 
   useEffect(() => {
+    insertUserStatus(roomId, userNum);
     if (userInfo && roomId) {
       const socket = new WebSocket('ws://localhost:4000');
       socketRef.current = socket;
@@ -278,6 +299,12 @@ const RoomWait = () => {
     }
   }
 
+  const PlayerImage = styled.img`
+  width: 150px;  // 원하는 너비로 설정
+  height: 150px; // 원하는 높이로 설정
+  object-fit: cover; // 이미지가 잘리더라도 비율을 유지하며 박스에 맞춥니다.
+`;
+
   return (
     <Container>
       <Content>
@@ -315,9 +342,9 @@ const RoomWait = () => {
               </Header>
               <div className="bg-gray-100 p-4 rounded mt-2 nes-container">
                 <div className="flex items-center">
-                  <img
+                  <PlayerImage
                     src={`${player.picture}`}
-                    className="rounded"
+                    alt={`${player.nickname}'s picture`} // alt 속성을 추가하는 것이 좋습니다.
                   />
                   <div className="ml-4">
                     <p className="nes-text">

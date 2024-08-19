@@ -52,6 +52,7 @@ const SpaceMinigame = ({ onClose }) => {
             userNickname: userInfo.userNickname,
             userGrade: userInfo.userGrade,
             userPoint: userInfo.userPoint,
+            userPicture: userInfo.userPicture,
           })
         )
       }
@@ -174,7 +175,7 @@ const SpaceMinigame = ({ onClose }) => {
         <PlayerList>
           {players.map((player, index) => (
             <Player key={player.clientId}>
-              <Character>{player.nickname}</Character>
+              <Character><img src={player.picture}></img></Character>
               {playerNum === index + 1
                 ? `${count}회`
                 : `${playerCounts[index]}회`}
@@ -337,6 +338,8 @@ const Character = styled.div`
   align-items: center;
   margin-bottom: 10px;
   font-size: 1.5em;
-`
+  overflow: hidden; /* 원형 밖으로 나가는 부분 숨김 */
+`;
+
 
 export default SpaceMinigame
