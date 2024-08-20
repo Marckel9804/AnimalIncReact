@@ -48,12 +48,12 @@ const App = () => {
       try {
         const response = await axios.post('/api/user/refresh-token')
         const newAccessToken = response.headers['authorization'].split(' ')[1]
-        localStorage.removeItem('accessToken')
         localStorage.setItem('accessToken', newAccessToken)
       } catch (err) {
         console.log('Error refreshing access token', err)
         if (err.response && err.response.status === 401) {
           localStorage.removeItem('accessToken')
+          removeRefreshToken()
           alert('세션이 만료되어 자동으로 로그아웃되었습니다.')
           window.location.href = '/'
         }
@@ -85,6 +85,10 @@ const App = () => {
     const threshold = 5 * 60
 
     return timeLeft < threshold
+  }
+
+  const removeRefreshToken = () => {
+    document.cookie = 'refreshToken=; path=/; max-age=0; secure; HttpOnly;';
   }
 
   return (
