@@ -120,6 +120,7 @@ const Login = () => {
                 </div>
             </div>
             <div id="backImg"/>
+            <Footer/>
         </>
     );
 };
