@@ -18,6 +18,13 @@ const AdminPage = () => {
     if (!isAdmin) {
       navi('/')
     }
+    axios.get('/redis/user', {params:{userNum:decodeToken.userNum}})
+      .then((res)=> {
+        console.log('redis data',res)
+      })
+      .catch((err)=> {
+        console.log('redis err',err)
+      })
   }, [isAdmin]);
 
 
