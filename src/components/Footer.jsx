@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import './Footer.css'
 import instagram from '../assets/images/instagram.png'
 import facebook from '../assets/images/facebook.png'
@@ -17,19 +18,19 @@ const Footer = () => {
           <p>(주)Animal 주식회사</p>
           <p>전유탁 | 서창호 | 김태웅 | 홍화연 | 오태경 | 유가영</p>
           <p>
-            <a
-              href="#terms"
+            <Link
+              to="/terms"
               style={{ color: '#4cbdb8', textDecoration: 'underline' }}
             >
               이용약관
-            </a>{' '}
+            </Link>{' '}
             |
-            <a
-              href="#privacy"
+            <Link
+              to="/privacy"
               style={{ color: '#4cbdb8', textDecoration: 'underline' }}
             >
               개인정보처리방침
-            </a>
+            </Link>
           </p>
         </div>
       </div>

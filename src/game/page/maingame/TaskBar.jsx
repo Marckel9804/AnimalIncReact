@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 
 function TaskBar(props) {
   const [time, setTime] = useState(new Date());
-
   useEffect(() => {
     const timerID = setInterval(() => {
       setTime(new Date());
@@ -38,6 +37,18 @@ function TaskBar(props) {
       <button
         className="task-btn w-48"
         onClick={() => {
+          if (props.showTM) {
+            props.setShowTM(false);
+          } else {
+            props.setShowTM(true);
+          }
+        }}
+      >
+        타이머
+      </button>
+      <button
+        className="task-btn w-48"
+        onClick={() => {
           if (props.showMI) {
             props.setShowMI(false);
           } else {
@@ -63,10 +74,10 @@ function TaskBar(props) {
       <button
         className="task-btn w-48"
         onClick={() => {
-          if (props.showIw) {
-            props.setShowIw(false);
+          if (props.showIW) {
+            props.setShowIW(false);
           } else {
-            props.setShowIw(true);
+            props.setShowIW(true);
           }
         }}
       >

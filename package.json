@@ -4,21 +4,42 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3600",
+    "dev": "vite --port 3600 --host 0.0.0.0",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "start": "vite --port 3600"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.624.0",
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
     "@react-oauth/google": "^0.12.1",
+    "@tosspayments/payment-widget-sdk": "^0.11.1",
     "animalincreact": "file:",
+    "aws-sdk": "^2.348.0",
     "axios": "^1.7.2",
+    "chart.js": "^4.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jwt-decode": "^4.0.0",
+    "moment": "^2.30.1",
+    "multer-s3": "^3.0.1",
     "nes.css": "^2.3.0",
+    "query-string": "^9.1.0",
     "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
+    "react-emoji": "^0.5.0",
+    "react-modal": "^3.16.1",
     "react-router-dom": "^6.25.1",
-    "styled-components": "^6.1.12"
+    "react-scroll-to-bottom": "^4.2.0",
+    "react95": "^4.0.0",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
+    "styled-components": "^6.1.12",
+    "uuid": "^10.0.0",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
@@ -29,9 +50,16 @@
     "eslint-plugin-react": "^7.34.3",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.7",
+    "nodemon": "^3.1.4",
     "postcss": "^8.4.39",
+    "sass": "^1.77.8",
     "tailwindcss": "^3.4.6",
     "vite": "^5.3.4"
   },
-  "proxy": "http://localhost:8080/"
+  "proxy": "http://localhost:8080/",
+  "description": "+ 초기세팅",
+  "main": "postcss.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
