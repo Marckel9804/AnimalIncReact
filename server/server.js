@@ -174,7 +174,7 @@ function handleJoin(ws, clientId, roomId) {
   const room = rooms.get(roomId);
 
   axios
-    .get(`http://localhost:8080/api/user/game/ladder/participants/${roomId}`)
+    .get(`http://223.130.160.171:8080/api/user/game/ladder/participants/${roomId}`)
     .then((res) => {
       room.totalParticipants = res.data.length;
 

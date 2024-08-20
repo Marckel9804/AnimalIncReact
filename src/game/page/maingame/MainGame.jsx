@@ -112,11 +112,11 @@ function MainGame() {
 
   //소켓 관련 기능들
   const [messages, setMessages] = useState([]);
-  const [ws, setWs] = useState(new WebSocket("ws://localhost:4000"));
+  const [ws, setWs] = useState(new WebSocket("ws://223.130.160.171:4000"));
 
   useEffect(() => {
     if (myStatus !== null) {
-      const ws = new WebSocket("ws://localhost:4000");
+      const ws = new WebSocket("ws://223.130.160.171:4000");
       ws.onopen = () => {
         console.log("Connected to server");
         const playerInfo = {
@@ -209,6 +209,22 @@ function MainGame() {
           console.log("게임 결과", data);
           setFinal(true);
           setResult(data.content);
+
+          // usernum과 일치하는 rank를 찾기
+          const usernum = myStatus.userNum; // 예시 usernum
+          const userRank = data.content.find(
+            (item) => item.usernum === usernum
+          )?.rank;
+          const totalParticipants = data.content.length;
+
+          if (totalParticipants > 1) {
+            getRewards(
+              (totalParticipants - userRank) * 10,
+              (totalParticipants - userRank) * 10
+            );
+          }
+
+          console.log("내 순위:", userRank);
         }
       };
       ws.onclose = (event) => {
@@ -388,12 +404,18 @@ function MainGame() {
   }, []);
 
   //내가 속한 방 아니면 바로 퇴출임
-  useEffect(() => {
-    if (otherStatus.length === 4 && progress === 100) {
-      console.log("댓츠 노노");
-      navigate("/");
-    }
-  }, [otherStatus, progress]);
+  // useEffect(() => {
+  //   if (otherStatus.length === 4 && progress === 100) {
+  //     console.log("댓츠 노노");
+  //     navigate("/");
+  //   }
+  // }, [otherStatus, progress]);
+
+  const getRewards = (ruby, point) => {
+    axios.get(
+      `/api/user/rewards?userNum=${myStatus.userNum}&ruby=${ruby}&point=${point}`
+    );
+  };
 
   //내 상태가 변하면 즉각 DB에 업데이트
   useEffect(() => {
