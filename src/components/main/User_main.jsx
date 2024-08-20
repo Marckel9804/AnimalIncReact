@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import './User_main.css'
 import 'nes.css/css/nes.min.css' // NES.css 스타일 임포트
-import axiosInstance from '../../utils/axios.js' // 경로 수정
+import axios from '../../utils/axios.js' // axiosInstance를 axios로 변경
 
 const User_main = () => {
   const [userInfo, setUserInfo] = useState({
@@ -15,7 +15,7 @@ const User_main = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await axiosInstance.get('/api/user/get-profile')
+        const response = await axios.get('/api/user/get-profile')
         const data = response.data
 
         // API에서 받은 데이터를 state에 저장
