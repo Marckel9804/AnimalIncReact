@@ -53,7 +53,7 @@ function News({
   useEffect(() => {
     sendMessage({
       type: "news",
-      stock: companyName[ind + comp],
+      stock: ind + comp,
       turn: gameStatus.turn,
     });
   }, [ind, comp]);
@@ -173,7 +173,14 @@ function News({
             >
               {news}
               <br />
-              <span style={{ color: "red" }}>{stockChange}</span>
+              <span style={{ color: "red" }}>
+                {
+                  stockInfo[ind + comp].weight[
+                    stockInfo[ind + comp].weight.length - 1
+                  ]
+                }
+                %
+              </span>
             </div>
           )}
         </div>

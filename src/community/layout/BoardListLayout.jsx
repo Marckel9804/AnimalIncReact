@@ -6,6 +6,7 @@ import axios from "../../utils/axios.js";
 import BoardSearchBar from "../component/BoardSearchBar.jsx";
 import Header from "../../components/Header.jsx";
 import Footer from "../../components/Footer.jsx";
+import bgimg from "../../image/background.png";
 
 const BoardListLayout = (props) => {
 
@@ -78,7 +79,7 @@ const BoardListLayout = (props) => {
 
 
           <div style={{
-            backgroundColor: 'aqua',
+            backgroundImage: `url(${bgimg})`,
             zIndex: '-1',
             position: 'fixed',
             width: '100vw',

@@ -84,6 +84,7 @@ const Ladder = ({
           setCountdown(message.count);
           break;
         case "startGame":
+          console.log("Received startGame message:", message);
           setLadder(message.ladder);
           setRewards(message.rewards);
           setGameState("running");
@@ -91,24 +92,22 @@ const Ladder = ({
           setCountdown(null);
           break;
         case "gameEnded":
-          if (!end) {
-            end = true;
-            setResults(message.results);
-            setInterval(() => {
-              setMiniL(false);
-            }, 8000);
-            console.log("우승자 :", message.winner);
-            if (message.winner.userNum === myStatus.usernum) {
-              const prize = getRandomTwo();
-              setMyStatus({
-                ...myStatus,
-                [prize[0]]: myStatus[prize[0]] + 1,
-                [prize[1]]: myStatus[prize[1]] + 1,
-              });
-            }
-            setGameState("end");
-
-            // updateTurn(gameStatus.turn);
+          console.log("Game ended message received:", message);
+          setResults(message.results);
+          setGameState("end");
+          const timerId = setInterval(() => {
+            setMiniL(false);
+            // 함수 실행 후 타이머 중지
+            clearInterval(timerId);
+          }, 8000);
+          console.log("우승자:", message.winner);
+          if (message.winner && message.winner.userNum === myStatus.usernum) {
+            const prize = getRandomTwo();
+            setMyStatus((prevStatus) => ({
+              ...prevStatus,
+              [prize[0]]: prevStatus[prize[0]] + 1,
+              [prize[1]]: prevStatus[prize[1]] + 1,
+            }));
           }
           break;
         case "gameState":
@@ -297,6 +296,7 @@ const Ladder = ({
   };
 
   const startGame = async (ladder) => {
+    console.log("Starting game with ladder:", ladder);
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -312,6 +312,11 @@ const Ladder = ({
         canvasHeight,
         colors[i]
       );
+      console.log("Sending finishPath message:", {
+        type: "finishPath",
+        clientId: players[i].clientId,
+        result,
+      });
       ws.send(
         JSON.stringify({
           type: "finishPath",
@@ -330,11 +335,11 @@ const Ladder = ({
           Ladder Game <BoxIcon>x</BoxIcon>
         </LadderHead>
         <GameContent>
-          <ParticipantInfo>
+          {/* <ParticipantInfo>
             <div className="text-3xl font-bold">
               Players: {currentParticipants} / {totalParticipants}
             </div>
-          </ParticipantInfo>
+          </ParticipantInfo> */}
           <PlayerList>
             {players.map((player) => (
               <Player key={player.clientId}>
@@ -382,8 +387,8 @@ const Ladder = ({
         {modal && (
           <LadderWindow>
             <LadderHead>
-              Waiting for players... {currentParticipants} / {totalParticipants}
-              <BoxIcon>x</BoxIcon>
+              세상에서 제일 지루한 중학교는? 로딩중... ( {currentParticipants} /{" "}
+              {totalParticipants} )<BoxIcon>x</BoxIcon>
             </LadderHead>
             <Loading>
               {countdown !== null ? (

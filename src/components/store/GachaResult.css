@@ -222,6 +222,7 @@
   height: 60px;
   aspect-ratio: 1;
   position: relative;
+  top: 120px;
 }
 
 .loader::before,
