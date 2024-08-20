@@ -13,7 +13,7 @@ const NaverLogin = () => {
 
             const naverLogin = new window.naver.LoginWithNaverId({
                 clientId: 'XtRHdGsf1DCObrQohYWO',
-                callbackUrl: 'http://localhost:3600/naver/callback',
+                callbackUrl: 'http://bit.animalinc.site:3600/naver/callback',
                 isPopup: false,
                 loginButton: { color: 'green', type: 1, height: 20 }
             });
