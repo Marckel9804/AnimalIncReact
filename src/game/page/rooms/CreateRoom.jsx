@@ -13,6 +13,7 @@ const CreateRoom = (props) => {
   const nowTime = moment().format('YYMMDDHHmm')
   const roomId = `${nowTime}_R_${user.userNum}`
   console.log('방 번호 확인: ', roomId)
+  
   // 방 채널은 본인 티어의 채널만 선택할 수 있다.
   const channelList = ['Bronze', 'Silver', 'Gold']
   const channelKR = ['브론즈', '실버', '골드']
@@ -53,32 +54,73 @@ const CreateRoom = (props) => {
   // 방 생성하기
   const insertRoom = async () => {
     try {
-      await axios
-        .post(`/api/user/game/insertRoom`, {
-          gameRoomId: roomId,
-          roomName: roomRef.current[0],
-          tier: roomRef.current[1],
-          players: roomRef.current[2],
-        })
-        .then(() => {
-          alert('📢➰ 게임 방이 만들어졌어요.')
-          navigate(`/roomwait/${roomId}`, {
-            state: {
-              roomId: roomId,
-              roomName: roomRef.current[0],
-              maxPlayers: roomRef.current[2],
-            },
+      if (roomRef.current[2] === 1) {
+        await axios
+          .post(`/api/user/game/insertRoom`, {
+            gameRoomId: roomId,
+            userNum: user.userNum, // 유저 번호 전달
+            roomName: roomRef.current[0],
+            tier: roomRef.current[1],
+            players: roomRef.current[2],
           })
-        })
-        .catch((error) => {
-          alert('😢 문제가 생겼어요... 관리자에게 문의해주세요.')
-          console.log(error)
-        })
+          .then(async () => {
+            // 1인 방이 생성된 경우 DB에 사용자 상태 저장
+            await axios.post(
+              `/game/insertUserStatus`, 
+              null,  // post 요청 바디가 필요 없으므로 null
+              {
+                params: { // 파라미터로 전달해야 합니다.
+                  gameRoomId: roomId,
+                  userNum: user.userNum,
+                },
+              }
+            );
+            // 1인 방이 생성된 후 MainGame으로 이동
+            navigate(`/game/${roomId}`, {
+              state: {
+                roomId: roomId,
+                roomName: roomRef.current[0],
+                maxPlayers: roomRef.current[2],
+                userNum: user.userNum,
+              },
+            });
+          })
+          .catch((error) => {
+            alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
+            console.log(error);
+          });
+      } else {
+        await axios
+          .post(`/api/user/game/insertRoom`, {
+            gameRoomId: roomId,
+            roomName: roomRef.current[0],
+            tier: roomRef.current[1],
+            players: roomRef.current[2],
+          })
+          .then(() => {
+            alert("📢➰ 게임 방이 만들어졌어요.");
+            navigate(`/roomwait/${roomId}`, {
+              state: {
+                roomId: roomId,
+                roomName: roomRef.current[0],
+                maxPlayers: roomRef.current[2],
+                userNum: user.userNum,
+              },
+            });
+          })
+          .catch((error) => {
+            alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
+            console.log(error);
+          });
+      }
     } catch (error) {
-      alert('😢 문제가 생겼어요... 관리자에게 문의해주세요.')
-      console.log(error)
+      alert("😢 문제가 생겼어요... 관리자에게 문의해주세요.");
+      console.log(error);
     }
-  }
+  };
+  
+
+
 
   return (
     <div className="nes-container is-rounded">
@@ -110,25 +152,21 @@ const CreateRoom = (props) => {
             <span>자유</span>
           </label>
           {channelList.map((item, index) => {
-            console.log('유저 정보 == 방 정보 확인 : ', item === user.userGrade)
-            {
-              return user.userGrade === item ? (
-                <>
-                  <label key={item}>
-                    <input
-                      type="radio"
-                      className="nes-radio"
-                      name="channel"
-                      value={item}
-                      onClick={(e) => {
-                        roomRef.current[1] = e.target.value
-                      }}
-                    />
-                    <span>{channelKR[index]}</span>
-                  </label>
-                </>
-              ) : null
-            }
+            console.log('유저 정보 == 방 정보 확인 : ', item === user.userGrade);
+            return user.userGrade === item ? (
+              <label key={item}>  {/* 여기서 key prop을 추가했습니다 */}
+                <input
+                  type="radio"
+                  className="nes-radio"
+                  name="channel"
+                  value={item}
+                  onClick={(e) => {
+                    roomRef.current[1] = e.target.value;
+                  }}
+                />
+                <span>{channelKR[index]}</span>
+              </label>
+            ) : null;
           })}
         </div>
         <div className="nes-container with-title is-rounded">
@@ -191,4 +229,4 @@ const CreateRoom = (props) => {
   )
 }
 
-export default CreateRoom
+export default CreateRoom;

@@ -1,5 +1,6 @@
 import WebSocket, { WebSocketServer } from "ws";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 const wss = new WebSocketServer({ port: 4000 });
 let players = []; // 현재 연결된 플레이어들을 저장하는 배열
@@ -259,13 +260,50 @@ function broadcastPlayers() {
 
 // 메시지 브로드캐스트 함수
 function broadcast(message) {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(
-        typeof message === "string" ? message : JSON.stringify(message)
-      );
+  let parsedMessage;
+  
+  // 메시지가 문자열이면 JSON 객체로 파싱
+  if (typeof message === "string") {
+    try {
+      parsedMessage = JSON.parse(message);
+    } catch (e) {
+      console.error("Failed to parse message:", e);
+      return;
     }
-  });
+  } else {
+    // 메시지가 이미 객체라면 그대로 사용
+    parsedMessage = message;
+  }
+
+  // message.type 확인
+  if (parsedMessage.type === "startGame") {
+    const clients = Array.from(wss.clients).filter(
+      (client) => client.readyState === WebSocket.OPEN
+    );
+    
+    let currentIndex = 0;
+  
+    const intervalId = setInterval(() => {
+      if (currentIndex < clients.length) {
+        const client = clients[currentIndex];
+        client.send(
+          typeof message === "string" ? message : JSON.stringify(message)
+        );
+        currentIndex++;
+      } else {
+        clearInterval(intervalId);
+        console.log("All messages have been sent.");
+      }
+    }, 1000); // 1초 간격으로 메시지 전송
+  }else{
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(
+          typeof message === "string" ? message : JSON.stringify(message)
+        );
+      }
+    });
+  }
 }
 
 //게임 관련된 메세지 통합처리
