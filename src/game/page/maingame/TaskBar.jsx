@@ -28,7 +28,7 @@ function TaskBar(props) {
         }}
       >
         <img
-          src="https://static-00.iconduck.com/assets.00/windows95-icon-2048x1776-bf6ucuub.png"
+          src="https://kr.object.ncloudstorage.com/aniinc/images/windows95-icon-2048x1776-bf6ucuub.png"
           width={"28px"}
           className=" align-middle mr-1"
         />

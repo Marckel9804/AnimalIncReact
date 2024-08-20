@@ -7,7 +7,10 @@ function TimeMachine(props) {
         ...props.myStatus,
         timeMachine: props.myStatus.timeMachine - 1,
       });
-      props.sendMessage({ type: "skip" });
+      const skip = setInterval(() => {
+        props.sendMessage({ type: "skip" });
+        clearInterval(skip);
+      }, 500);
       props.onClose;
     } else {
       props.openAlert("아이템이 부족합니다.");
