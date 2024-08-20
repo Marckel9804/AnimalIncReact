@@ -10,6 +10,7 @@ const FailPage = () => {
   return (
     <>
       <Header />
+      <div id="backImg" />
       <div className="fail-container">
         <div className="fail-alert-container">
           <div className="fail-alert-box">

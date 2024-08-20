@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import yFolderHover from "../../assets/community/b-folder.png"; // Mouse hover image
-import yFolderClick from "../../assets/community/y-folder5.png"; // Clicked image
-import yFolderInactive from "../../assets/community/w-folder.png"; // Inactive image
-import { useNavigate } from "react-router-dom";
+import yFolderClick from "../../assets/community/y-folder5.png";
+import yFolderInactive from "../../assets/community/w-folder.png";
 
 
 const BoardTable = (props) => {
@@ -97,14 +96,16 @@ const BoardTable = (props) => {
           <thead>
           <tr>
             <th style={{ width: '16px' }}>글번호</th>
-            <th style={{ width: '70%' }}>제목</th>
-            <th style={{ width: '40px' }}>글쓴이</th>
+            <th style={{ width: '24px' }}>테그</th>
+            <th className='w-36'>제목</th>
+            <th style={{ width: '48px' }}>글쓴이</th>
           </tr>
           </thead>
           <tbody>
           {list.map((item, index) => (
             <tr key={index}>
               <td className='text-center'>{item.bcId}</td>
+              <td className='text-center'>{item.bcCode}</td>
               <td onClick={() => onDetail(item.bcId)}
                   style={{ padding: '10px 20px' }}
                   className='nes-pointer'

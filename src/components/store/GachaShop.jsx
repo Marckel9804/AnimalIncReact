@@ -40,6 +40,7 @@ const GachaShop = () => {
   return (
     <>
       <Header />
+      <div id="backImg" />
       <div className="gacha-container">
         <div className="gacha-header">
           <Link to="/animal/encyclopedia" className="gacha-link">
