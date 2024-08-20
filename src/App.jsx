@@ -116,15 +116,22 @@ const App = () => {
           <Route path="/kakao-login" element={<KakaoLogin />} />
           <Route path="/check-profile" element={<CheckProfile />} />
           <Route path="/find-password" element={<FindPassword />} />
+
+          {/* 게시판 페이지 */}
           <Route path="/board/list" element={<BoardListPage />} />
           <Route path="/board" element={<Navigate to="/board/list?page=0" />} />
           <Route path="/board/write/:type" element={<BoardWritePage />} />
           <Route path="/board/detail/:id" element={<BoardDetailPage />} />
           <Route path="/board/update/:id" element={<BoardUpdatePage />} />
+          {/* 게시판 페이지 */}
+
           <Route exact path="/roomwait/:room_id" element={<RoomWait />} />
           {/* <Route exact path="/maingame/:room_id" element={<MainGame />} /> */}
           <Route path="/SpaceMinigame" element={<SpaceMinigame />} />
+
+          {/* 관리자 페이지 */}
           <Route path="/admin" element={<AdminPage />} />
+          {/* 관리자 페이지 */}
         </Routes>
       </div>
     </Router>
