@@ -176,7 +176,7 @@ const RoomWait = () => {
     const initializeUser = async () => {
       await insertUserStatus(roomId, userNum); // 사용자 상태를 DB에 초기화
       if (userInfo && roomId) {
-        const socket = new WebSocket("ws://localhost:4000");
+        const socket = new WebSocket("ws://223.130.160.171:4000");
         socketRef.current = socket;
 
         socket.onopen = () => {
