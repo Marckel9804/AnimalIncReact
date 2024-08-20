@@ -40,10 +40,6 @@ const CompleteProfile = () => {
         }
 
         const formattedBirthdate = `${birthdate.slice(0, 4)}-${birthdate.slice(4, 6)}-${birthdate.slice(6, 8)}`;
-        if (!isValidBirthdate(birthdate)) {
-            alert('유효하지 않은 생년월일 형식입니다');
-            return;
-        }
 
         try {
             const response = await axios.post('/api/user/check-profile', {
