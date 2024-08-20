@@ -37,6 +37,7 @@ function MainGame() {
   const [alert, setAlert] = useState(false);
   const [itemUse, setItemUse] = useState(false);
   const [item, setItem] = useState("shortSelling");
+  const [newsDesc, setNewsDesc] = useState("no");
   const [selected, setSelected] = useState(0);
   const [alertMsg, setAlertMsg] = useState("경고창");
   const companyName = {
@@ -157,6 +158,9 @@ function MainGame() {
             ...prevMessages,
             { content: data.content, type: "game" },
           ]);
+        }
+        if (data.type === "news") {
+          setNewsDesc(data.describe);
         }
         if (data.type === "turn") {
           setMyStatus({ ...myStatus, newsCount: 5 });
@@ -468,6 +472,9 @@ function MainGame() {
           myStatus={myStatus}
           setMyStatus={setMyStatus}
           openAlert={openAlert}
+          sendMessage={sendMessage}
+          gameStatus={gameStatus}
+          newsDesc={newsDesc}
         />
         <div className="flex=col" style={{ width: "21%" }}>
           <Timer show={showTM} setShow={setShowTM} timer={timer} />

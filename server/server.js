@@ -11,6 +11,7 @@ let gameOver = false; // 게임 종료 여부를 나타내는 플래그
 let countdownInterval; // 카운트다운 타이머를 저장할 변수
 
 let countdowns = {};
+let fake = {};
 let dept = [];
 
 // 클라이언트가 서버에 연결될 때 실행되는 함수
@@ -56,6 +57,12 @@ wss.on("connection", (ws) => {
         break;
       case "lottery":
         lottery(parsedMessage);
+        break;
+      case "fakenews":
+        fakeNews(parsedMessage);
+        break;
+      case "news":
+        news(parsedMessage);
         break;
       case "gameover":
         gameover(parsedMessage);
@@ -349,6 +356,45 @@ function lottery(message) {
     content: message.content,
   };
   gameRoomMessage(newMessage, message.roomid, "game");
+}
+
+//게임-가짜 뉴스
+function fakeNews(message) {
+  const newMessage = {
+    type: "game",
+    content: message.content,
+  };
+  fake[message.roomid].push({
+    turn: message.turn,
+    stock: message.stockId,
+    describe: message.describe,
+    turn: message.turn,
+  });
+  console.log(fake[message.roomid]);
+  gameRoomMessage(newMessage, message.roomid, "game");
+}
+
+function news(message) {
+  const roomId = message.roomid;
+  const stockId = message.stock;
+  const turn = message.turn;
+  let describe = "no";
+
+  const fakeStocks = fake[roomId].filter(
+    (item) => item.stock === stockId && item.turn === turn
+  );
+
+  if (fakeStocks.length > 0) {
+    const randomIndex = Math.floor(Math.random() * fakeStocks.length);
+    describe = fakeStocks[randomIndex].describe;
+  }
+
+  const newMessage = {
+    type: "news",
+    describe: describe,
+  };
+
+  gameRoomMessage(newMessage, roomId, "news");
 }
 
 function sendNext(message, cont) {

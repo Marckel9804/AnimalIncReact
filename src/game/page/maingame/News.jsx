@@ -11,6 +11,9 @@ function News({
   myStatus,
   openAlert,
   setMyStatus,
+  sendMessage,
+  gameStatus,
+  newsDesc,
 }) {
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -34,14 +37,35 @@ function News({
   const stockChange = useMemo(() => {
     const res =
       stockInfo[ind + comp].weight[stockInfo[ind + comp].weight.length - 1];
-    if (res < 0) {
-      return res + "% 하락 할 예정";
+    let result = res;
+
+    if (Math.abs(res) < 10 && Math.random() < 0.3) {
+      result = -res;
+    }
+
+    if (result < 0) {
+      return result + "% 하락 할 예정";
     } else {
-      return "+" + res + "% 상승 할 예정";
+      return "+" + result + "% 상승 할 예정";
     }
   }, [stockInfo, ind, comp]);
 
+  useEffect(() => {
+    sendMessage({
+      type: "news",
+      stock: companyName[ind + comp],
+      turn: gameStatus.turn,
+    });
+  }, [ind, comp]);
+
   const handleGenerateNews = async () => {
+    const media = () => {
+      if (newsDesc === "no") {
+        return stockChange;
+      } else {
+        return newsDesc;
+      }
+    };
     if (myStatus.newsCount > 0) {
       setLoading(true);
       setError("");
@@ -67,7 +91,7 @@ function News({
       여기서 주어진 정보는 다음과 같아:
       기업 이름: ${companyName[ind + comp]}
       서비스 종류: ${indKor[ind]}
-      주가 변화 예측: ${stockChange}
+      주가 변화 예측: ${media()}
       
       이 정보를 바탕으로 한국어로 가상의 뉴스를 작성해줘. 주가 언급은 절대 하지 말고, 이슈와 상황에 중점을 두어 작성해줘.
       `;
