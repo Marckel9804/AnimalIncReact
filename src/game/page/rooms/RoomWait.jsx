@@ -72,6 +72,12 @@ const MessageBalloon = styled.div`
   }
 `
 
+const PlayerImage = styled.img`
+  width: 150px; // 원하는 너비로 설정
+  height: 150px; // 원하는 높이로 설정
+  object-fit: cover; // 이미지가 잘리더라도 비율을 유지하며 박스에 맞춥니다.
+`
+
 const RoomWait = () => {
   const [chatMessages, setChatMessages] = useState([]) // 채팅 메시지 상태
   const [newMessage, setNewMessage] = useState('') // 새로운 메시지 입력 상태
@@ -87,6 +93,25 @@ const RoomWait = () => {
   const socketRef = useRef(null)
   const clientId = useRef(uuidv4())
   const params = useParams()
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get('/api/user/get-profile')
+        const data = response.data
+
+        // API에서 받은 데이터를 state에 저장
+        setUserInfo({
+          animal_image: data.animalImage, // selected_animal_id에 해당하는 이미지
+          user_tier: data.userGrade, // userGrade를 user_tier로 매핑
+        })
+      } catch (error) {
+        console.error('Error fetching user info:', error)
+      }
+    }
+
+    fetchUserInfo()
+  }, [])
 
   const insertUserStatus = async (gameRoomId, userNum) => {
     try {
@@ -110,7 +135,7 @@ const RoomWait = () => {
     try {
       const response = await axios.post('/game/saveUserStatus', null, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`, // 인증 토큰 추가
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
         params: {
           gameRoomId: gameRoomId,
@@ -120,6 +145,9 @@ const RoomWait = () => {
       console.log('User status saved:', response.data)
     } catch (error) {
       console.error('Error saving user status:', error)
+      if (error.response) {
+        console.error('Server response:', error.response)
+      }
     }
   }
 
@@ -145,70 +173,102 @@ const RoomWait = () => {
   }, [])
 
   useEffect(() => {
-    insertUserStatus(roomId, userNum)
-    if (userInfo && roomId) {
+    const initializeWebSocket = async () => {
+      // userInfo와 roomId가 설정되어 있지 않으면 WebSocket을 초기화하지 않음
+      if (!userInfo || !roomId) return
+
+      // 사용자 상태를 DB에 삽입
+      await insertUserStatus(roomId, userNum)
+
+      // WebSocket 연결 설정
       const socket = new WebSocket('ws://localhost:4000')
       socketRef.current = socket
 
       socket.onopen = () => {
         console.log('Connected to WebSocket server')
+        // 서버에 로그인 메시지 전송
         socket.send(
           JSON.stringify({
             type: 'login',
             clientId: clientId.current,
             userNickname: userInfo.userNickname,
-            userGrade: userInfo.userGrade,
+            userGrade: userInfo.user_tier,
             userPoint: userInfo.userPoint,
             roomId: roomId,
-            userPicture: userInfo.userPicture,
+            userPicture: userInfo.animal_image, // 현재 사용자의 animal_image 전송
           })
         )
       }
 
+      // 서버로부터 수신된 메시지 처리
+      // 서버로부터 수신된 메시지 처리
       socket.onmessage = (event) => {
         const parsedMessage = JSON.parse(event.data)
         console.log('Received from server:', parsedMessage)
 
-        if (parsedMessage.type === 'players') {
-          console.log('플레이어 데이터:', parsedMessage.players)
-          setPlayers(parsedMessage.players)
-        } else if (parsedMessage.type === 'countdown') {
-          console.log(`카운트다운: ${parsedMessage.countdown}초`)
-          setGameStartCountdown(parsedMessage.countdown)
-        } else if (parsedMessage.type === 'countdownCanceled') {
-          console.log('카운트다운이 취소되었습니다.')
-          setGameStartCountdown(null) // 카운트다운을 초기화
-        } else if (parsedMessage.type === 'startGame') {
-          console.log('게임이 시작됩니다!')
-
-          // 게임 시작 메시지를 받았을 때 saveUserStatus와 insertUserStatus 함수를 호출합니다.
-          saveUserStatus(roomId, loggedInPlayerId)
-
-          // 게임 페이지로 이동
-          navigate(`/game/${roomId}`)
-        } else if (parsedMessage.type === 'chat') {
-          setChatMessages((prevMessages) => [...prevMessages, parsedMessage])
-        } else if (parsedMessage.type === 'readyUpdate') {
-          console.log('Updating player ready state...')
-          setPlayers((prevPlayers) =>
-            prevPlayers.map((player) =>
-              player.clientId === parsedMessage.clientId
-                ? { ...player, ready: parsedMessage.ready }
-                : player
+        switch (parsedMessage.type) {
+          case 'players': {
+            console.log('플레이어 데이터:', parsedMessage.players)
+            // 현재 플레이어만 포함하도록 players 배열을 수정
+            const currentUser = parsedMessage.players.find(
+              (player) => player.clientId === clientId.current
             )
-          )
+            setPlayers(currentUser ? [currentUser] : [])
+            break
+          }
+
+          case 'countdown':
+            console.log(`카운트다운: ${parsedMessage.countdown}초`)
+            setGameStartCountdown(parsedMessage.countdown)
+            break
+
+          case 'countdownCanceled':
+            console.log('카운트다운이 취소되었습니다.')
+            setGameStartCountdown(null)
+            break
+
+          case 'startGame':
+            console.log('게임이 시작됩니다!')
+            saveUserStatus(roomId, userNum) // 게임 시작 시 사용자 상태 저장
+            setTimeout(() => {
+              navigate(`/game/${roomId}`)
+            }, 1000)
+            break
+
+          case 'chat':
+            setChatMessages((prevMessages) => [...prevMessages, parsedMessage])
+            break
+
+          case 'readyUpdate':
+            console.log('Updating player ready state...')
+            setPlayers((prevPlayers) =>
+              prevPlayers.map((player) =>
+                player.clientId === parsedMessage.clientId
+                  ? { ...player, ready: parsedMessage.ready }
+                  : player
+              )
+            )
+            break
+
+          default:
+            console.log('Unknown message type:', parsedMessage.type)
+            break
         }
       }
-
+      // WebSocket 연결 종료 시 처리
       socket.onclose = () => {
         console.log('WebSocket connection closed')
       }
 
+      // 컴포넌트 언마운트 시 WebSocket 연결 해제
       return () => {
         socket.close()
       }
     }
-  }, [userInfo, roomId, navigate])
+
+    // WebSocket 초기화 함수 호출
+    initializeWebSocket()
+  }, [userInfo, roomId, navigate]) // userInfo와 roomId가 변경될 때마다 실행
 
   // 방 정보를 가져오는 함수
   useEffect(() => {
@@ -290,12 +350,6 @@ const RoomWait = () => {
     }
   }
 
-  const PlayerImage = styled.img`
-    width: 150px; // 원하는 너비로 설정
-    height: 150px; // 원하는 높이로 설정
-    object-fit: cover; // 이미지가 잘리더라도 비율을 유지하며 박스에 맞춥니다.
-  `
-
   return (
     <Container>
       <Content>
@@ -333,8 +387,12 @@ const RoomWait = () => {
               <div className="bg-gray-100 p-4 rounded mt-2 nes-container">
                 <div className="flex items-center">
                   <PlayerImage
-                    src={`${player.picture}`}
-                    alt={`${player.nickname}'s picture`} // alt 속성을 추가하는 것이 좋습니다.
+                    src={
+                      player.clientId === clientId.current
+                        ? userInfo.animal_image // 현재 사용자의 경우 userInfo.animal_image를 사용
+                        : player.picture
+                    }
+                    alt={`${player.nickname}'s picture`} // alt 속성 추가
                   />
                   <div className="ml-4">
                     <p className="nes-text">

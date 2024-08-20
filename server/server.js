@@ -12,6 +12,7 @@ let gameOver = false // 게임 종료 여부를 나타내는 플래그
 let countdownInterval // 카운트다운 타이머를 저장할 변수
 
 let countdowns = {}
+let fake = {}
 let dept = []
 
 // 클라이언트가 서버에 연결될 때 실행되는 함수
@@ -57,6 +58,12 @@ wss.on('connection', (ws) => {
         break
       case 'lottery':
         lottery(parsedMessage)
+        break
+      case 'fakenews':
+        fakeNews(parsedMessage)
+        break
+      case 'news':
+        news(parsedMessage)
         break
       case 'gameover':
         gameover(parsedMessage)
@@ -114,8 +121,7 @@ function handleLogin(parsedMessage, ws, clientId) {
 }
 
 // 플레이어 레디 상태 처리 함수
-// 플레이어 레디 상태 처리 함수
-function handleReadyMessage(message) {
+async function handleReadyMessage(message) {
   if (!message.clientId) {
     console.log('Received undefined clientId. Message ignored:', message)
     return // clientId가 undefined인 경우 처리를 중단
@@ -167,7 +173,9 @@ function handleJoin(ws, clientId, roomId) {
   const room = rooms.get(roomId)
 
   axios
-    .get(`http://localhost:8080/api/user/game/ladder/participants/${roomId}`)
+    .get(
+      `http://223.130.160.171:8080/api/user/game/ladder/participants/${roomId}`
+    )
     .then((res) => {
       room.totalParticipants = res.data.length
 
@@ -403,13 +411,50 @@ function broadcastPlayers() {
 
 // 메시지 브로드캐스트 함수
 function broadcast(message) {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(
-        typeof message === 'string' ? message : JSON.stringify(message)
-      )
+  let parsedMessage
+
+  // 메시지가 문자열이면 JSON 객체로 파싱
+  if (typeof message === 'string') {
+    try {
+      parsedMessage = JSON.parse(message)
+    } catch (e) {
+      console.error('Failed to parse message:', e)
+      return
     }
-  })
+  } else {
+    // 메시지가 이미 객체라면 그대로 사용
+    parsedMessage = message
+  }
+
+  // message.type 확인
+  if (parsedMessage.type === 'startGame') {
+    const clients = Array.from(wss.clients).filter(
+      (client) => client.readyState === WebSocket.OPEN
+    )
+
+    let currentIndex = 0
+
+    const intervalId = setInterval(() => {
+      if (currentIndex < clients.length) {
+        const client = clients[currentIndex]
+        client.send(
+          typeof message === 'string' ? message : JSON.stringify(message)
+        )
+        currentIndex++
+      } else {
+        clearInterval(intervalId)
+        console.log('All messages have been sent.')
+      }
+    }, 1000) // 1초 간격으로 메시지 전송
+  } else {
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(
+          typeof message === 'string' ? message : JSON.stringify(message)
+        )
+      }
+    })
+  }
 }
 
 //게임 관련된 메세지 통합처리
@@ -491,6 +536,54 @@ function lottery(message) {
     content: message.content,
   }
   gameRoomMessage(newMessage, message.roomid, 'game')
+}
+
+//게임-가짜 뉴스
+function fakeNews(message) {
+  const newMessage = {
+    type: 'game',
+    content: message.content,
+  }
+  const roomId = message.roomid
+  if (!fake[roomId]) {
+    fake[roomId] = []
+  }
+
+  fake[roomId].push({
+    turn: message.turn,
+    stock: message.stockId,
+    describe: message.describe,
+  })
+  // console.log(fake[roomId]);
+  gameRoomMessage(newMessage, message.roomid, 'game')
+}
+
+function news(message) {
+  const roomId = message.roomid
+  const stockId = message.stock
+  const turn = message.turn
+  let describe = 'no'
+
+  // console.log("fake", fake);
+  if (fake[roomId]) {
+    const fakeStocks = fake[roomId].filter(
+      (item) => item.stock === stockId && item.turn === turn
+    )
+
+    // console.log("fakeStocks", fakeStocks);
+
+    if (fakeStocks.length > 0) {
+      const randomIndex = Math.floor(Math.random() * fakeStocks.length)
+      describe = fakeStocks[randomIndex].describe
+    }
+  }
+
+  const newMessage = {
+    type: 'news',
+    describe: describe,
+  }
+
+  gameRoomMessage(newMessage, roomId, 'news')
 }
 
 function sendNext(message, cont) {
