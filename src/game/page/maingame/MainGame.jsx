@@ -112,11 +112,11 @@ function MainGame() {
 
   //소켓 관련 기능들
   const [messages, setMessages] = useState([]);
-  const [ws, setWs] = useState(new WebSocket("ws://localhost:4000"));
+  const [ws, setWs] = useState(new WebSocket("ws://223.130.160.171:4000"));
 
   useEffect(() => {
     if (myStatus !== null || (ws && ws.readyState === WebSocket.CLOSED)) {
-      const newWs = new WebSocket("ws://localhost:4000");
+      const newWs = new WebSocket("ws://223.130.160.171:4000");
       newWs.onopen = () => {
         console.log("Connected to server");
         const playerInfo = {
