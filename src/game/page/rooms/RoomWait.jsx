@@ -147,7 +147,7 @@ const RoomWait = () => {
   useEffect(() => {
     insertUserStatus(roomId, userNum)
     if (userInfo && roomId) {
-      const socket = new WebSocket('ws://localhost:4000')
+      const socket = new WebSocket('ws://223.130.160.171:4000')
       socketRef.current = socket
 
       socket.onopen = () => {
