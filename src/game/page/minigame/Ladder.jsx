@@ -63,7 +63,7 @@ const Ladder = ({
   useBlocker(blocker, isGameRunning);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://223.130.160.171:4000");
+    const socket = new WebSocket("ws://localhost:4000");
     setWs(socket);
 
     socket.onopen = () => {
