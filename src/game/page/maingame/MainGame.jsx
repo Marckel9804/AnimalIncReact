@@ -115,9 +115,9 @@ function MainGame() {
   const [ws, setWs] = useState(new WebSocket("ws://223.130.160.171:4000"));
 
   useEffect(() => {
-    if (myStatus !== null) {
-      const ws = new WebSocket("ws://223.130.160.171:4000");
-      ws.onopen = () => {
+    if (myStatus !== null || (ws && ws.readyState === WebSocket.CLOSED)) {
+      const newWs = new WebSocket("ws://223.130.160.171:4000");
+      newWs.onopen = () => {
         console.log("Connected to server");
         const playerInfo = {
           type: "playerInfo",
@@ -126,9 +126,9 @@ function MainGame() {
           usernum: myStatus.userNum,
           turn: gameStatus.turn,
         };
-        ws.send(JSON.stringify(playerInfo));
+        newWs.send(JSON.stringify(playerInfo));
       };
-      ws.onmessage = (event) => {
+      newWs.onmessage = (event) => {
         const data = JSON.parse(event.data);
         // console.log("message", data);
         if (data.type === "message") {
@@ -167,16 +167,14 @@ function MainGame() {
         }
         if (data.type === "turn") {
           setMyStatus({ ...myStatus, newsCount: 5 });
-          if (gameStatus.turn === 1) {
-            setMiniL(true);
-          } else {
-            setNextDay(true);
-            const timerId = setInterval(() => {
-              setNextDay(false);
-              // 함수 실행 후 타이머 중지
-              clearInterval(timerId);
-            }, 5000);
-          }
+
+          setNextDay(true);
+          const timerId = setInterval(() => {
+            setNextDay(false);
+            // 함수 실행 후 타이머 중지
+            clearInterval(timerId);
+          }, 5000);
+
           if (data.incharge === myStatus.userNum) {
             updateTurn(gameStatus.turn);
           } else {
@@ -227,13 +225,15 @@ function MainGame() {
           console.log("내 순위:", userRank);
         }
       };
-      ws.onclose = (event) => {
-        console.log("WebSocket closed: ", event);
+      newWs.onclose = () => {
+        console.log("Disconnected from server");
+        // 서버와의 연결이 끊어졌을 때의 로직을 여기에 작성하세요.
+        setWs(null); // 웹소켓 상태를 null로 설정하여 useEffect가 다시 실행되도록 함
       };
-      ws.onerror = (error) => {
+      newWs.onerror = (error) => {
         console.error("WebSocket error: ", error);
       };
-      setWs(ws);
+      setWs(newWs);
       return () => {
         // console.log("소켓 오프");
         // ws.close();

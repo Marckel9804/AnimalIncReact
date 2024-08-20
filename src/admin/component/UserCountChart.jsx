@@ -20,14 +20,14 @@ const UserCountChart = (props) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get(`/api/admin/usercount/${year}/${month}`)
+    axios.get(`/api/admin/redis/usercount/${year}/${month}`)
       .then((res) => {
         setData(res.data)
       })
   }, [menu, month, year]);
 
-  const labels = data.map(item => new Date(item.cuDate).getDate());
-  const counts = data.map(item => item.count);
+  const labels = data.map(item => new Date(item.date).getDate());
+  const counts = data.map(item => item.userCount);
 
   const cMin = Math.min(...counts) - 100;
   const yMin = (cMin<0?0:cMin)

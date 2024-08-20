@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import './User_main.css'
 import 'nes.css/css/nes.min.css' // NES.css 스타일 임포트
-import axios from '../../utils/axios.js' // axiosInstance를 axios로 변경
+import axios from '../../utils/axios.js'
 
 const User_main = () => {
   const [userInfo, setUserInfo] = useState({
