@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Rank_week.css'
 import 'nes.css/css/nes.min.css' // NES.css 스타일 임포트
-import axiosInstance from '../../utils/axios.js' // axios 경로
+import axios from '../../utils/axios.js' // axios 경로
 
 // Rank_week 컴포넌트 정의
 const Rank_week = () => {
@@ -14,7 +14,7 @@ const Rank_week = () => {
     // 비동기 함수로 API에서 랭킹 데이터를 가져오는 함수 정의
     const fetchRankingData = async () => {
       try {
-        const response = await axiosInstance.get('/api/user/rankings') // 전체 랭킹 데이터를 가져오는 API 호출
+        const response = await axios.get('/api/user/rankings') // 전체 랭킹 데이터를 가져오는 API 호출
         const data = response.data
         if (Array.isArray(data)) {
           const sortedData = data.sort((a, b) => b.userPoint - a.userPoint) // userPoint 기준으로 내림차순 정렬

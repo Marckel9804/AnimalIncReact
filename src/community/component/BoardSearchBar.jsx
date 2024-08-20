@@ -51,10 +51,29 @@ const BoardSearchBar = (props) => {
                 onChange={onTag}
         >
           <option value='all' hidden>...</option>
-          <option value='잡담'>잡담</option>
-          <option value='자유'>자유</option>
-          <option value='공략'>공략</option>
-          <option value='정보'>정보</option>
+          {type==='notice'?(<>
+              <option value='이벤트'>이벤트</option>
+              <option value='공지'>공지</option>
+            </>
+          ):<></>
+          }
+          {
+            type==='free'?(<>
+                <option value="잡담">잡담</option>
+                <option value="공략">공략</option>
+                <option value="정보">정보</option>
+                <option value="질문">질문</option>
+              </>
+            ):<></>
+          }
+          {
+            type==='faq'?(<>
+                <option value="건의사항">건의사항</option>
+                <option value="신고">신고</option>
+                <option value="버그">버그</option>
+              </>
+            ):<></>
+          }
         </select>
       </div>
 

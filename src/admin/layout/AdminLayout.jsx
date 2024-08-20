@@ -8,6 +8,7 @@ import DashBoardChartLayout from "./DashBoardChartLayout.jsx";
 import Footer from "../../components/Footer.jsx";
 import AdminFooter from "../component/AdminFooter.jsx";
 import ReportTable from "../component/ReportTable.jsx";
+import bgimg from "../../image/background.png";
 
 const AdminLayout = (props) => {
   const [menu, setMenu] = useState('DASHBOARD');
@@ -31,11 +32,14 @@ const AdminLayout = (props) => {
 
       </div>
       <div className='fixed left-4' style={{top: '130px'}}>
-        <div className="nes-container with-title is-centered">
+        <div className="nes-container with-title is-centered" style={{backgroundColor:"white"}}>
           <p className="title" style={{fontSize: '32px', lineHeight: '0.5'}}>Menu</p>
           <AdminMenuBar menu={menu} setMenu={setMenu}/>
         </div>
       </div>
+      <div id="board-bg" className='fixed top-0 left-0 h-dvh w-dvw  -z-10'
+           style={{backgroundImage: `url(${bgimg})`}}
+      ></div>
     </div>
   )
 }

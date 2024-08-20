@@ -39,7 +39,7 @@ const BoardWriteLayout = (props) => {
     try {
       const now = new Date();
       const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+      const month = String(now.getMonth() + 1).padStart(2, '0');
       const date = String(now.getDate()).padStart(2, '0');
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
@@ -48,7 +48,7 @@ const BoardWriteLayout = (props) => {
       formData['writeDate'] = formattedTime;
       formData['type'] = type;
 
-      await onUpload(); // onUpload 함수가 끝날 때까지 기다림
+      await onUpload();
       console.log('전송데이터', formData);
 
       const res = await axios.post('/api/board/test/writedto', formData, {});
@@ -100,7 +100,11 @@ const BoardWriteLayout = (props) => {
       <div className='nes-container with-title bg-white mb-4 w-4/5'
            // style={{width:"1200px"}}
       >
-        <p className='title' style={{lineHeight: '0.4', fontSize: '2rem'}}> 자유게시글 작성 </p>
+        <p className='title' style={{lineHeight: '0.4', fontSize: '2rem'}}>
+          {type==='notice'?'공지사항 작성':''}
+          {type==='free'?'자유게시글 작성':''}
+          {type==='faq'?"FAQ 작성":''}
+        </p>
 
         {/* 태그 선택 */}
         <div id='board-write-code-select'
@@ -115,10 +119,31 @@ const BoardWriteLayout = (props) => {
             <select name='bcCode'
                     onChange={onChange}>
               <option value="x" hidden>...</option>
-              <option value="잡담">잡담</option>
-              <option value="공략">공략</option>
-              <option value="정보">정보</option>
-              <option value="질문">질문</option>
+
+              {type==='notice'?(<>
+                <option value='이벤트'>이벤트</option>
+                <option value='공지'>공지</option>
+                </>
+                ):<></>
+              }
+              {
+                type==='free'?(<>
+                  <option value="잡담">잡담</option>
+                  <option value="공략">공략</option>
+                  <option value="정보">정보</option>
+                  <option value="질문">질문</option>
+                  </>
+                ):<></>
+              }
+              {
+                type==='faq'?(<>
+                    <option value="건의사항">건의사항</option>
+                    <option value="신고">신고</option>
+                    <option value="버그">버그</option>
+                  </>
+                ):<></>
+              }
+
             </select>
           </div>
         </div>
@@ -155,10 +180,10 @@ const BoardWriteLayout = (props) => {
           {files.map((item, index) => (
             <WriteFileItem
               key={index}
-              index={index}  // Ensure you pass the index prop to the component
+              index={index}
               fileName={item.name}
               file={item}
-              deleteFile={deleteFile}  // Pass the delete function without invoking it
+              deleteFile={deleteFile}
             />
           ))}
         </div>
