@@ -30,7 +30,7 @@ import BoardListPage from './community/page/BoardListPage.jsx'
 import BoardWritePage from './community/page/BoardWritePage.jsx'
 import BoardDetailPage from './community/page/BoardDetailPage.jsx'
 import BoardUpdatePage from './community/page/BoardUpdatePage.jsx' // App.css 파일을 임포트합니다.
-import RoomWait from './game/page/rooms/RoomWait'
+import RoomWait from './game/page/rooms/RoomWait.jsx'
 import SpaceMinigame from './game/page/rooms/SpaceMinigame'
 import FindPassword from './login/FindPassword.jsx'
 import Terms from './components/Terms'
@@ -122,6 +122,7 @@ const App = () => {
           <Route path="/board/detail/:id" element={<BoardDetailPage />} />
           <Route path="/board/update/:id" element={<BoardUpdatePage />} />
           <Route exact path="/roomwait/:room_id" element={<RoomWait />} />
+          {/* <Route exact path="/maingame/:room_id" element={<MainGame />} /> */}
           <Route path="/SpaceMinigame" element={<SpaceMinigame />} />
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
