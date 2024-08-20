@@ -29,6 +29,7 @@ function StockInfo(props) {
     openAlert,
     updateTurn,
     sendMessage,
+    companyName,
   } = props;
   ChartJS.register(
     CategoryScale,
@@ -40,14 +41,16 @@ function StockInfo(props) {
     Tooltip
   );
 
+  const [infoTip, setInfoTip] = useState("");
+
   ChartJS.defaults.font.family = "'DungGeunMo'";
 
   const indColor = {
-    food: "#3CB371", // Green
-    ship: "rgb(128, 128, 128)", // Gray
-    enter: "#ED9CA5", // Red
-    elec: "#4B89DC", // Blue
-    tech: "#FFFF7F", // Yellow
+    food: "rgba(60, 179, 113, 0.8)", // Green
+    ship: "rgba(128, 128, 128, 0.8)", // Gray
+    enter: "rgba(237, 156, 165, 0.8)", // Red
+    elec: "rgba(75, 137, 220, 0.8)", // Blue
+    tech: "rgba(255, 255, 127, 0.8)", // Yellow
   };
   const indCheck = (e) => {
     setInd(e.target.value);
@@ -111,9 +114,10 @@ function StockInfo(props) {
   const [order, setOrder] = useState(0);
   const changeOrder = (e) => {
     const value = parseInt(e.target.value, 10);
-    console.log("val", value);
     if (isNaN(value) || value < 0) {
       setOrder("");
+    } else if (value > 999999) {
+      setOrder(999999);
     } else {
       setOrder(value);
     }
@@ -166,15 +170,6 @@ function StockInfo(props) {
       };
       sendMessage(sellMsg);
     }
-  };
-
-  //내 상태가 변하면 즉각 DB에 업데이트
-  useEffect(() => {
-    updateMyStatus();
-  }, [myStatus]);
-
-  const updateMyStatus = () => {
-    axios.post("/game/update/userStatus", myStatus);
   };
 
   return (
@@ -267,10 +262,21 @@ function StockInfo(props) {
                 onClick={() => {
                   setShowNews(true);
                 }}
+                onMouseEnter={() => {
+                  setInfoTip("news");
+                }}
+                onMouseLeave={() => {
+                  setInfoTip("");
+                }}
               >
+                {infoTip === "news" ? (
+                  <div className="win-news-tooltip ">
+                    뉴스를 참조해 주가의 등락을 예측해보자.
+                  </div>
+                ) : null}
                 뉴스 보기
               </button>
-              <button
+              {/* <button
                 className="nes-btn is-error"
                 style={{ padding: 0 }}
                 onClick={() => {
@@ -278,11 +284,11 @@ function StockInfo(props) {
                 }}
               >
                 다음 턴({gameStatus.turn + 1})
-              </button>
+              </button> */}
             </div>
           </div>
           <div className="win-chart-container">
-            <div className=" flex-col gap-4 mt-6">
+            <div className=" flex-col gap-4 mt-6 w-28">
               <label className="flex">
                 <input
                   type="radio"
@@ -292,7 +298,7 @@ function StockInfo(props) {
                   onChange={compCheck}
                   name="company"
                 />
-                <span>{ind + "1"}</span>
+                <span>{companyName[ind + "1"]}</span>
               </label>
               <label className="flex">
                 <input
@@ -303,7 +309,7 @@ function StockInfo(props) {
                   onChange={compCheck}
                   name="company"
                 />
-                <span>{ind + "2"}</span>
+                <span>{companyName[ind + "2"]}</span>
               </label>
               <label className="flex">
                 <input
@@ -314,7 +320,7 @@ function StockInfo(props) {
                   onChange={compCheck}
                   name="company"
                 />
-                <span>{ind + "3"}</span>
+                <span>{companyName[ind + "3"]}</span>
               </label>
               <label className="flex">
                 <input
@@ -325,7 +331,7 @@ function StockInfo(props) {
                   onChange={compCheck}
                   name="company"
                 />
-                <span>{ind + "4"}</span>
+                <span>{companyName[ind + "4"]}</span>
               </label>
             </div>
             <Chart data={data} options={options} />
@@ -351,7 +357,18 @@ function StockInfo(props) {
                 onClick={() => {
                   buyStock();
                 }}
+                onMouseEnter={() => {
+                  setInfoTip("buy");
+                }}
+                onMouseLeave={() => {
+                  setInfoTip("");
+                }}
               >
+                {infoTip === "buy" ? (
+                  <div className="win-stock-tooltip">
+                    주식을 주문 수량만큼 사는 행위.
+                  </div>
+                ) : null}
                 매수
               </button>
               <button
@@ -359,7 +376,18 @@ function StockInfo(props) {
                 onClick={() => {
                   sellStock();
                 }}
+                onMouseEnter={() => {
+                  setInfoTip("sell");
+                }}
+                onMouseLeave={() => {
+                  setInfoTip("");
+                }}
               >
+                {infoTip === "sell" ? (
+                  <div className="win-stock-tooltip">
+                    주식을 주문 수량만큼 파는 행위.
+                  </div>
+                ) : null}
                 매도
               </button>
             </div>

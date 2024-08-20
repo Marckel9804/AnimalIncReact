@@ -28,8 +28,24 @@ const CompleteProfile = () => {
     };
 
     const handleCompleteProfile = async () => {
+
+        if (nickname.trim() === '' || birthdate === '') {
+            alert('닉네임과 생년월일 모두 입력해주세요')
+            return;
+        }
+
+        if (isNicknameAvailable === null) {
+            alert('닉네임 중복 확인을 해주세요.');
+            return;
+        }
+
+        const formattedBirthdate = `${birthdate.slice(0, 4)}-${birthdate.slice(4, 6)}-${birthdate.slice(6, 8)}`;
+        if (!isValidBirthdate(birthdate)) {
+            alert('유효하지 않은 생년월일 형식입니다');
+            return;
+        }
+
         try {
-            const formattedBirthdate = `${birthdate.slice(0, 4)}-${birthdate.slice(4, 6)}-${birthdate.slice(6, 8)}`;
             const response = await axios.post('/api/user/check-profile', {
                 birthdate: formattedBirthdate,
                 nickname
@@ -42,6 +58,31 @@ const CompleteProfile = () => {
             alert('프로필 완성 중 오류가 발생했습니다. 다시 시도해 주세요.');
         }
     };
+
+    const isValidBirthdate = (date) => {
+        if (!/^\d{8}$/.test(date)) {
+            return false;
+        }
+
+        const year = parseInt(date.slice(0, 4), 10);
+        const month = parseInt(date.slice(4, 6), 10);
+        const day = parseInt(date.slice(6, 8), 10);
+
+        if (year < 1900 || year > 2024) {
+            return false;
+        }
+
+        if (month < 1  || month > 12) {
+            return false;
+        }
+
+        if (day < 1 || day < 31) {
+            return false;
+        }
+
+        const dateObj = new Date(`${year} - ${month} - ${day}`);
+        return dateObj && dateObj.getMonth() + 1 === month && dateObj.getDate() === day;
+    }
 
     return (
         <div className="complete-profile-page">

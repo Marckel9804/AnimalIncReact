@@ -7,6 +7,7 @@
     width: 80%;
     max-width: 1000px;
     margin: 0 auto;
+    z-index: 1;
 }
 
 .profile-section {
@@ -62,6 +63,7 @@
     flex: 2;
     padding: 20px;
     background-color: #fff;
+    margin-top: 20px;
 }
 
 .info-item {
@@ -80,13 +82,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 130px;
+    width: 140px;
     height: 40px;
     margin: 0 auto;
 }
 
 .modal {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -96,17 +98,19 @@
     width: 300px;
     max-width: 80%;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 99999; /* 모달의 z-index 값을 높게 설정 */
 }
 
 .modal-content {
     display: flex;
     flex-direction: column;
     margin: 0 auto;
+    z-index: 99999; /* 모달의 z-index 값을 높게 설정 */
 }
 
 .modal-item {
-    margin-bottom: 15px;
-    margin: auto;
+    padding: 15px;
+    margin: 0 auto;
 }
 
 .modal-item label {
@@ -115,7 +119,7 @@
 }
 
 .modal-item input {
-    width: 400px;
+    width: 250px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -162,6 +166,7 @@
     justify-content: center;
     font-size: 1.25em;
     font-weight: bold;
+    margin-top: 10px;
     margin-bottom: 20px;
 }
 
@@ -174,6 +179,7 @@
 .modal-item-info {
     display: flex;
     flex-direction: column;
+    margin: 10px;
 }
 
 .modal-item-name {
@@ -185,18 +191,19 @@
     color: #666;
 }
 
-.mypage-item-modal {
-    position: absolute;
+.mypage-modal-item {
+    position: fixed; /* 절대 위치에서 고정된 위치로 변경 */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: white;
-    padding: 20px;
+    padding: 10px;
     border-radius: 8px;
     width: 500px;
     max-width: 80%;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+
 
 #mypage-item-modal-btn {
     width: 80px;
@@ -263,4 +270,188 @@
 
 .mypage-pagination #page-num {
     background-color: white;
+}
+
+.mypage-nick {
+    margin-left: 140px;
+}
+
+.mypage-nick-change {
+    margin-left: 140px;
+}
+
+.mypage-nickname {
+    width: 280px;
+}
+
+#mypage-nick-error {
+    color: red;
+    margin-left: 140px;
+}
+
+#mypage-nick-success {
+    color: green;
+    margin-left: 140px;
+}
+
+.delete-notice {
+    color: red;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 20px;
+    text-align: center;
+}
+
+.delete-content {
+    text-align: center;
+    padding: 20px;
+}
+
+.animal-modal {
+    position: relative;
+    width: 50%;
+    text-align: center;
+    margin: 0 auto;
+    top: 150px;
+}
+
+/* 전체 컨테이너 스타일 */
+.animal-modal-content {
+    height: 59.5vh;
+    background-color: rgba(255, 255, 255, 0.7); /* 투명한 흰색 배경 */
+    border: 6px solid #4cbdb8; /* 테두리를 더 두껍게 설정 */
+    border-radius: 40px; /* 둥근 모서리 */
+    box-shadow: 0 0 10px rgba(76, 189, 184, 0.5); /* 그림자 추가 */
+    overflow-y: auto; /* 세로 스크롤 추가 */
+}
+
+.animal-modal-content::-webkit-scrollbar {
+    width: 0; /* 스크롤바 너비를 0으로 설정하여 숨김 */
+    background: transparent; /* 스크롤바 배경을 투명하게 설정 */
+}
+
+/* 동물 리스트 스타일 */
+.animal-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+
+/* 동물 카드 스타일 */
+.animal-card {
+    border: 2px solid #4cbdb8;
+    border-radius: 10px;
+    padding: 10px;
+    width: 150px;
+    text-align: center;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+/* 보유한 동물 카드 스타일 */
+.animal-card.owned {
+    background-color: white;
+}
+
+/* 잠금 상태의 동물 카드 스타일 */
+.animal-card.locked {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+/* 이미지 컨테이너 스타일 */
+.animal-image-container {
+    width: 100%;
+    height: 100px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #4cbdb8;
+}
+
+/* 알림 창 컨테이너 스타일 */
+.animal-alert-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 280px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 4px solid #4cbdb8;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(76, 189, 184, 0.5);
+    z-index: 10000;
+    padding: 15px;
+    text-align: center;
+}
+
+/* 알림 창 표시 상태 */
+.animal-alert-container.show {
+    display: block;
+}
+
+/* 확인 다이얼로그 스타일 */
+.confirmation-dialog {
+    position: fixed; /* Changed from fixed to absolute */
+    top: 50%; /* Default to top of modal */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, 0); /* Center horizontally and adjust vertically based on scroll */
+    width: 300px;
+    height: 150px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 4px solid #4cbdb8;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(76, 189, 184, 0.5);
+    z-index: 10000;
+    padding: 20px;
+}
+
+
+.confirmation-dialog-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.confirmation-dialog-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.confirmation-dialog-message {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.confirmation-dialog-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.confirmation-dialog-buttons .nes-btn {
+    flex: 1;
+    margin: 0 5px;
+}
+
+/* 동물 이름 스타일 */
+.animal-name {
+    font-size: 1em;
+    margin: 10px 0 5px;
+}
+
+/* 동물 ID 스타일 */
+.animal-id {
+    font-size: 0.9em;
+    margin: 0;
 }

@@ -46,7 +46,7 @@
 
 .register-input.email-input select,
 .register-input.email-input input[type="text"] {
-  width: 137px; /* 도메인 입력 필드와 선택 박스의 너비를 고정 */
+  width: 127px; /* 도메인 입력 필드와 선택 박스의 너비를 고정 */
   height: 40px;
   border: 1px solid #e5e8eb;
   background-color: #fff;

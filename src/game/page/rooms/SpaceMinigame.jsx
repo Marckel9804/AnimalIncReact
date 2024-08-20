@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import styled, { keyframes, css } from 'styled-components'
 import 'nes.css/css/nes.min.css'
+import axios from '../../../utils/axios.js'
+import { v4 as uuidv4 } from 'uuid' // uuidv4 함수 임포트
 
 const SpaceMinigame = ({ onClose }) => {
   const [count, setCount] = useState(0)
@@ -10,40 +12,70 @@ const SpaceMinigame = ({ onClose }) => {
   const [gameOver, setGameOver] = useState(false)
   const [isKeyPressed, setIsKeyPressed] = useState(false)
   const [hit, setHit] = useState(false)
+  const [players, setPlayers] = useState([]) // 플레이어 상태 추가
+  const [userInfo, setUserInfo] = useState(null) // 유저 정보를 저장할 상태 추가
   const socketRef = useRef(null)
-  const [clientId, setClientId] = useState(null)
-  const [playerNum, setPlayerNum] = useState(1) // 플레이어 번호 상태
+  const clientId = useRef(uuidv4())
+  const [playerNum, setPlayerNum] = useState(null) // 플레이어 번호 상태
   const [playerCounts, setPlayerCounts] = useState([0, 0, 0, 0]) // 모든 플레이어의 카운트를 관리
 
   useEffect(() => {
-    const initializeWebSocket = () => {
+    const fetchLoggedInPlayer = async () => {
+      try {
+        const response = await axios.get('/api/user/me', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+        })
+        const loggedInPlayer = response.data
+        setUserInfo(loggedInPlayer)
+        console.log('Logged in player info:', loggedInPlayer) // 이 부분에서 로그를 찍어 확인
+      } catch (error) {
+        console.error('Error fetching current user data:', error)
+      }
+    }
+
+    fetchLoggedInPlayer()
+  }, [])
+
+  useEffect(() => {
+    if (userInfo) {
       const socket = new WebSocket('ws://localhost:4000')
-      socketRef.current = socket // WebSocket 객체를 참조에 할당
+      socketRef.current = socket
 
       socket.onopen = () => {
         console.log('Connected to WebSocket server')
+        socket.send(
+          JSON.stringify({
+            type: 'login',
+            clientId: clientId.current,
+            userNickname: userInfo.userNickname,
+            userGrade: userInfo.userGrade,
+            userPoint: userInfo.userPoint,
+            userPicture: userInfo.userPicture,
+          })
+        )
       }
 
       socket.onmessage = (event) => {
-        const data = JSON.parse(event.data)
-        console.log('Received message:', data)
+        const parsedMessage = JSON.parse(event.data)
+        console.log('Received from server:', parsedMessage)
 
-        if (data.type === 'init' && data.clientId) {
-          setClientId(data.clientId)
-          setPlayerNum(data.playerNum)
-        }
-
-        if (data.type === 'count') {
+        if (parsedMessage.type === 'init' && parsedMessage.clientId) {
+          clientId.current = parsedMessage.clientId
+          setPlayerNum(parsedMessage.playerNum)
+        } else if (parsedMessage.type === 'players') {
+          setPlayers(parsedMessage.players)
+          console.log('Updated players state:', parsedMessage.players)
+        } else if (parsedMessage.type === 'count') {
           setPlayerCounts((prevCounts) => {
             const newCounts = [...prevCounts]
-            newCounts[data.playerNum - 1] = data.count
+            newCounts[parsedMessage.playerNum - 1] = parsedMessage.count
             return newCounts
           })
-        }
-
-        if (data.type === 'gameOver') {
+        } else if (parsedMessage.type === 'gameOver') {
           setGameOver(true)
-          if (data.isWinner) {
+          if (parsedMessage.isWinner) {
             setGameMessage('1등입니다! 게임이 종료되었습니다.')
           } else {
             setGameMessage('게임이 종료되었습니다.')
@@ -54,28 +86,15 @@ const SpaceMinigame = ({ onClose }) => {
         }
       }
 
-      socket.onclose = (event) => {
-        console.log('WebSocket connection closed', event)
-        if (event.code !== 1000) {
-          // 정상적인 종료가 아니면 재연결 시도
-          setTimeout(initializeWebSocket, 1000)
-        }
+      socket.onclose = () => {
+        console.log('WebSocket connection closed')
       }
 
-      socket.onerror = (error) => {
-        console.error('WebSocket error', error)
-        socket.close() // 에러 발생 시 연결을 닫음
+      return () => {
+        socket.close()
       }
     }
-
-    initializeWebSocket()
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.close()
-      }
-    }
-  }, [])
+  }, [userInfo, onClose])
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -97,7 +116,7 @@ const SpaceMinigame = ({ onClose }) => {
 
         const playerData = {
           type: 'count',
-          clientId,
+          clientId: clientId.current,
           count: newCount,
           progress: newProgress,
           playerNum,
@@ -126,7 +145,7 @@ const SpaceMinigame = ({ onClose }) => {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [isKeyPressed, gameOver, count, progress, clientId, playerNum])
+  }, [isKeyPressed, gameOver, count, progress, playerNum])
 
   useEffect(() => {
     if (count > highScore) {
@@ -154,25 +173,17 @@ const SpaceMinigame = ({ onClose }) => {
           </div>
         </ProgressContainer>
         <PlayerList>
-          <Player>
-            <Character>P1</Character>
-            {playerNum === 1 ? `${count}회` : `${playerCounts[0]}회`}
-          </Player>
-          <Player>
-            <Character>P2</Character>
-            {playerNum === 2 ? `${count}회` : `${playerCounts[1]}회`}
-          </Player>
-          <Player>
-            <Character>P3</Character>
-            {playerNum === 3 ? `${count}회` : `${playerCounts[2]}회`}
-          </Player>
-          <Player>
-            <Character>P4</Character>
-            {playerNum === 4 ? `${count}회` : `${playerCounts[3]}회`}
-          </Player>
+          {players.map((player, index) => (
+            <Player key={player.clientId}>
+              <Character><img src={player.picture}></img></Character>
+              {playerNum === index + 1
+                ? `${count}회`
+                : `${playerCounts[index]}회`}
+            </Player>
+          ))}
         </PlayerList>
         <ButtonContainer>
-          <StyledButton hit={hit ? 1 : 0} className="minigame-nes-btn">
+          <StyledButton $hit={hit ? 1 : 0} className="minigame-nes-btn">
             Space Bar
           </StyledButton>
         </ButtonContainer>
@@ -280,7 +291,7 @@ const StyledButton = styled.button`
     box-shadow: inset 4px 4px #adafbc;
   }
   ${(props) =>
-    props.hit &&
+    props.$hit &&
     css`
       animation: ${hitAnimation} 0.2s ease;
     `}
@@ -327,6 +338,8 @@ const Character = styled.div`
   align-items: center;
   margin-bottom: 10px;
   font-size: 1.5em;
-`
+  overflow: hidden; /* 원형 밖으로 나가는 부분 숨김 */
+`;
+
 
 export default SpaceMinigame

@@ -37,6 +37,18 @@ function TaskBar(props) {
       <button
         className="task-btn w-48"
         onClick={() => {
+          if (props.showTM) {
+            props.setShowTM(false);
+          } else {
+            props.setShowTM(true);
+          }
+        }}
+      >
+        타이머
+      </button>
+      <button
+        className="task-btn w-48"
+        onClick={() => {
           if (props.showMI) {
             props.setShowMI(false);
           } else {
