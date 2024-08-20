@@ -66,6 +66,24 @@
   z-index: 22;
 }
 
+.win-next-container {
+  position: absolute;
+  width: 800px;
+  height: 500px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 48;
+}
+
+.win-next-background {
+  width: 95vw;
+  height: 95vh;
+  background-color: transparent;
+  z-index: 48;
+  position: absolute;
+}
+
 .win-item-use-container {
   position: absolute;
   width: 700px;

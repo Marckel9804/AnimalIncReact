@@ -95,8 +95,10 @@ const Ladder = ({
           console.log("Game ended message received:", message);
           setResults(message.results);
           setGameState("end");
-          setInterval(() => {
+          const timerId = setInterval(() => {
             setMiniL(false);
+            // 함수 실행 후 타이머 중지
+            clearInterval(timerId);
           }, 8000);
           console.log("우승자:", message.winner);
           if (message.winner && message.winner.userNum === myStatus.usernum) {
