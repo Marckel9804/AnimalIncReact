@@ -17,7 +17,7 @@ import trash from "../../.././images/trash.ico";
 import ItemUse from "./ItemUse.jsx";
 import Timer from "./Timer.jsx";
 import FinalResult from "./FinalResult.jsx";
-import NextTurn from "./NextTurn.jsx";
+import Next from "./Next.jsx";
 
 function MainGame() {
   // 윈도우 창 닫힘 열림 관리
@@ -442,7 +442,7 @@ function MainGame() {
           <div className={selected == 2 ? "win-item-text" : null}>휴지통</div>
         </div>
         <Alert isOpen={alert} onClose={closeAlert} message={alertMsg} />
-        <NextTurn isOpen={nextDay} />
+        <Next isOpen={nextDay} />
         <FinalResult
           isOpen={final}
           result={result}

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import alert from "../../.././images/alert.png";
 
-function NextTurn({ isOpen }) {
+function Next({ isOpen }) {
   return isOpen ? (
     <div className="win-next-background">
       <div className={"win-next-container"}>
@@ -39,4 +38,4 @@ function NextTurn({ isOpen }) {
   ) : null;
 }
 
-export default NextTurn;
+export default Next;
