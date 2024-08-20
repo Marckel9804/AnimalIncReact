@@ -316,7 +316,7 @@
 }
 
 /* 전체 컨테이너 스타일 */
-.animal-modal-content {
+.mypage-animal-modal-content {
     height: 59.5vh;
     background-color: rgba(255, 255, 255, 0.7); /* 투명한 흰색 배경 */
     border: 6px solid #4cbdb8; /* 테두리를 더 두껍게 설정 */
@@ -325,13 +325,13 @@
     overflow-y: auto; /* 세로 스크롤 추가 */
 }
 
-.animal-modal-content::-webkit-scrollbar {
+.mypage-animal-modal-content::-webkit-scrollbar {
     width: 0; /* 스크롤바 너비를 0으로 설정하여 숨김 */
     background: transparent; /* 스크롤바 배경을 투명하게 설정 */
 }
 
 /* 동물 리스트 스타일 */
-.animal-list {
+.mypage-animal-list {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -343,7 +343,7 @@
 }
 
 /* 동물 카드 스타일 */
-.animal-card {
+.mypage-animal-card {
     border: 2px solid #4cbdb8;
     border-radius: 10px;
     padding: 10px;
@@ -355,18 +355,18 @@
 }
 
 /* 보유한 동물 카드 스타일 */
-.animal-card.owned {
+.mypage-animal-card.owned {
     background-color: white;
 }
 
 /* 잠금 상태의 동물 카드 스타일 */
-.animal-card.locked {
+.mypage-animal-card.locked {
     background-color: #ddd;
     cursor: not-allowed;
 }
 
 /* 이미지 컨테이너 스타일 */
-.animal-image-container {
+.mypage-animal-image-container {
     width: 100%;
     height: 100px;
     overflow: hidden;
@@ -377,7 +377,7 @@
 }
 
 /* 알림 창 컨테이너 스타일 */
-.animal-alert-container {
+.mypage-animal-alert-container {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -393,18 +393,18 @@
 }
 
 /* 알림 창 표시 상태 */
-.animal-alert-container.show {
+.mypage-animal-alert-container.show {
     display: block;
 }
 
 /* 확인 다이얼로그 스타일 */
-.confirmation-dialog {
+.mypage-confirmation-dialog {
     position: fixed; /* Changed from fixed to absolute */
     top: 50%; /* Default to top of modal */
     left: 50%; /* Center horizontally */
-    transform: translate(-50%, 0); /* Center horizontally and adjust vertically based on scroll */
+    transform: translate(-50%, -50%); /* Center horizontally and adjust vertically based on scroll */
     width: 300px;
-    height: 150px;
+    height: 200px;
     background-color: rgba(255, 255, 255, 0.9);
     border: 4px solid #4cbdb8;
     border-radius: 10px;
@@ -414,7 +414,7 @@
 }
 
 
-.confirmation-dialog-box {
+.mypage-confirmation-dialog-box {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -422,36 +422,41 @@
     height: 100%;
 }
 
-.confirmation-dialog-title {
+.mypage-confirmation-dialog-title {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 10px;
 }
 
-.confirmation-dialog-message {
+.mypage-confirmation-dialog-message {
     font-size: 16px;
     margin-bottom: 20px;
 }
 
-.confirmation-dialog-buttons {
+.mypage-confirmation-dialog-buttons {
     display: flex;
     justify-content: space-between;
     width: 100%;
 }
 
-.confirmation-dialog-buttons .nes-btn {
+.mypage-confirmation-dialog-buttons .nes-btn {
     flex: 1;
     margin: 0 5px;
 }
 
 /* 동물 이름 스타일 */
-.animal-name {
+.mypage-animal-name {
     font-size: 1em;
     margin: 10px 0 5px;
 }
 
 /* 동물 ID 스타일 */
-.animal-id {
+.mypage-animal-id {
     font-size: 0.9em;
     margin: 0;
+}
+
+#mypage-comfirm-btn {
+    margin: 5px;
+
 }
