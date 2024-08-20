@@ -357,7 +357,7 @@
   padding-left: 8px;
 }
 .win-my-tooltip::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: -10px;
   left: 80%;
@@ -490,7 +490,7 @@
   text-align: center;
 }
 .win-stock-tooltip::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: -10px;
   left: 80%;
@@ -513,7 +513,7 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  background-image: url("/select-btn.png");
+  background-image: url('/select-btn.png');
   background-repeat: no-repeat;
   background-position: right center;
   background-size: 16px;
@@ -535,7 +535,7 @@
   text-align: center;
 }
 .win-news-tooltip::after {
-  content: "";
+  content: '';
   position: absolute;
   top: -10px;
   left: 90%;
@@ -553,7 +553,7 @@
   padding: 4px;
 }
 
-.radio-container input[type="radio"] {
+.radio-container input[type='radio'] {
   appearance: none;
   width: 18px;
   height: 18px;
@@ -569,8 +569,8 @@
   position: relative;
 }
 
-.radio-container input[type="radio"]:checked::before {
-  content: "";
+.radio-container input[type='radio']:checked::before {
+  content: '';
   width: 10px;
   height: 10px;
   background-color: #000;
