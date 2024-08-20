@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import './User_main.css'
 import 'nes.css/css/nes.min.css' // NES.css 스타일 임포트
-import axiosInstance from '../../utils/axios.js' // 경로 수정
+import axios from '../../utils/axios.js' // axiosInstance를 axios로 변경
 
 const User_main = () => {
   const [userInfo, setUserInfo] = useState({
@@ -10,17 +10,17 @@ const User_main = () => {
     user_tier: '',
   })
   const location = useLocation()
-  const selectedAnimal = location.state?.selectedAnimal || {}
-
   const navigate = useNavigate()
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await axiosInstance.get('/api/user/get-profile')
+        const response = await axios.get('/api/user/get-profile')
         const data = response.data
+
+        // API에서 받은 데이터를 state에 저장
         setUserInfo({
-          animal_image: data.animal_image,
+          animal_image: data.animalImage, // selected_animal_id에 해당하는 이미지
           user_tier: data.userGrade, // userGrade를 user_tier로 매핑
         })
       } catch (error) {
@@ -30,10 +30,6 @@ const User_main = () => {
 
     fetchUserInfo()
   }, [])
-
-  useEffect(() => {
-    console.log('Selected Animal:', selectedAnimal) // 선택된 캐릭터 정보를 출력
-  }, [selectedAnimal])
 
   const goToMypage = () => {
     navigate(`/mypage`)
@@ -54,9 +50,7 @@ const User_main = () => {
         <div className="image-background"></div>
         <img
           src={
-            selectedAnimal.animalImage ||
-            userInfo.animal_image ||
-            'https://via.placeholder.com/150' // 기본 이미지 URL
+            userInfo.animal_image || 'https://via.placeholder.com/150' // 기본 이미지 URL
           }
           alt="캐릭터 이미지"
           className="character-image"

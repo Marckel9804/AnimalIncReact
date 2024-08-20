@@ -40,13 +40,14 @@ const GachaShop = () => {
   return (
     <>
       <Header />
+      <div id="backImg" />
       <div className="gacha-container">
         <div className="gacha-header">
-          <Link to="/animal/encyclopedia" className="gacha-link">
+          <Link to="/animal/encyclopedia" className="gacha-link nes-pointer">
             도감
           </Link>
           <h2 className="gacha-title">가차 상점</h2>
-          <span className="gacha-close" onClick={() => navigate('/')}>
+          <span className="gacha-close nes-pointer" onClick={() => navigate('/')}>
             X
           </span>
         </div>

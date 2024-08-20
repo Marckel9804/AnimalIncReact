@@ -119,6 +119,7 @@ const CheckoutPage = () => {
   return (
     <>
       <Header />
+      <div id="backImg" />
       <div className="checkout-container">
         <div className="payment-container with-border">
           <div className="payment-widget-container">

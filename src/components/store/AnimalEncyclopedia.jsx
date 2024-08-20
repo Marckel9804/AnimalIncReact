@@ -86,20 +86,20 @@ const AnimalEncyclopedia = () => {
   return (
     <>
       <Header />
-      <div className="encyclopedia-wrapper">
-        <div className="encyclopedia-container">
-          <div className="animal-list">
+      <div className="encyclopedia-wrapper1">
+        <div className="encyclopedia-container1">
+          <div className="animal-list1">
             {filledAnimals.map((animal, index) => (
               <div
                 key={index}
-                className={`animal-card ${
+                className={`animal-card1 ${
                   ownedAnimals.includes(animal.animalId) ? 'owned' : 'locked'
                 }`}
                 onMouseEnter={() => setHoveredAnimal(animal)}
                 onMouseLeave={() => setHoveredAnimal(null)}
                 onClick={() => handleAnimalSelect(animal)}
               >
-                <div className="animal-image-container">
+                <div className="animal-image1-container">
                   {animal.animalImage ? (
                     <img src={animal.animalImage} alt={animal.animalName} />
                   ) : (
@@ -115,12 +115,12 @@ const AnimalEncyclopedia = () => {
           </div>
         </div>
         {hoveredAnimal && (
-          <div className="animal-alert-container show">
-            <div className="animal-alert-box">
-              <div className="animal-alert-title">
+          <div className="animal-alert1-container show">
+            <div className="animal-alert1-box">
+              <div className="animal-alert1-title">
                 {hoveredAnimal.animalName || '빈 슬롯'}
               </div>
-              <div className="animal-alert-message">
+              <div className="animal-alert1-message">
                 {hoveredAnimal.animalDescription || '설명 없음'}
                 <br />
                 확률: {hoveredAnimal.animalProbability || '미정'}
@@ -129,13 +129,14 @@ const AnimalEncyclopedia = () => {
           </div>
         )}
         {showConfirmation && (
-          <div className="confirmation-dialog">
-            <div className="confirmation-dialog-box">
-              <div className="confirmation-dialog-title">안내</div>
-              <div className="confirmation-dialog-message">
-                {selectedAnimal.animalName}을(를) 내 캐릭터로 선택하시겠습니까?
+          <div className="confirmation-dialog1">
+            <div className="confirmation-dialog1-box">
+              <div className="confirmation-dialog1-title">안내</div>
+              <div className="confirmation-dialog1-message">
+                {selectedAnimal.animalName}(을)를
+                <br />내 캐릭터로 선택하시겠습니까?
               </div>
-              <div className="confirmation-dialog-buttons">
+              <div className="confirmation-dialog1-buttons">
                 <button className="nes-btn" onClick={handleConfirm}>
                   확인
                 </button>

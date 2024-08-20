@@ -1,5 +1,5 @@
-import React, {useState, useEffect, useRef} from 'react'
-import {useNavigate} from 'react-router-dom'
+import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Modal from 'react-modal'
 import axios from '../utils/axios.js'
 import '../styles/login/MyPage.css'
@@ -94,6 +94,8 @@ const Mypage = () => {
                     userRealname: response.data.userRealname,
                     userBirthdate: response.data.userBirthdate,
                 })
+                setNickname(response.data.userNickname);
+                setSelectedPicture(response.data.animalImage);
             } catch (error) {
                 console.error('Error fetching user info:', error)
                 alert('로그인을 먼저 해주세요!')
@@ -225,9 +227,27 @@ const Mypage = () => {
     const openItemModal = () => setIsItemModalOpen(true);
     const closeItemModal = () => setIsItemModalOpen(false);
 
+    const isValidBirthdate = (date) => {
+        // 생년월일이 8자리 숫자인지 확인
+        if (!/^\d{8}$/.test(date)) return false;
+
+        const year = parseInt(date.slice(0, 4), 10);
+        const month = parseInt(date.slice(4, 6), 10);
+        const day = parseInt(date.slice(6, 8), 10);
+
+        // 날짜가 유효한 범위인지 확인
+        if (year < 1900 || year > new Date().getFullYear()) return false;
+        if (month < 1 || month > 12) return false;
+        if (day < 1 || day > 31) return false;
+
+        // 실제 날짜로 변환하여 유효성 확인
+        const dateObj = new Date(`${year}-${month}-${day}`);
+        return dateObj && dateObj.getMonth() + 1 === month && dateObj.getDate() === day;
+    };
+
     const handleUpdate = async () => {
         // 필수 입력값 확인
-        if (!updatedInfo.userRealname || !updatedInfo.userNickname || !updatedInfo.userBirthdate) {
+        if (!updatedInfo.userRealname || !nickname || !updatedInfo.userBirthdate) {
             alert('모든 필드를 입력해주세요.');
             return;
         }
@@ -325,6 +345,9 @@ const Mypage = () => {
                 return 'src/image/Silver.png';
             case 'Gold':
                 return 'src/image/Gold.png';
+            case null:
+            case undefined:
+                return null;  // userGrade가 null 또는 undefined일 경우 null을 반환
             default:
                 return 'src/image/Default.png';
         }
@@ -354,6 +377,7 @@ const Mypage = () => {
             setSelectedPicture(selectedAnimal.animal_image);
             setShowConfirmation(false);
             setIsProfilePictureModalOpen(false);
+            navigate('/');
         } catch (error) {
             console.error('Error selecting profile picture:', error);
             alert('프로필 사진 선택 중 오류가 발생했습니다. 다시 시도해 주세요.');
@@ -403,20 +427,6 @@ const Mypage = () => {
         return nickname.length >= 2 && nickname.length <= 12 && !invalidPattern.test(nickname);
     };
 
-    const isValidBirthdate = (date) => {
-        if (!/^\d{8}$/.test(date)) return false;
-        const year = parseInt(date.slice(0, 4), 10);
-        const month = parseInt(date.slice(4, 6), 10);
-        const day = parseInt(date.slice(6, 8), 10);
-
-        if (year < 1900 || year > new Date().getFullYear()) return false;
-        if (month < 1 || month > 12) return false;
-        if (day < 1 || day > 31) return false;
-
-        const dateObj = new Date(`${year}-${month}-${day}`);
-        return dateObj && dateObj.getMonth() + 1 === month && dateObj.getDate() === day;
-    };
-
     const handleCancel = () => {
         setShowConfirmation(false);
         setSelectedAnimal(null);
@@ -440,8 +450,8 @@ const Mypage = () => {
                         <StyledTab value={1} style={{minWidth: '120px', textAlign: 'center'}}>내 정보 수정</StyledTab>
                         <StyledTab value={2} style={{minWidth: '120px', textAlign: 'center'}}>회원 탈퇴</StyledTab>
                         <StyledTab value={3} style={{minWidth: '120px', textAlign: 'center'}}>내 글 목록</StyledTab>
-                        <StyledTab value={4} style={{minWidth: '120px', textAlign: 'center'}}>내가 쓴 댓글</StyledTab>
-                        <StyledTab value={5} style={{minWidth: '120px', textAlign: 'center'}}>내 FAQ</StyledTab>
+{/*                        <StyledTab value={4} style={{minWidth: '120px', textAlign: 'center'}}>내가 쓴 댓글</StyledTab>
+                        <StyledTab value={5} style={{minWidth: '120px', textAlign: 'center'}}>내 FAQ</StyledTab>*/}
                         {!userInfo.slogin &&
                             <StyledTab value={6} style={{minWidth: '120px', textAlign: 'center'}}>비밀번호 변경</StyledTab>}
                     </Tabs>
@@ -457,8 +467,10 @@ const Mypage = () => {
                                              className="profile-image"/>
                                     </div>
                                     <div className="profile-icon-wrapper">
-                                        <img src={getTierIcon(userInfo.userGrade)} alt="티어 아이콘"
-                                             className="profile-icon"/>
+                                        {getTierIcon(userInfo.userGrade) ? (
+                                            <img src={getTierIcon(userInfo.userGrade)} alt="티어 아이콘"
+                                                 className="profile-icon"/>
+                                        ) : null}
                                     </div>
                                 </div>
                                 <div className="info-section">
@@ -482,12 +494,12 @@ const Mypage = () => {
                                         <span className="info-label">루비</span>
                                         <span className="info-value">{userInfo.userRuby} 루비</span>
                                     </div>
-                                    <div className="info-item">
+{/*                                    <div className="info-item">
                                         <span className="info-label">아이템</span>
                                         <span className="info-value-item nes-pointer" onClick={openItemModal}>
-                                {userInfo.userItems.length} 개
-                            </span>
-                                    </div>
+                                            {userInfo.userItems.length} 개
+                                        </span>
+                                    </div>*/}
                                 </div>
                             </div>
                         )}
@@ -504,8 +516,13 @@ const Mypage = () => {
                                 <div className="modal-item">
                                     <label className="mypage-nick">닉네임</label>
                                     <div className="mypage-nick-change">
-                                        <input type="text" value={updatedInfo.userNickname} className="mypage-nickname" onChange={(e) => setNickname(e.target.value)}
-                                               placeholder="닉네임"/>
+                                        <input
+                                            type="text"
+                                            value={nickname} // nickname 상태를 value로 설정
+                                            className="mypage-nickname"
+                                            onChange={(e) => setNickname(e.target.value)} // nickname 상태를 업데이트
+                                            placeholder="닉네임"
+                                        />
                                         <button type="button" id="check-nickname-button" className="nes-btn"
                                                 onClick={checkNicknameAvailability}>중복 확인
                                         </button>
@@ -518,7 +535,7 @@ const Mypage = () => {
                                     <label>생년월일</label>
                                     <input
                                         type="text"
-                                        value={updatedInfo.userBirthdate}
+                                        placeholder="YYYYMMDD 형식으로 작성"
                                         onChange={(e) => setUpdatedInfo({
                                             ...updatedInfo,
                                             userBirthdate: e.target.value
@@ -598,8 +615,8 @@ const Mypage = () => {
                                 </div>
                             </div>
                         )}
-                        {selectedTab === 4 && <div>내가 쓴 댓글 내용</div>}
-                        {selectedTab === 5 && <div>FAQ 내용</div>}
+{/*                        {selectedTab === 4 && <div>내가 쓴 댓글 내용</div>}
+                        {selectedTab === 5 && <div>FAQ 내용</div>}*/}
                         {selectedTab === 6 && !userInfo.slogin && (
                             <div className="modal-content">
                                 <div className="modal-item">
@@ -675,37 +692,37 @@ const Mypage = () => {
                 </div>
             </Modal>
             <Modal isOpen={isProfilePictureModalOpen} onRequestClose={closeProfilePictureModal} className="animal-modal">
-                <div className="animal-modal-content">
-                    <div className="animal-list">
+                <div className="mypage-animal-modal-content">
+                    <div className="mypage-animal-list">
                         {filledAnimals.map((animal, index) => (
                             <div
                                 key={index}
-                                className={`animal-card ${
+                                className={`mypage-animal-card ${
                                     ownedAnimals.includes(animal.animalId) ? 'owned' : 'locked'
                                 }`}
                                 onMouseEnter={() => setHoveredAnimal(animal)}
                                 onMouseLeave={() => setHoveredAnimal(null)}
                                 onClick={() => handleProfilePictureSelect(animal)}
                             >
-                                <div className="animal-image-container">
+                                <div className="mypage-animal-image-container">
                                     {animal.animalImage ? (
                                         <img src={animal.animalImage} alt={animal.animalName} />
                                     ) : (
                                         <div className="placeholder-image">No Image</div>
                                     )}
                                 </div>
-                                <div className="animal-id">No.{animal.animalId || '-'}</div>
-                                <div className="animal-name">{animal.animalName || '빈 슬롯'}</div>
+                                <div className="mypage-animal-id">No.{animal.animalId || '-'}</div>
+                                <div className="mypage-animal-name">{animal.animalName || '빈 슬롯'}</div>
                             </div>
                         ))}
                     </div>
                     {hoveredAnimal && (
-                        <div className="animal-alert-container show">
-                            <div className="animal-alert-box">
-                                <div className="animal-alert-title">
+                        <div className="mypage-animal-alert-container show">
+                            <div className="mypage-animal-alert-box">
+                                <div className="mypage-animal-alert-title">
                                     {hoveredAnimal.animalName || '빈 슬롯'}
                                 </div>
-                                <div className="animal-alert-message">
+                                <div className="mypage-animal-alert-message">
                                     {hoveredAnimal.animalDescription || '설명 없음'}
                                     <br />
                                     확률: {hoveredAnimal.animalProbability || '미정'}
@@ -714,17 +731,17 @@ const Mypage = () => {
                         </div>
                     )}
                     {showConfirmation && (
-                        <div className="confirmation-dialog">
-                            <div className="confirmation-dialog-box">
-                                <div className="confirmation-dialog-title">안내</div>
-                                <div className="confirmation-dialog-message">
+                        <div className="mypage-confirmation-dialog">
+                            <div className="mypage-confirmation-dialog-box">
+                                <div className="mypage-confirmation-dialog-title">안내</div>
+                                <div className="mypage-confirmation-dialog-message">
                                     {selectedAnimal.animalName}을(를) 메인 캐릭터로 선택하시겠습니까?
                                 </div>
-                                <div className="confirmation-dialog-buttons">
-                                    <button className="nes-btn" onClick={handleUpload}>
+                                <div className="mypage-confirmation-dialog-buttons">
+                                    <button className="nes-btn is-primary" id="mypage-comfirm-btn" onClick={handleUpload}>
                                         확인
                                     </button>
-                                    <button className="nes-btn" onClick={handleCancel}>
+                                    <button className="nes-btn is-error" id="mypage-comfirm-btn" onClick={handleCancel}>
                                         취소
                                     </button>
                                 </div>
@@ -733,7 +750,7 @@ const Mypage = () => {
                     )}
                 </div>
             </Modal>
-            <Modal
+            {/*<Modal
                 isOpen={isItemModalOpen}
                 onRequestClose={closeItemModal}
                 className="mypage-modal-item"
@@ -756,7 +773,7 @@ const Mypage = () => {
                     )}
                 </div>
                 <button className="nes-btn is-error" id="mypage-item-modal-btn" onClick={closeItemModal}>닫기</button>
-            </Modal>
+            </Modal>*/}
             <Footer/>
         </>
     );

@@ -5,6 +5,7 @@ import axios from "../../utils/axios.js";
 import '../Board.scss'
 import Header from "../../components/Header.jsx";
 import Footer from "../../components/Footer.jsx";
+import bgimg from "../../image/background.png"
 
 const BoardWritePage = () => {
 
@@ -26,7 +27,9 @@ const BoardWritePage = () => {
     <div id='BoardWritePage' className='flex-col justify-center w-full'>
       <Header/>
       <BoardWriteLayout type={type} email={email}/>
-      <div id="board-bg" className='fixed top-0 left-0 h-dvh w-dvw bg-cyan-200 -z-10'></div>
+      <div id="board-bg" className='fixed top-0 left-0 h-dvh w-dvw  -z-10'
+           style={{ backgroundImage: `url(${bgimg})`}}
+      ></div>
     </div>
   )
 }

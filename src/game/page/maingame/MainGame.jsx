@@ -17,6 +17,7 @@ import trash from "../../.././images/trash.ico";
 import ItemUse from "./ItemUse.jsx";
 import Timer from "./Timer.jsx";
 import FinalResult from "./FinalResult.jsx";
+import Next from "./Next.jsx";
 
 function MainGame() {
   // 윈도우 창 닫힘 열림 관리
@@ -30,6 +31,7 @@ function MainGame() {
   const [showNews, setShowNews] = useState(false);
   const [miniL, setMiniL] = useState(false);
   const [final, setFinal] = useState(false);
+  const [nextDay, setNextDay] = useState(false);
   const [result, setResult] = useState(null);
 
   const [timer, setTimer] = useState(0);
@@ -37,6 +39,7 @@ function MainGame() {
   const [alert, setAlert] = useState(false);
   const [itemUse, setItemUse] = useState(false);
   const [item, setItem] = useState("shortSelling");
+  const [newsDesc, setNewsDesc] = useState("no");
   const [selected, setSelected] = useState(0);
   const [alertMsg, setAlertMsg] = useState("경고창");
   const companyName = {
@@ -109,11 +112,11 @@ function MainGame() {
 
   //소켓 관련 기능들
   const [messages, setMessages] = useState([]);
-  const [ws, setWs] = useState(new WebSocket("ws://localhost:4000"));
+  const [ws, setWs] = useState(new WebSocket("ws://223.130.160.171:4000"));
 
   useEffect(() => {
     if (myStatus !== null) {
-      const ws = new WebSocket("ws://localhost:4000");
+      const ws = new WebSocket("ws://223.130.160.171:4000");
       ws.onopen = () => {
         console.log("Connected to server");
         const playerInfo = {
@@ -158,9 +161,21 @@ function MainGame() {
             { content: data.content, type: "game" },
           ]);
         }
+        if (data.type === "news") {
+          setNewsDesc(data.describe);
+          console.log(data.describe);
+        }
         if (data.type === "turn") {
+          setMyStatus({ ...myStatus, newsCount: 5 });
           if (gameStatus.turn === 1) {
             setMiniL(true);
+          } else {
+            setNextDay(true);
+            const timerId = setInterval(() => {
+              setNextDay(false);
+              // 함수 실행 후 타이머 중지
+              clearInterval(timerId);
+            }, 5000);
           }
           if (data.incharge === myStatus.userNum) {
             updateTurn(gameStatus.turn);
@@ -194,6 +209,22 @@ function MainGame() {
           console.log("게임 결과", data);
           setFinal(true);
           setResult(data.content);
+
+          // usernum과 일치하는 rank를 찾기
+          const usernum = myStatus.userNum; // 예시 usernum
+          const userRank = data.content.find(
+            (item) => item.usernum === usernum
+          )?.rank;
+          const totalParticipants = data.content.length;
+
+          if (totalParticipants > 1) {
+            getRewards(
+              (totalParticipants - userRank) * 10,
+              (totalParticipants - userRank) * 10
+            );
+          }
+
+          console.log("내 순위:", userRank);
         }
       };
       ws.onclose = (event) => {
@@ -373,12 +404,18 @@ function MainGame() {
   }, []);
 
   //내가 속한 방 아니면 바로 퇴출임
-  useEffect(() => {
-    if (otherStatus.length === 4 && progress === 100) {
-      console.log("댓츠 노노");
-      navigate("/");
-    }
-  }, [otherStatus, progress]);
+  // useEffect(() => {
+  //   if (otherStatus.length === 4 && progress === 100) {
+  //     console.log("댓츠 노노");
+  //     navigate("/");
+  //   }
+  // }, [otherStatus, progress]);
+
+  const getRewards = (ruby, point) => {
+    axios.get(
+      `/api/user/rewards?userNum=${myStatus.userNum}&ruby=${ruby}&point=${point}`
+    );
+  };
 
   //내 상태가 변하면 즉각 DB에 업데이트
   useEffect(() => {
@@ -427,6 +464,7 @@ function MainGame() {
           <div className={selected == 2 ? "win-item-text" : null}>휴지통</div>
         </div>
         <Alert isOpen={alert} onClose={closeAlert} message={alertMsg} />
+        <Next isOpen={nextDay} />
         <FinalResult
           isOpen={final}
           result={result}
@@ -464,6 +502,12 @@ function MainGame() {
           comp={comp}
           stockInfo={stockInfo}
           companyName={companyName}
+          myStatus={myStatus}
+          setMyStatus={setMyStatus}
+          openAlert={openAlert}
+          sendMessage={sendMessage}
+          gameStatus={gameStatus}
+          newsDesc={newsDesc}
         />
         <div className="flex=col" style={{ width: "21%" }}>
           <Timer show={showTM} setShow={setShowTM} timer={timer} />
