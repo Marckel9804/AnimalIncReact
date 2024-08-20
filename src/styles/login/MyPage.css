@@ -402,9 +402,9 @@
     position: fixed; /* Changed from fixed to absolute */
     top: 50%; /* Default to top of modal */
     left: 50%; /* Center horizontally */
-    transform: translate(-50%, 0); /* Center horizontally and adjust vertically based on scroll */
+    transform: translate(-50%, -50%); /* Center horizontally and adjust vertically based on scroll */
     width: 300px;
-    height: 150px;
+    height: 200px;
     background-color: rgba(255, 255, 255, 0.9);
     border: 4px solid #4cbdb8;
     border-radius: 10px;
@@ -454,4 +454,9 @@
 .mypage-animal-id {
     font-size: 0.9em;
     margin: 0;
+}
+
+#mypage-comfirm-btn {
+    margin: 5px;
+
 }

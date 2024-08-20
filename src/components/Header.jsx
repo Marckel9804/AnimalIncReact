@@ -96,7 +96,7 @@ const Header = () => {
   return (
     <header className="header-header-container">
       <div className="header-header-content">
-        <div className="header-title" onClick={() => navigate('/')}>
+        <div className="header-title nes-pointer" onClick={() => navigate('/')}>
           Animal 주식회사
         </div>
         <div className="header-user-info">
@@ -105,7 +105,7 @@ const Header = () => {
             <i className="nes-icon trophy header-ruby-icon" />
             <span className="header-ruby-text">
               {userInfo.userRuby}
-              <button className="add-ruby-btn" onClick={openModal}>
+              <button className="add-ruby-btn nes-pointer" onClick={openModal}>
                 +
               </button>
             </span>
@@ -156,7 +156,7 @@ const Header = () => {
       >
         <div className="modal-header">
           <h2 className="ruby-modal-title">루비 구매</h2>
-          <button className="modal-close-btn" onClick={closeModal}>
+          <button className="modal-close-btn nes-pointer" onClick={closeModal}>
             X
           </button>
         </div>

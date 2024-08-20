@@ -227,6 +227,24 @@ const Mypage = () => {
     const openItemModal = () => setIsItemModalOpen(true);
     const closeItemModal = () => setIsItemModalOpen(false);
 
+    const isValidBirthdate = (date) => {
+        // 생년월일이 8자리 숫자인지 확인
+        if (!/^\d{8}$/.test(date)) return false;
+
+        const year = parseInt(date.slice(0, 4), 10);
+        const month = parseInt(date.slice(4, 6), 10);
+        const day = parseInt(date.slice(6, 8), 10);
+
+        // 날짜가 유효한 범위인지 확인
+        if (year < 1900 || year > new Date().getFullYear()) return false;
+        if (month < 1 || month > 12) return false;
+        if (day < 1 || day > 31) return false;
+
+        // 실제 날짜로 변환하여 유효성 확인
+        const dateObj = new Date(`${year}-${month}-${day}`);
+        return dateObj && dateObj.getMonth() + 1 === month && dateObj.getDate() === day;
+    };
+
     const handleUpdate = async () => {
         // 필수 입력값 확인
         if (!updatedInfo.userRealname || !nickname || !updatedInfo.userBirthdate) {
@@ -327,6 +345,9 @@ const Mypage = () => {
                 return 'src/image/Silver.png';
             case 'Gold':
                 return 'src/image/Gold.png';
+            case null:
+            case undefined:
+                return null;  // userGrade가 null 또는 undefined일 경우 null을 반환
             default:
                 return 'src/image/Default.png';
         }
@@ -406,20 +427,6 @@ const Mypage = () => {
         return nickname.length >= 2 && nickname.length <= 12 && !invalidPattern.test(nickname);
     };
 
-    const isValidBirthdate = (date) => {
-        if (!/^\d{8}$/.test(date)) return false;
-        const year = parseInt(date.slice(0, 4), 10);
-        const month = parseInt(date.slice(4, 6), 10);
-        const day = parseInt(date.slice(6, 8), 10);
-
-        if (year < 1900 || year > new Date().getFullYear()) return false;
-        if (month < 1 || month > 12) return false;
-        if (day < 1 || day > 31) return false;
-
-        const dateObj = new Date(`${year}-${month}-${day}`);
-        return dateObj && dateObj.getMonth() + 1 === month && dateObj.getDate() === day;
-    };
-
     const handleCancel = () => {
         setShowConfirmation(false);
         setSelectedAnimal(null);
@@ -443,8 +450,8 @@ const Mypage = () => {
                         <StyledTab value={1} style={{minWidth: '120px', textAlign: 'center'}}>내 정보 수정</StyledTab>
                         <StyledTab value={2} style={{minWidth: '120px', textAlign: 'center'}}>회원 탈퇴</StyledTab>
                         <StyledTab value={3} style={{minWidth: '120px', textAlign: 'center'}}>내 글 목록</StyledTab>
-                        <StyledTab value={4} style={{minWidth: '120px', textAlign: 'center'}}>내가 쓴 댓글</StyledTab>
-                        <StyledTab value={5} style={{minWidth: '120px', textAlign: 'center'}}>내 FAQ</StyledTab>
+{/*                        <StyledTab value={4} style={{minWidth: '120px', textAlign: 'center'}}>내가 쓴 댓글</StyledTab>
+                        <StyledTab value={5} style={{minWidth: '120px', textAlign: 'center'}}>내 FAQ</StyledTab>*/}
                         {!userInfo.slogin &&
                             <StyledTab value={6} style={{minWidth: '120px', textAlign: 'center'}}>비밀번호 변경</StyledTab>}
                     </Tabs>
@@ -460,8 +467,10 @@ const Mypage = () => {
                                              className="profile-image"/>
                                     </div>
                                     <div className="profile-icon-wrapper">
-                                        <img src={getTierIcon(userInfo.userGrade)} alt="티어 아이콘"
-                                             className="profile-icon"/>
+                                        {getTierIcon(userInfo.userGrade) ? (
+                                            <img src={getTierIcon(userInfo.userGrade)} alt="티어 아이콘"
+                                                 className="profile-icon"/>
+                                        ) : null}
                                     </div>
                                 </div>
                                 <div className="info-section">
@@ -485,12 +494,12 @@ const Mypage = () => {
                                         <span className="info-label">루비</span>
                                         <span className="info-value">{userInfo.userRuby} 루비</span>
                                     </div>
-                                    <div className="info-item">
+{/*                                    <div className="info-item">
                                         <span className="info-label">아이템</span>
                                         <span className="info-value-item nes-pointer" onClick={openItemModal}>
-                                {userInfo.userItems.length} 개
-                            </span>
-                                    </div>
+                                            {userInfo.userItems.length} 개
+                                        </span>
+                                    </div>*/}
                                 </div>
                             </div>
                         )}
@@ -606,8 +615,8 @@ const Mypage = () => {
                                 </div>
                             </div>
                         )}
-                        {selectedTab === 4 && <div>내가 쓴 댓글 내용</div>}
-                        {selectedTab === 5 && <div>FAQ 내용</div>}
+{/*                        {selectedTab === 4 && <div>내가 쓴 댓글 내용</div>}
+                        {selectedTab === 5 && <div>FAQ 내용</div>}*/}
                         {selectedTab === 6 && !userInfo.slogin && (
                             <div className="modal-content">
                                 <div className="modal-item">
@@ -729,10 +738,10 @@ const Mypage = () => {
                                     {selectedAnimal.animalName}을(를) 메인 캐릭터로 선택하시겠습니까?
                                 </div>
                                 <div className="mypage-confirmation-dialog-buttons">
-                                    <button className="nes-btn" onClick={handleUpload}>
+                                    <button className="nes-btn is-primary" id="mypage-comfirm-btn" onClick={handleUpload}>
                                         확인
                                     </button>
-                                    <button className="nes-btn" onClick={handleCancel}>
+                                    <button className="nes-btn is-error" id="mypage-comfirm-btn" onClick={handleCancel}>
                                         취소
                                     </button>
                                 </div>
@@ -741,7 +750,7 @@ const Mypage = () => {
                     )}
                 </div>
             </Modal>
-            <Modal
+            {/*<Modal
                 isOpen={isItemModalOpen}
                 onRequestClose={closeItemModal}
                 className="mypage-modal-item"
@@ -764,7 +773,7 @@ const Mypage = () => {
                     )}
                 </div>
                 <button className="nes-btn is-error" id="mypage-item-modal-btn" onClick={closeItemModal}>닫기</button>
-            </Modal>
+            </Modal>*/}
             <Footer/>
         </>
     );
