@@ -40,12 +40,23 @@ const Login = () => {
             }
         } catch (error) {
             console.error("Login error:", error);
-            if (error.response && error.response.data) {
+            if (error.response && error.response.status === 403) {
+                const banMessage = error.response.data.message;
+                const banReason = error.response.data.banReason;
+                const unlockDate = new Date(error.response.data.unlockDate);
+
+                // unlockDate를 yyyy-MM-dd HH:mm 형식으로 변환
+                const formattedUnlockDate = `${unlockDate.getFullYear()}-${String(unlockDate.getMonth() + 1).padStart(2, '0')}-${String(unlockDate.getDate()).padStart(2, '0')} ${String(unlockDate.getHours()).padStart(2, '0')}:${String(unlockDate.getMinutes()).padStart(2, '0')}`;
+
+                // 밴된 경우의 처리
+                alert(`${banMessage}\n\n정지 사유: ${banReason}\n정지 기간: ${formattedUnlockDate}`);
+                navigate('/login');
+            } else if (error.response && typeof error.response.data === 'string') {
+                // 오류 메시지가 문자열일 경우
                 alert(error.response.data);
-                return;
             } else {
+                // 다른 오류 처리
                 alert('로그인 중 오류가 발생했습니다. 다시 시도해 주세요.');
-                return;
             }
         }
     };
@@ -109,6 +120,7 @@ const Login = () => {
                 </div>
             </div>
             <div id="backImg"/>
+            <Footer/>
         </>
     );
 };
