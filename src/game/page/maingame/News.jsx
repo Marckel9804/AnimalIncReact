@@ -174,12 +174,13 @@ function News({
               {news}
               <br />
               <span style={{ color: "red" }}>
+                개발자 모드: 실제로는
                 {
                   stockInfo[ind + comp].weight[
                     stockInfo[ind + comp].weight.length - 1
                   ]
                 }
-                %
+                % 임
               </span>
             </div>
           )}
