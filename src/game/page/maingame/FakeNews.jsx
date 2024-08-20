@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 
 function FakeNews(props) {
   const [stockSelected, setStockSelected] = useState("elec1");
-  const [radio, setRadio] = useState("positive");
+  const [radio, setRadio] = useState("30%");
 
   const handleStockChange = (event) => {
     setStockSelected(event.target.value);
@@ -13,18 +13,17 @@ function FakeNews(props) {
   };
 
   const fakeNews = () => {
-    if (isNaN(order) || order == 0) {
-      props.openAlert("주문이 존재하지 않습니다.");
-    } else if (props.myStatus.shortSelling > 0) {
+    if (props.myStatus.fakeNews > 0) {
       props.setMyStatus({
         ...props.myStatus,
-        shortSelling: props.myStatus.shortSelling - 1,
-        cash: props.myStatus.cash + total,
-        shortSellRecord:
-          props.myStatus.shortSellRecord +
-          `&${
-            props.stockInfo[stockSelected].price[props.gameStatus.turn - 1]
-          }:${order}`,
+        fakeNews: props.myStatus.fakeNews - 1,
+      });
+      props.sendMessage({
+        type: "fakenews",
+        stockId: stockSelected,
+        describe: radio,
+        content: `누군가 시장에서 근거 없는 소문을 내고 다닌다는 소식이 있습니다.`,
+        turn: props.gameStatus.turn,
       });
     } else {
       props.openAlert("보유한 아이템이 부족합니다.");
@@ -57,8 +56,8 @@ function FakeNews(props) {
             <input
               type="radio"
               name="options"
-              value="positive"
-              checked={radio === "positive"}
+              value="30"
+              checked={radio === "30"}
               onChange={handleOptionChange}
             />
             <label
@@ -70,8 +69,8 @@ function FakeNews(props) {
             <input
               type="radio"
               name="options"
-              value="negative"
-              checked={radio === "negative"}
+              value="-30"
+              checked={radio === "-30"}
               onChange={handleOptionChange}
             />
             <label
