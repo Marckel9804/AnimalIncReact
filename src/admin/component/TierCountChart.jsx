@@ -96,7 +96,7 @@ const TierCountChart = (props) => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className=' flex justify-center' style={{ width: '450px', height: '450px' }}>
+    <div className=' flex justify-center' style={{ width: '500px', height: '450px' }}>
       <Bar data={chartData} options={options} height={400} />
     </div>
   );
