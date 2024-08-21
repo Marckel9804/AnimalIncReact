@@ -107,7 +107,7 @@ const DashBoardChartLayout = (props) => {
             <select name='year' value={yearReport} onChange={onYearReport}>
               <option value="0" hidden>...</option>
               {years.map((year) => (
-                <option key={year} value={year}>{year}</option>
+                <option key={year} value={year}>{year}년</option>
               ))}
             </select>
           </div>
@@ -116,13 +116,13 @@ const DashBoardChartLayout = (props) => {
             <select name='month' value={monthReport} onChange={onMonthReport}>
               <option value="0" hidden>...</option>
               {months.map((month) => (
-                <option key={month} value={month}>{monthReport}</option>
+                <option key={month} value={month}>{monthReport}월</option>
               ))}
             </select>
           </div>
 
         </div>
-        <ReportsChart menu={menu} month={yearReport} year={yearUC}/>
+        <ReportsChart menu={menu} month={monthReport} year={yearReport}/>
       </div>
 
 
