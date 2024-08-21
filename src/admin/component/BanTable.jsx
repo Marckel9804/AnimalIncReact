@@ -33,6 +33,20 @@ const BanTable = (props) => {
     setModal('none')
   }
 
+  const handleSave = (updateData) => {
+    axios.put(`/api/admin/ban/${updateData.banId}`, updateData)
+     .then((res) => {
+       console.log('ban update success', res)
+       alert("성공적으로 업데이트 되었어요!")
+       setBanlist(banlist.map(ban =>
+            ban.banId === updateData.banId ? res.data : ban
+        ))
+      })
+     .catch((err)=> {
+        console.log('ban update err', err)
+      })
+  }
+
   return (
     <div id='UserTable' className='ml-52 my-2'>
       <table className='nes-table is-bordered is-centered justify-center w-full'>
@@ -67,7 +81,7 @@ const BanTable = (props) => {
         <div
           className='flex min-w-64 min-h-80 rounded-lg border-4 border-emerald-600 justify-center px-8 py-4 bg-gray-50 bg-opacity-100'
           onClick={(e) => e.stopPropagation()}>
-          <BanModal data={data}/>
+          <BanModal data={data} onSave={handleSave} onClose={closeBan}/>
         </div>
       </div>
     </div>
