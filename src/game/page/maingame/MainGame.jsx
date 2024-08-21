@@ -166,7 +166,21 @@ function MainGame() {
           console.log(data.describe);
         }
         if (data.type === "turn") {
-          setMyStatus({ ...myStatus, newsCount: 5 });
+          const items = [
+            "shortSelling",
+            "fakeNews",
+            "goodNews",
+            "timeMachine",
+            "lottery",
+          ];
+          const shuffled = items.sort(() => 0.5 - Math.random());
+          const selectedItem = shuffled[0];
+
+          setMyStatus({
+            ...myStatus,
+            newsCount: 5,
+            [selectedItem]: myStatus[selectedItem] + 1,
+          });
 
           setNextDay(true);
           const timerId = setInterval(() => {
@@ -217,7 +231,7 @@ function MainGame() {
 
           if (totalParticipants > 1) {
             getRewards(
-              (totalParticipants - userRank) * 10,
+              (totalParticipants - userRank) * 5,
               (totalParticipants - userRank) * 10
             );
           }

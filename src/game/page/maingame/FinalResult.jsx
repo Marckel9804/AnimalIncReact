@@ -35,7 +35,7 @@ function FinalResult({ isOpen, onClose, result, formatNumber }) {
                 <p>
                   <span style={{ color: "yellow" }}>
                     {" "}
-                    +{(result.length - item.rank) * 10} Ruby
+                    +{(result.length - item.rank) * 5} Ruby
                   </span>
                   <span style={{ color: "blue" }}>
                     {" "}
