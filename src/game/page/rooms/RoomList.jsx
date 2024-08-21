@@ -77,25 +77,24 @@ const RoomList = () => {
 
   // 게임방 클릭하면 해당 게임방으로 이동 (게임방 인원 +1)
   // 게임방 클릭하면 해당 게임방으로 이동 (게임방 인원 +1)
-const goWaitingRoom = (item) => {
-  console.log("item >>> ", item); // 로그 추가
-  // 방에 들어가면 인원수를 증가시키자 !
-  axios
-    .post(`/api/user/game/updateCount/${item.gameRoomId}`)
-    .then(() => {
-      console.log("인원수 증가 완료 ~");
-      navigate(`/roomwait/${item.gameRoomId}`, {
-        state: {
-          roomId: item.gameRoomId,
-          roomName: item.roomName, // 방 이름도 함께 전달
-          maxPlayers: item.players + item.bots,
-          userNum: userInfo.userNum, // 현재 사용자 정보도 전달
-        },
-      });
-    })
-    .catch((error) => console.log(error));
-};
-
+  const goWaitingRoom = (item) => {
+    console.log("item >>> ", item); // 로그 추가
+    // 방에 들어가면 인원수를 증가시키자 !
+    axios
+      .post(`/api/user/game/updateCount/${item.gameRoomId}`)
+      .then(() => {
+        console.log("인원수 증가 완료 ~");
+        navigate(`/roomwait/${item.gameRoomId}`, {
+          state: {
+            roomId: item.gameRoomId,
+            roomName: item.roomName, // 방 이름도 함께 전달
+            maxPlayers: item.players + item.bots,
+            userNum: userInfo.userNum, // 현재 사용자 정보도 전달
+          },
+        });
+      })
+      .catch((error) => console.log(error));
+  };
 
   // 공지사항 불러오기 (notice 최신글 10개까지만 출력)
   const [notice, setNotice] = useState();
@@ -230,7 +229,8 @@ const goWaitingRoom = (item) => {
 };
 
 const RoomBody = styled.div`
-  width: 100vw;
+  width: 97vw;
+  padding: 40px 20px 190px 20px;
   margin: 20px auto;
 `;
 
