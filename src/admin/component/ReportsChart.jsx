@@ -15,12 +15,12 @@ import axios from "../../utils/axios.js";
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 ChartJS.defaults.font.family = "'DungGeunMo'";
 
-const UserCountChart = (props) => {
+const ReportsChart = (props) => {
   const {menu, month, year}= props;
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get(`/api/admin/redis/usercount/${year}/${month}`)
+    axios.get(`/api/admin/redis/reportcount/${year}/${month}`)
       .then((res) => {
         setData(res.data)
       })
@@ -37,7 +37,7 @@ const UserCountChart = (props) => {
     labels: labels,
     datasets: [
       {
-        label: 'User Count',
+        label: 'Report Count',
         data: counts,
         borderColor: 'rgba(75, 192, 192, 1)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -84,4 +84,4 @@ const UserCountChart = (props) => {
   );
 }
 
-export default UserCountChart;
+export default ReportsChart

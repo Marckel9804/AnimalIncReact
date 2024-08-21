@@ -1,6 +1,7 @@
 import UserCountChart from "../component/UserCountChart.jsx";
 import {useEffect, useState} from "react";
 import TierCountChart from "../component/TierCountChart.jsx";
+import ReportsChart from "../component/ReportsChart.jsx";
 
 let years = [2020, 2021, 2022, 2023, 2024]
 let months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
@@ -115,13 +116,13 @@ const DashBoardChartLayout = (props) => {
             <select name='month' value={monthReport} onChange={onMonthReport}>
               <option value="0" hidden>...</option>
               {months.map((month) => (
-                <option key={month} value={month}>{month}</option>
+                <option key={month} value={month}>{monthReport}</option>
               ))}
             </select>
           </div>
 
         </div>
-        {/*<UserCountChart menu={menu}/>*/}
+        <ReportsChart menu={menu} month={yearReport} year={yearUC}/>
       </div>
 
 
