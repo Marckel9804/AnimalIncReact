@@ -44,7 +44,7 @@ const DashBoardChartLayout = (props) => {
     <div id='DashBoardChartLayout' className='ml-56 grid grid-cols-2 gap-x-32 gap-y-8 w-full'>
 
       {/* 월별 사용자 수 */}
-      <div className='nes-container with-title' style={{width: '540px', backgroundColor:"white"}}>
+      <div className='nes-container with-title' style={{width: '600px', backgroundColor:"white"}}>
         <p className='title' style={{lineHeight: 0.5}}>{yearUC}년 {monthUC}월 사용자 인원</p>
         <div className='flex gap-2'>
 
@@ -71,7 +71,7 @@ const DashBoardChartLayout = (props) => {
       </div>
 
       {/* 월별 티어 분포도 */}
-      <div className='nes-container with-title' style={{width: '540px', backgroundColor:"white"}}>
+      <div className='nes-container with-title' style={{width: '600px', backgroundColor:"white"}}>
         <p className='title' style={{lineHeight: 0.5}}>{yearTC}년 {monthTC}월 티어 분포도</p>
         <div className='flex gap-x-2'>
 
@@ -99,7 +99,7 @@ const DashBoardChartLayout = (props) => {
 
 
       {/* 일별 신고수 */}
-      <div className='nes-container with-title' style={{width: '540px', backgroundColor:"white"}}>
+      <div className='nes-container with-title' style={{width: '600px', backgroundColor:"white"}}>
         <p className='title' style={{lineHeight: 0.5}}>{yearReport}년 {monthReport}월 신고수</p>
         <div className='flex gap-2'>
 
@@ -116,7 +116,7 @@ const DashBoardChartLayout = (props) => {
             <select name='month' value={monthReport} onChange={onMonthReport}>
               <option value="0" hidden>...</option>
               {months.map((month) => (
-                <option key={month} value={month}>{monthReport}월</option>
+                <option key={month} value={month}>{month  }월</option>
               ))}
             </select>
           </div>
@@ -127,7 +127,7 @@ const DashBoardChartLayout = (props) => {
 
 
       {/* 월별 티어 분포도 */}
-      <div className='nes-container with-title' style={{width: '540px', backgroundColor:"white"}}>
+      <div className='nes-container with-title' style={{width: '600px', backgroundColor:"white"}}>
         <p className='title' style={{lineHeight: 0.5}}>{yearUC}년 {monthUC}월 사용자 인원</p>
         <div className='flex gap-2'>
 
