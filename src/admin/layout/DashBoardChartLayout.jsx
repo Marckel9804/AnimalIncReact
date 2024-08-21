@@ -1,6 +1,7 @@
 import UserCountChart from "../component/UserCountChart.jsx";
 import {useEffect, useState} from "react";
 import TierCountChart from "../component/TierCountChart.jsx";
+import ReportsChart from "../component/ReportsChart.jsx";
 
 let years = [2020, 2021, 2022, 2023, 2024]
 let months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
@@ -43,7 +44,7 @@ const DashBoardChartLayout = (props) => {
     <div id='DashBoardChartLayout' className='ml-56 grid grid-cols-2 gap-x-32 gap-y-8 w-full'>
 
       {/* 월별 사용자 수 */}
-      <div className='nes-container with-title' style={{width: '540px', backgroundColor:"white"}}>
+      <div className='nes-container with-title' style={{width: '600px', backgroundColor:"white"}}>
         <p className='title' style={{lineHeight: 0.5}}>{yearUC}년 {monthUC}월 사용자 인원</p>
         <div className='flex gap-2'>
 
@@ -70,7 +71,7 @@ const DashBoardChartLayout = (props) => {
       </div>
 
       {/* 월별 티어 분포도 */}
-      <div className='nes-container with-title' style={{width: '540px', backgroundColor:"white"}}>
+      <div className='nes-container with-title' style={{width: '600px', backgroundColor:"white"}}>
         <p className='title' style={{lineHeight: 0.5}}>{yearTC}년 {monthTC}월 티어 분포도</p>
         <div className='flex gap-x-2'>
 
@@ -98,7 +99,7 @@ const DashBoardChartLayout = (props) => {
 
 
       {/* 일별 신고수 */}
-      <div className='nes-container with-title' style={{width: '540px', backgroundColor:"white"}}>
+      <div className='nes-container with-title' style={{width: '600px', backgroundColor:"white"}}>
         <p className='title' style={{lineHeight: 0.5}}>{yearReport}년 {monthReport}월 신고수</p>
         <div className='flex gap-2'>
 
@@ -106,7 +107,7 @@ const DashBoardChartLayout = (props) => {
             <select name='year' value={yearReport} onChange={onYearReport}>
               <option value="0" hidden>...</option>
               {years.map((year) => (
-                <option key={year} value={year}>{year}</option>
+                <option key={year} value={year}>{year}년</option>
               ))}
             </select>
           </div>
@@ -115,18 +116,18 @@ const DashBoardChartLayout = (props) => {
             <select name='month' value={monthReport} onChange={onMonthReport}>
               <option value="0" hidden>...</option>
               {months.map((month) => (
-                <option key={month} value={month}>{month}</option>
+                <option key={month} value={month}>{month  }월</option>
               ))}
             </select>
           </div>
 
         </div>
-        {/*<UserCountChart menu={menu}/>*/}
+        <ReportsChart menu={menu} month={monthReport} year={yearReport}/>
       </div>
 
 
       {/* 월별 티어 분포도 */}
-      <div className='nes-container with-title' style={{width: '540px', backgroundColor:"white"}}>
+      <div className='nes-container with-title' style={{width: '600px', backgroundColor:"white"}}>
         <p className='title' style={{lineHeight: 0.5}}>{yearUC}년 {monthUC}월 사용자 인원</p>
         <div className='flex gap-2'>
 

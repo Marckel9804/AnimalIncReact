@@ -25,7 +25,17 @@ const TierCountChart = (props) => {
       });
   }, [menu, month, year]);
 
-  const labels = useMemo(() => Array.from(new Set(data.map(item => item.tuDate.split('T')[0]))), [data]);
+  // 기존 labels 생성
+  const labels = useMemo(() =>
+      Array.from(new Set(data.map(item => item.tuDate.split('T')[0]))),
+    [data]
+  );
+
+  // labels에서 "일" 부분만 추출
+  const dayLabels = useMemo(() =>
+      labels.map(date => date.split('-')[2]),
+    [labels]
+  );
 
   const goldData = useMemo(() =>
     labels.map(date => {
@@ -45,15 +55,15 @@ const TierCountChart = (props) => {
       return entry ? entry.count : 0;
     }), [labels, data]);
 
+  // 차트에 사용할 데이터
   const chartData = {
-    labels: labels,
+    labels: dayLabels, // "일"만 표시되는 레이블 사용
     datasets: [
       {
         label: 'Bronze',
         data: bronzeData,
         backgroundColor: 'rgba(215,108,108,0.6)',
       },
-
       {
         label: 'Silver',
         data: silverData,
@@ -96,7 +106,7 @@ const TierCountChart = (props) => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className=' flex justify-center' style={{ width: '450px', height: '450px' }}>
+    <div className='flex justify-center' style={{ width: '500px', height: '450px' }}>
       <Bar data={chartData} options={options} height={400} />
     </div>
   );
