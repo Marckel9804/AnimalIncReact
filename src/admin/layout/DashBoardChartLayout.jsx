@@ -126,32 +126,32 @@ const DashBoardChartLayout = (props) => {
       </div>
 
 
-      {/* 월별 티어 분포도 */}
-      <div className='nes-container with-title' style={{width: '600px', backgroundColor:"white"}}>
-        <p className='title' style={{lineHeight: 0.5}}>{yearUC}년 {monthUC}월 사용자 인원</p>
-        <div className='flex gap-2'>
+      {/*/!* 월별 티어 분포도 *!/*/}
+      {/*<div className='nes-container with-title' style={{width: '600px', backgroundColor:"white"}}>*/}
+      {/*  <p className='title' style={{lineHeight: 0.5}}>{yearUC}년 {monthUC}월 사용자 인원</p>*/}
+      {/*  <div className='flex gap-2'>*/}
 
-          <div className="nes-select is-error">
-            <select name='year' onChange={onYearUC}>
-              <option value="0" hidden>...</option>
-              {years.map((year) => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
-          </div>
+      {/*    <div className="nes-select is-error">*/}
+      {/*      <select name='year' onChange={onYearUC}>*/}
+      {/*        <option value="0" hidden>...</option>*/}
+      {/*        {years.map((year) => (*/}
+      {/*          <option key={year} value={year}>{year}</option>*/}
+      {/*        ))}*/}
+      {/*      </select>*/}
+      {/*    </div>*/}
 
-          <div className="nes-select is-error">
-            <select name='month' onChange={onMonthTC}>
-              <option value="0" hidden>...</option>
-              {months.map((month) => (
-                <option key={month} value={month}>{month}</option>
-              ))}
-            </select>
-          </div>
+      {/*    <div className="nes-select is-error">*/}
+      {/*      <select name='month' onChange={onMonthTC}>*/}
+      {/*        <option value="0" hidden>...</option>*/}
+      {/*        {months.map((month) => (*/}
+      {/*          <option key={month} value={month}>{month}</option>*/}
+      {/*        ))}*/}
+      {/*      </select>*/}
+      {/*    </div>*/}
 
-        </div>
-        {/*<UserCountChart menu={menu}/>*/}
-      </div>
+      {/*  </div>*/}
+      {/*  /!*<UserCountChart menu={menu}/>*!/*/}
+      {/*</div>*/}
 
 
     </div>
