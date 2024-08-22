@@ -78,15 +78,11 @@ const BoardListLayout = (props) => {
                            type={type}/>
 
 
-          <div style={{
-            backgroundImage: `url(${bgimg})`,
-            zIndex: '-1',
-            position: 'fixed',
-            width: '100vw',
-            height: '100vh',
-            top: '0px',
-            left: '0px'
-          }}></div>
+          <div id="board-bg" className='fixed top-0 left-0 h-dvh w-dvw -z-10'
+               style={{
+                 backgroundImage: `url(${bgimg})`,
+                 backgroundSize: "cover"
+               }}></div>
         </div>
         <Footer/>
       </div>

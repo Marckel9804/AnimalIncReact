@@ -1,6 +1,6 @@
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import BoardDetailLayout from "../layout/BoardDetailLayout.jsx";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import axios from "../../utils/axios.js";
 import {jwtDecode} from "jwt-decode";
 import Header from "../../components/Header.jsx";
@@ -35,8 +35,10 @@ const BoardDetailPage = () => {
       <Header/>
       <BoardDetailLayout data={data} mEmail={mEmail} page={page}/>
       <div id="board-bg" className='fixed top-0 left-0 h-dvh w-dvw -z-10'
-           style={{ backgroundImage: `url(${bgimg})`}}
-      ></div>
+           style={{
+             backgroundImage: `url(${bgimg})`,
+             backgroundSize: "cover"
+           }}></div>
     </div>
   )
 }

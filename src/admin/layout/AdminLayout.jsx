@@ -1,4 +1,4 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import Header from "../../components/Header.jsx";
 import UserTable from "../component/UserTable.jsx";
 import AdminMenuBar from "../component/AdminMenuBar.jsx";
@@ -37,9 +37,11 @@ const AdminLayout = (props) => {
           <AdminMenuBar menu={menu} setMenu={setMenu}/>
         </div>
       </div>
-      <div id="board-bg" className='fixed top-0 left-0 h-dvh w-dvw  -z-10'
-           style={{backgroundImage: `url(${bgimg})`}}
-      ></div>
+      <div id="board-bg" className='fixed top-0 left-0 h-dvh w-dvw -z-10'
+           style={{
+             backgroundImage: `url(${bgimg})`,
+             backgroundSize: "cover"
+           }}></div>
     </div>
   )
 }

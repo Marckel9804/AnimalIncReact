@@ -85,7 +85,7 @@ const BoardDetailLayout = (props) => {
 
         </div>
       </div>
-      <button onClick={onBack}>리스트로 돌아가기</button>
+      {/*<button onClick={onBack}>리스트로 돌아가기</button>*/}
 
       <Footer/>
     </div>

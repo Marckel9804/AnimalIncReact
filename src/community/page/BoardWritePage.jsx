@@ -27,9 +27,11 @@ const BoardWritePage = () => {
     <div id='BoardWritePage' className='flex-col justify-center w-full'>
       <Header/>
       <BoardWriteLayout type={type} email={email}/>
-      <div id="board-bg" className='fixed top-0 left-0 h-dvh w-dvw  -z-10'
-           style={{ backgroundImage: `url(${bgimg})`}}
-      ></div>
+      <div id="board-bg" className='fixed top-0 left-0 h-dvh w-dvw -z-10'
+           style={{
+             backgroundImage: `url(${bgimg})`,
+             backgroundSize: "cover"
+      }}></div>
     </div>
   )
 }
