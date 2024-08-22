@@ -173,6 +173,15 @@ function News({
             >
               {news}
               <br />
+              <span style={{ color: "green" }}>
+                예상 등락폭이 크지 않을 경우 뉴스는 낮은 확률로 실제 등락폭과
+                다른 여론을 보여줍니다.
+                <br />
+                주식을 구매할 때 뉴스 한 두개만 보고 결정하는 행동을 하지
+                맙시다.
+              </span>
+              <br />
+              <br />
               <span style={{ color: "red" }}>
                 개발자 모드: 실제로는
                 {

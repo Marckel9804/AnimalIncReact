@@ -91,7 +91,7 @@ function ItemsWin({ show, setShow, openItemUse, myStatus }) {
           >
             <img src={lottery} style={{ width: "70px", height: "70px" }} />
             <div className={selected == 5 ? "win-item-text" : null}>
-              로또({myStatus.lottery})
+              복권({myStatus.lottery})
             </div>
           </div>
         </div>
