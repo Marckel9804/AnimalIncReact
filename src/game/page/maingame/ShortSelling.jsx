@@ -36,7 +36,14 @@ function ShortSelling(props) {
 
   const shortSell = () => {
     if (props.gameStatus.turn === 12) {
-      props.openAlert("현재 턴에서는 사용 할 수 없는 아이템입니다.");
+      props.openAlert(
+        "현재 턴에서는 사용 할 수 없는 아이템입니다.ㅜ남은 아이템이 전부 로또로 전환됩니다."
+      );
+      props.setMyStatus({
+        ...props.myStatus,
+        shortSelling: 0,
+        lottery: props.myStatus.shortSelling,
+      });
     } else if (isNaN(order) || order == 0) {
       props.openAlert("주문이 존재하지 않습니다.");
     } else if (props.myStatus.shortSelling > 0) {
@@ -86,7 +93,10 @@ function ShortSelling(props) {
           얻을 수 있고 다음 턴이 오면 다음 턴의 주가로 해당 주식을 매도한 만큼의
           금액이 빠져나가게 됩니다.
         </p>
-        <p>따라서 마지막 턴에는 사용이 불가능 합니다.</p>
+        <p>
+          따라서 마지막 턴에는 사용이 불가능 합니다. 마지막 턴에는 해당 아이템이
+          복권으로 전환됩니다.
+        </p>
         <p style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>
           {" "}
           *주의*{" "}
