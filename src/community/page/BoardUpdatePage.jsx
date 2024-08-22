@@ -18,8 +18,10 @@ const BoardUpdatePage = () => {
       <Header/>
       <BoardUpdateLayout id={id}/>
       <div id="board-bg" className='fixed top-0 left-0 h-dvh w-dvw -z-10'
-           style={{ backgroundImage: `url(${bgimg})`}}
-      ></div>
+           style={{
+             backgroundImage: `url(${bgimg})`,
+             backgroundSize: "cover"
+      }}></div>
     </div>
   )
 }
