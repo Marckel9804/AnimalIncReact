@@ -8,7 +8,7 @@ import DashBoardChartLayout from "./DashBoardChartLayout.jsx";
 import Footer from "../../components/Footer.jsx";
 import AdminFooter from "../component/AdminFooter.jsx";
 import ReportTable from "../component/ReportTable.jsx";
-import bgimg from "../../image/background.png";
+import bgimg from "../../assets/images/background.jpg";
 
 const AdminLayout = (props) => {
   const [menu, setMenu] = useState('DASHBOARD');
