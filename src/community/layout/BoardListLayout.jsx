@@ -6,7 +6,7 @@ import axios from "../../utils/axios.js";
 import BoardSearchBar from "../component/BoardSearchBar.jsx";
 import Header from "../../components/Header.jsx";
 import Footer from "../../components/Footer.jsx";
-import bgimg from "../../image/background.png";
+import bgimg from "../../assets/images/background.jpg";
 
 const BoardListLayout = (props) => {
 
